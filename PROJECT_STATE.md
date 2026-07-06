@@ -11,7 +11,7 @@
 ## Source Pointers
 
 - Run docs: `README.md`, `docs/17-run-project-after-restart.md`.
-- Multi-account workflow: `docs/19-multi-account-collaboration-protocol.md`.
+- Multi-account workflow: `docs/19-multi-account-collaboration-protocol.md`, `docs/20-session-handoff-and-workload-map.md`.
 - Source inputs: `Prompt_Codex_VietSupply_Radar.pdf`, `Noi_dung_hoi_thoai_du_an_VietSupply_Radar.pdf`, `deep-research-report.md`.
 - Diagrams: `docs/16-current-demo-diagrams.md`, `docs/diagrams/*.drawio`.
 - Tech assessment: `docs/18-deep-research-technical-assessment.md`.
@@ -19,6 +19,8 @@
 
 ## Latest Slice
 
+- Session handoff/workload map documented for multi-account continuation.
+- New accounts should use `docs/20-session-handoff-and-workload-map.md` for the startup prompt, recommended parallel tracks, high-conflict files, and end-of-session state template.
 - Multi-account GitHub collaboration protocol documented.
 - Rule now persisted: every account/session pulls latest GitHub state first, updates `PROJECT_STATE.md` before context runs low, commits, and pushes back to GitHub before ending.
 - Parallel work should use task branches or clearly separated file ownership; no force push or wholesale state rewrite.
