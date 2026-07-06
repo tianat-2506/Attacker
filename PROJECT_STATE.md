@@ -19,6 +19,8 @@
 
 ## Latest Slice
 
+- Overview simulation subject guardrail completed.
+- Simulation strip now derives the disrupted supplier label from `shock.shockNodeId` instead of hardcoded `Dai Tin disruption`.
 - Matching workspace stakeholder subject guardrail completed.
 - Matching header now displays dynamic buyer and disrupted supplier names from active account/default business and selected business.
 - Matching no longer hardcodes `Thu Duc Retail Mart` / `Dai Tin Distribution` in the workspace header; scenario text elsewhere remains intentional demo copy.
@@ -116,7 +118,7 @@
   - `npm.cmd exec tsc -- --noEmit` passed.
   - `npm.cmd exec vitest -- run --cache=false` passed, 31 tests.
   - `npm.cmd exec vite -- build --outDir ..\tmp-vite-dist` passed; temp output removed.
-  - `rg -n "MatchingWorkspace|buyerName|disruptedSupplierName|Buyer: Thu Duc|disrupted supplier: Dai Tin" frontend\src\App.tsx frontend\src\components\WorkspaceViews.tsx` confirms Matching header uses dynamic subject names.
+  - `rg -n -F "Dai Tin disruption" frontend\src\components\WorkspaceViews.tsx` returns no matches; simulation label uses `shockTargetName`.
 - Latest targeted backend proof:
   - `python -B -m unittest backend.tests.test_database_service.DatabaseServiceTests.test_recommendations_are_shortlist_not_disrupted_supplier` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_selected_period_context_does_not_silently_fallback_for_finance_or_evidence` passed.

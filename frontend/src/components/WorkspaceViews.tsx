@@ -198,6 +198,9 @@ export function OverviewWorkspace({
   const edges = focused ? scenario.edges : allEdges;
   const trendTotals = dashboard.disruptionTrend.map((item) => item.total);
   const trendCritical = dashboard.disruptionTrend.map((item) => item.highCritical);
+  const shockTarget = allNodes.find((node) => node.id === shock.shockNodeId)
+    ?? scenario.nodes.find((node) => node.id === shock.shockNodeId);
+  const shockTargetName = shockTarget?.name ?? "Selected supplier";
 
   return (
     <div className="page-stack overview-page">
@@ -229,7 +232,7 @@ export function OverviewWorkspace({
           </div>
 
           <div className="simulation-strip">
-            <div><AlertTriangle size={18} /><span><strong>Dai Tin disruption</strong><small>{shock.active ? "Scenario active" : "Ready to simulate"}</small></span></div>
+            <div><AlertTriangle size={18} /><span><strong>{shockTargetName} disruption</strong><small>{shock.active ? "Scenario active" : "Ready to simulate"}</small></span></div>
             <div className="button-row">
               <button className="primary-button" type="button" onClick={onSimulate} disabled={shock.active}><RefreshCw size={15} />Run</button>
               {shock.active ? <button className="icon-button" type="button" title="Reset scenario" onClick={onReset}><RefreshCw size={16} /></button> : null}
