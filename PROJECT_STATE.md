@@ -19,6 +19,11 @@
 
 ## Latest Slice
 
+- Risk UI evidence-scope display completed.
+- Frontend `RiskSignal` now carries `evidenceScope`, `policyDecisionId`, and `auditEventId` from `/risk-signal`.
+- Risk workspace now labels blocked-evidence responses as `High-level advisory`, not evidence-based analysis.
+- Empty evidence panel now says linked evidence is blocked by policy when `evidence_scope="evidence_blocked_by_policy"`.
+- Risk workspace shows policy/audit/scope correlation when backend provides it.
 - Frontend high-level risk scope alignment completed.
 - `canRequestRiskSignal` now separates masked high-level risk preview from sensitive company/evidence visibility.
 - App risk loading now uses the selected business access decision, so masked relationship risk can call the backend high-level risk path without opening evidence or finance.
@@ -130,9 +135,10 @@
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
-  - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 13 tests.
+  - `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 11 tests.
   - `npm.cmd exec vitest -- run --cache=false` passed, 33 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
+  - Risk API client test confirms `evidence_scope`, `policy_decision_id`, and `audit_event_id` map into `RiskSignal`.
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
 - Latest targeted backend proof:

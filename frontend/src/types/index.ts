@@ -229,6 +229,9 @@ export interface RiskSignal {
   evidence: EvidenceDocument[];
   suggestedActions: string[];
   formulaVersion: string;
+  evidenceScope?: "linked_evidence_visible" | "evidence_blocked_by_policy" | string | null;
+  policyDecisionId?: string | null;
+  auditEventId?: string | null;
   disclaimer: string;
 }
 

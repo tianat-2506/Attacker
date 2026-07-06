@@ -149,7 +149,7 @@ describe("api client trust headers", () => {
 
   it("adds the selected period to company evidence risk and finance reads", async () => {
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.includes("/risk-signal")) return new Response(JSON.stringify({ data: { signal_id: "RISK-1", business_id: "BIZ-005", risk_type: "DELIVERY", level: "MEDIUM", confidence: 67, summary: "Period signal.", triggers: [], evidence_ids: [], evidence: [], suggested_actions: [], formula_version: "risk-v1", disclaimer: "Advisory." } }), { status: 200 });
+      if (url.includes("/risk-signal")) return new Response(JSON.stringify({ data: { signal_id: "RISK-1", business_id: "BIZ-005", risk_type: "DELIVERY", level: "MEDIUM", confidence: 67, summary: "Period signal.", triggers: [], evidence_ids: [], evidence: [], suggested_actions: [], formula_version: "risk-v1", evidence_scope: "evidence_blocked_by_policy", policy_decision_id: "POL-RISK", audit_event_id: "AUD-RISK", disclaimer: "Advisory." } }), { status: 200 });
       if (url.includes("/finance")) return new Response(JSON.stringify({ data: { business: { id: "BIZ-005", name: "Dai Tin Distribution", type: "distributor", province: "Binh Duong", category: "beverage", lat: 10.9, lng: 106.7, revenue: 1, capacity: 1, health: 40, risk: 70 }, health: { score: 0, level: "no_period_data", components: {}, formula_version: "finance-v1", explanation: "No row." }, latest: null, previous: null, series: [], access_scope: "owner", data_scope: "restricted_financial", advisory_notice: "Selected period.", policy_decision_id: "POL-F" } }), { status: 200 });
       if (url.includes("/evidence")) return new Response(JSON.stringify({ data: { business_id: "BIZ-005", period_key: "2026-07", documents: [], summary: { total: 0, verified: 0, needs_review: 0 }, data_scope: "Selected period." } }), { status: 200 });
       return new Response(JSON.stringify({ data: { business: { id: "BIZ-005", name: "Dai Tin Distribution", type: "distributor", province: "Binh Duong", category: "beverage", lat: 10.9, lng: 106.7, revenue: 1, capacity: 1, health: 40, risk: 70 }, products: [], risk: { score: 50, level: "watch", formula_version: "risk-v1", drivers: [], explanation: "Period detail.", advisory_notice: "Advisory." }, financial_summary: null, dependency_summary: { downstream_business_count: 0, monthly_volume_supplied: 0 }, evidence_summary: { total: 0, verified: 0, by_type: {} } } }), { status: 200 });
@@ -158,7 +158,7 @@ describe("api client trust headers", () => {
 
     await getBusinessDetail("BIZ-005", "2026-07");
     await getEvidence("BIZ-005", "2026-07");
-    await getRiskSignal("BIZ-005", "2026-07");
+    const riskSignal = await getRiskSignal("BIZ-005", "2026-07");
     await getFinance("BIZ-005", "2026-07");
 
     const urls = fetchMock.mock.calls.map(([url]) => new URL(String(url), "http://localhost"));
@@ -166,6 +166,9 @@ describe("api client trust headers", () => {
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/evidence" && url.searchParams.get("period") === "2026-07")).toBe(true);
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/risk-signal" && url.searchParams.get("period") === "2026-07")).toBe(true);
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/finance" && url.searchParams.get("period") === "2026-07")).toBe(true);
+    expect(riskSignal.evidenceScope).toBe("evidence_blocked_by_policy");
+    expect(riskSignal.policyDecisionId).toBe("POL-RISK");
+    expect(riskSignal.auditEventId).toBe("AUD-RISK");
   });
 
   it("maps dashboard alert business ids for risk navigation", async () => {

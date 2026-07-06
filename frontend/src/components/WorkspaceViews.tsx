@@ -563,9 +563,14 @@ function RiskLockedState({ subjectName, message }: { subjectName: string; messag
 
 export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; subjectName: string; accessNotice?: string | null; canOpenMatching: boolean; onOpenMatching: () => void }) {
   if (!signal) return accessNotice ? <RiskLockedState subjectName={subjectName} message={accessNotice} /> : <div className="loading-state">Loading evidence-based risk signal...</div>;
+  const evidenceBlocked = signal.evidenceScope === "evidence_blocked_by_policy";
+  const riskEyebrow = evidenceBlocked ? "High-level advisory" : "Evidence-scoped analysis";
+  const evidenceEmptyMessage = evidenceBlocked
+    ? "Linked evidence is blocked by policy for this account scope. Treat this as a review prompt only."
+    : "No visible evidence documents for this account, business and period scope.";
   return (
     <div className="risk-workspace page-stack">
-      <header className="workspace-heading"><div><span className="eyebrow">Evidence-based analysis</span><h1>Risk Signal Review</h1><p>{subjectName} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
+      <header className="workspace-heading"><div><span className="eyebrow">{riskEyebrow}</span><h1>Risk Signal Review</h1><p>{subjectName} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
       <section className="risk-summary-band">
         <div className="risk-severity"><AlertTriangle size={28} /><span><small>{signal.riskType.replace(/_/g, " ")}</small><strong>{signal.level}</strong></span></div>
         <p>{signal.summary}</p>
@@ -583,8 +588,8 @@ export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatchi
           ))}
         </section>
         <section className="evidence-chain tool-panel">
-          <div className="panel-heading"><span>Linked evidence chain</span><Database size={16} /></div>
-          {!signal.evidence.length ? <div className="empty-document-state">No visible evidence documents for this account, business and period scope.</div> : null}
+          <div className="panel-heading"><span>{evidenceBlocked ? "Linked evidence blocked" : "Linked evidence chain"}</span><Database size={16} /></div>
+          {!signal.evidence.length ? <div className="empty-document-state">{evidenceEmptyMessage}</div> : null}
           {signal.evidence.map((document, index) => (
             <div className="chain-row" key={document.id}>
               <span className="chain-index">{index + 1}</span>
@@ -593,6 +598,7 @@ export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatchi
               <EvidenceStatusPill status={document.verificationStatus} />
             </div>
           ))}
+          {signal.policyDecisionId || signal.auditEventId ? <DataNotice>{`Policy ${signal.policyDecisionId ?? "n/a"} / audit ${signal.auditEventId ?? "n/a"} / scope ${signal.evidenceScope ?? "not reported"}`}</DataNotice> : null}
         </section>
       </div>
       <section className="actions-panel tool-panel">
