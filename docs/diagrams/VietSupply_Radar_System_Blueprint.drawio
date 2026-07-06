@@ -1,0 +1,1551 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mxfile host="app.diagrams.net" modified="2026-06-22T08:57:44+00:00" agent="Codex" version="24.7.17" type="device">
+  <diagram id="01-system-context---trust-boundary" name="01 System Context &amp; Trust Boundary">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1160" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="01 System Context &amp; Trust Boundary" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="VietSupply Radar is an advisory data intermediary. It gives risk signals, supplier shortlists and referral packages; humans and regulated partners make final decisions." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="&lt;b&gt;VietSupply Radar platform boundary&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;arcSize=6;fillColor=#f8fafc;strokeColor=#64748b;strokeWidth=2;fontStyle=1;align=left;verticalAlign=top;spacing=10;" vertex="1" parent="1">
+          <mxGeometry x="420" y="180" width="860" height="560" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="React dashboard&lt;br&gt;Map / Sidebar / Risk panel" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="480" y="250" width="200" height="86" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="FastAPI API&lt;br&gt;/graph /businesses /shock /recommendations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="780" y="250" width="260" height="86" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Domain services&lt;br&gt;risk signal, matching, shock, invoice" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="650" y="410" width="300" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Governance layer&lt;br&gt;RBAC, masking, consent, audit, dispute" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="410" width="230" height="96" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="MVP CSV seed data&lt;br&gt;businesses, edges, financials, products, invoices" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="620" y="590" width="330" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Future data sources&lt;br&gt;POS, ERP, accounting, e-invoice, bank, logistics" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="990" y="590" width="230" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="SME retailer&lt;br&gt;owns demand, financials, invoices" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="70" y="230" width="230" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Supplier / distributor&lt;br&gt;owns capacity, terms, certifications" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="70" y="390" width="230" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Manufacturer&lt;br&gt;views aggregate channel risk" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="70" y="550" width="230" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Financial partner&lt;br&gt;underwrites independently" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="310" width="230" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-20" value="Admin / demo operator&lt;br&gt;seed, reset, support" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="500" width="230" height="82" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="use dashboard" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="profile / accepted leads" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="aggregate network" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="JSON API" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="invoke pure functions" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="access checks" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="read / compute" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="consent + lineage" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="validated import" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="consented package only" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-19" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="synthetic admin ops" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-32" value="&lt;b&gt;Guardrails&lt;/b&gt;&lt;br&gt;No auto supplier termination&lt;br&gt;No credit approval or loan decision&lt;br&gt;No legal breach/default declaration&lt;br&gt;No unmasked graph or financial data without consent" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="420" y="790" width="860" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-33" value="Trust boundary rule:&lt;br&gt;Public/demo views are masked. Private contact, invoice and financial data require purpose, consent and audit." style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="70" y="790" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-34" value="Partner boundary:&lt;br&gt;Financial partners run their own KYB/KYC, underwriting and compliance review." style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="790" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-35" value="" style="endArrow=none;html=1;strokeColor=none;" edge="1" parent="1" source="v-9" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="02-bounded-context-overview" name="02 Bounded Context Overview">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="1160" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="02 Bounded Context Overview" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Core business contexts plus cross-cutting governance. Governance is not a decoration; it gates sensitive visibility and commercial action." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Evidence + Audit backbone&lt;br&gt;source refs, formula version, purpose, request id" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="735" y="495" width="300" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="SupplyGraph&lt;br&gt;Business, SupplyEdge, dependency" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="450" y="250" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="RiskIntelligence&lt;br&gt;Supply Risk Signal + drivers" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="775" y="250" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="SupplierMatching&lt;br&gt;shortlist + reason codes" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="250" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="ShockSimulation&lt;br&gt;downstream impact scenario" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="450" y="720" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="InvoiceVerification&lt;br&gt;hash, funding status, alert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="775" y="720" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Governance&lt;br&gt;consent, RBAC, masking, dispute" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="720" width="250" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-16" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-17" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-18" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-19" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="evidence" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-9">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="dependency metrics" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="directed edges" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="risk filter" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="buyer need" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-32" value="consented invoice access" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-33" value="contact reveal gate" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-34" value="Advisory wording:&lt;br&gt;RiskSignal, Suggested Alternatives, Introduction Request, Financial Partner Referral" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="90" y="850" width="330" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-35" value="Avoid wording:&lt;br&gt;Credit score, default probability, auto replacement, automatic loan approval, blockchain proves truth" style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1360" y="850" width="330" height="130" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="03-activity---onboarding---kyb-readiness" name="03 Activity - Onboarding &amp; KYB Readiness">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="03 Activity - Onboarding &amp; KYB Readiness" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="From account setup to qualified profile. Pilot/production requires evidence and review before a supplier appears as viable." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="SME / Supplier" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Platform" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Admin / Reviewer" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Start onboarding" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Create organization&lt;br&gt;role + purpose" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Submit profile&lt;br&gt;products, terms, locations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Upload evidence&lt;br&gt;certs, capacity, contracts" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Validate schema&lt;br&gt;dedupe + completeness" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Qualification&lt;br&gt;review required?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="382" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="KYB/KYC readiness&lt;br&gt;supplier qualification" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Active masked profile&lt;br&gt;eligible for shortlist" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="no / demo synthetic" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="approved" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-28" value="Guardrail: unverified supplier data can be used for demo only; pilot needs qualification and evidence trail." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="760" width="360" height="92" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="04-activity---data-import--consent---lineage" name="04 Activity - Data Import, Consent &amp; Lineage">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="04 Activity - Data Import, Consent &amp; Lineage" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Every sensitive import has a purpose, consent check, lineage record and audit event." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Data owner" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Platform data pipeline" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Governance" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Select data source&lt;br&gt;POS / ERP / e-invoice / logistics" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Declare purpose&lt;br&gt;risk, matching, invoice check" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Consent valid?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="552" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Reject / request consent" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Ingest file/API&lt;br&gt;checksum + source id" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Validate schema&lt;br&gt;range, FK, duplicates" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Store lineage&lt;br&gt;raw ref + transform version" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Derived datasets&lt;br&gt;features, graph, invoice hash" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-20" value="Audit event&lt;br&gt;who, purpose, request id" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="no" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-19" target="v-20">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-29" value="Raw financials and invoices stay private; public graph uses masked/aggregate views." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="755" width="410" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="05-activity---supply-risk-signal" name="05 Activity - Supply Risk Signal">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="05 Activity - Supply Risk Signal" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Transparent rule-based signal with top drivers, evidence refs and explicit advisory wording." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Inputs" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Risk module" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Human / UI" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Financial snapshots&lt;br&gt;cash, AR/AP, debt, inventory" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Downstream edges&lt;br&gt;dependency count + volume" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Normalize features&lt;br&gt;0-100 risk drivers" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Weighted formula&lt;br&gt;risk-v1" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Top drivers&lt;br&gt;cashflow, late payment, delivery" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Needs review&lt;br&gt;or dispute?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="552" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Evidence review&lt;br&gt;correct data or override note" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Show Supply Risk Signal&lt;br&gt;with advisory disclaimer" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="resolved" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="no" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-28" value="Not a credit score, default probability, legal breach finding or automatic action trigger." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1120" y="755" width="410" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="06-activity---shock-simulation" name="06 Activity - Shock Simulation">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="06 Activity - Shock Simulation" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Scenario simulation traverses directed supply edges and estimates downstream impact. It does not assert breach or fault." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="User" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Shock module" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Output" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Select shock node&lt;br&gt;example BIZ-005" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Choose product category&lt;br&gt;beverage, food, etc." style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Build adjacency&lt;br&gt;source -&gt; target" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="BFS downstream&lt;br&gt;max depth + cycle guard" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Compute impact&lt;br&gt;dependency, stockout, volume" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Highlight affected nodes&lt;br&gt;red / yellow / green" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Trigger supplier shortlist&lt;br&gt;optional next step" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-19" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-25" value="Scenario wording: use affected/at-risk/estimated stockout; avoid saying supplier breached or defaulted." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="755" width="430" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="07-activity---supplier-shortlist---introduction" name="07 Activity - Supplier Shortlist &amp; Introduction">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="07 Activity - Supplier Shortlist &amp; Introduction" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Matching ranks candidate suppliers, then gates real contact and commercial action behind review and mutual consent." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="SME" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Matching module" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Supplier / Governance" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Buyer need&lt;br&gt;SKU/spec, volume, lead time" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Filter candidates&lt;br&gt;category, capacity, risk, lead time" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Score components&lt;br&gt;product, capacity, distance, health, reliability, terms" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Top 3 shortlist&lt;br&gt;reason codes" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Show masked cards&lt;br&gt;no private contact yet" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Request introduction?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="212" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Mutual consent&lt;br&gt;supplier accepts lead" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="RFQ / PO preview&lt;br&gt;human-approved" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="approved" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-27" value="No auto replacement, no contract termination, no public customer list. Shortlist means decision support." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1115" y="755" width="430" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="08-activity---contract---assurance-review" name="08 Activity - Contract &amp; Assurance Review">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="08 Activity - Contract &amp; Assurance Review" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Before acting on a risk signal, users review terms, obligations and supplier assurance evidence." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="SME / Buyer" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Platform evidence" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Legal / Operations review" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Risk signal or supply shock" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Collect contract terms&lt;br&gt;payment, MOQ, warranty, penalties, exclusivity" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Collect assurance&lt;br&gt;certifications, samples, SLA, delivery history" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Contract status?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="552" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="No breach&lt;br&gt;monitor + contingency shortlist" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Suspected breach&lt;br&gt;gather evidence + contact party" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Confirmed default&lt;br&gt;legal/ops decision outside platform" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Human-approved next action" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="no breach" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="suspected" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="confirmed" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-30" value="The platform may organize evidence, but does not declare breach/default or terminate contracts." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="755" width="450" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="09-activity---financial-partner-referral" name="09 Activity - Financial Partner Referral">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1940" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="09 Activity - Financial Partner Referral" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="The platform can package consented data for a partner. Underwriting and approval stay with the financial institution." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="SME" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Platform" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Financial partner" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1840" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="SME requests working capital option" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Consent to share&lt;br&gt;scope + expiry + purpose" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Build data package&lt;br&gt;risk signal, cashflow summary, invoice status" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Audit export&lt;br&gt;request id + recipient" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="KYB/KYC + sanctions&lt;br&gt;partner process" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Underwriting&lt;br&gt;credit policy + docs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Partner decision" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="552" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Record outcome metadata&lt;br&gt;no platform approval claim" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1630" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="approved / declined by partner" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-27" value="Use referral / underwriting package. Avoid auto finance, loan approval or bank replacement claims." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1100" y="755" width="450" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="10-activity---invoice-verification" name="10 Activity - Invoice Verification">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1800" pageHeight="860" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="10 Activity - Invoice Verification" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Hashing and funded-status checks reduce double-financing risk, but they do not prove the original invoice is true." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Seller / Buyer" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="170" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Invoice verification module" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="340" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Partner review" style="swimlane;html=1;startSize=28;horizontal=1;fillColor=#f8fafc;strokeColor=#cbd5e1;fontColor=#334155;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="40" y="510" width="1700" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Invoice submitted&lt;br&gt;seller, buyer, amount, due date" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Buyer + seller confirmation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="310" y="222" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Canonical JSON&lt;br&gt;ignore mutable fields" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="530" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="SHA-256 hash" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="750" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Existing funded hash?" style="rhombus;whiteSpace=wrap;html=1;fontSize=11;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="970" y="382" width="140" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Double-financing alert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Verification signal&lt;br&gt;no duplicate funded hash" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1190" y="392" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Partner reviews docs&lt;br&gt;KYB/KYC + invoice authenticity" style="ellipse;whiteSpace=wrap;html=1;fontSize=12;fontStyle=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1410" y="562" width="170" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="yes" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="no" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-28" value="Ledger/hash is tamper evidence after capture. It is not an oracle for truth of source documents." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1080" y="755" width="460" height="84" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="11-oop-domain-class-diagram" name="11 OOP Domain Class Diagram">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="11 OOP Domain Class Diagram" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Conceptual domain model aligned with current MVP data and required pilot governance objects." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="&lt;b&gt;Organization&lt;/b&gt;&lt;hr&gt;organization_id&lt;br&gt;name&lt;br&gt;type&lt;br&gt;status" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="210" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="&lt;b&gt;User&lt;/b&gt;&lt;hr&gt;user_id&lt;br&gt;email&lt;br&gt;role&lt;br&gt;organization_id" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="420" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="&lt;b&gt;Role / Permission&lt;/b&gt;&lt;hr&gt;role&lt;br&gt;scope&lt;br&gt;allowed_actions" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="60" y="630" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="&lt;b&gt;Business&lt;/b&gt;&lt;hr&gt;business_id&lt;br&gt;name/display_name&lt;br&gt;type&lt;br&gt;province&lt;br&gt;lat/lng&lt;br&gt;financial_health_score" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="430" y="260" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="&lt;b&gt;Product&lt;/b&gt;&lt;hr&gt;sku&lt;br&gt;product_name&lt;br&gt;category&lt;br&gt;specification&lt;br&gt;available_capacity&lt;br&gt;certifications" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="430" y="500" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="&lt;b&gt;FinancialSnapshot&lt;/b&gt;&lt;hr&gt;business_id&lt;br&gt;month&lt;br&gt;cash_in/out&lt;br&gt;revenue&lt;br&gt;debt&lt;br&gt;AR/AP&lt;br&gt;inventory_value" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="430" y="740" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="&lt;b&gt;SupplyEdge&lt;/b&gt;&lt;hr&gt;edge_id&lt;br&gt;source_id&lt;br&gt;target_id&lt;br&gt;product_category&lt;br&gt;monthly_volume&lt;br&gt;lead_time_days&lt;br&gt;reliability&lt;br&gt;payment_term_days" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="800" y="260" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="&lt;b&gt;RiskSignal&lt;/b&gt;&lt;hr&gt;score&lt;br&gt;level&lt;br&gt;drivers&lt;br&gt;formula_version&lt;br&gt;evidence_refs&lt;br&gt;calculated_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="800" y="520" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="&lt;b&gt;RiskDriver&lt;/b&gt;&lt;hr&gt;feature&lt;br&gt;value&lt;br&gt;weight&lt;br&gt;contribution&lt;br&gt;message" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="800" y="760" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="&lt;b&gt;SupplierRecommendation&lt;/b&gt;&lt;hr&gt;buyer_id&lt;br&gt;candidate_supplier_id&lt;br&gt;match_score&lt;br&gt;components&lt;br&gt;reason_codes&lt;br&gt;new_edge_preview" style="rounded=0;whiteSpace=wrap;html=1;fontSize=11;align=left;verticalAlign=top;spacing=8;fillColor=#ffffff;strokeColor=#334155;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="260" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="&lt;b&gt;InvoiceVerification&lt;/b&gt;&lt;hr&gt;invoice_id&lt;br&gt;seller_id&lt;br&gt;buyer_id&lt;br&gt;amount&lt;br&gt;invoice_hash&lt;br&gt;funding_status&lt;br&gt;confirmed_by" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="520" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-20" value="&lt;b&gt;EvidencePackage&lt;/b&gt;&lt;hr&gt;package_id&lt;br&gt;source_refs&lt;br&gt;calculation_version&lt;br&gt;purpose&lt;br&gt;created_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1180" y="780" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-21" value="&lt;b&gt;ConsentRecord&lt;/b&gt;&lt;hr&gt;actor_id&lt;br&gt;subject_id&lt;br&gt;scope&lt;br&gt;purpose&lt;br&gt;expires_at&lt;br&gt;revoked_at" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="260" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-22" value="&lt;b&gt;AuditLog&lt;/b&gt;&lt;hr&gt;event_type&lt;br&gt;actor_role&lt;br&gt;subject_id&lt;br&gt;purpose&lt;br&gt;timestamp&lt;br&gt;request_id" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="520" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-23" value="&lt;b&gt;DisputeCase&lt;/b&gt;&lt;hr&gt;case_id&lt;br&gt;subject_id&lt;br&gt;claim&lt;br&gt;evidence_refs&lt;br&gt;status&lt;br&gt;resolution" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1560" y="780" width="250" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="1..n" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="has" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="owns / operates" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="1..n" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="1..n" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="source/target" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="dependency metrics" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="financial features" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-32" value="1..n" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-33" value="risk filter" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-34" value="buyer + supplier" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-35" value="seller/buyer" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-36" value="source refs" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-19" target="v-20">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-37" value="explains" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-38" value="supports" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-39" value="gates access" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-21" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-40" value="gates contact" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-21" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-41" value="records" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-22" target="v-21">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-42" value="reviews" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-23" target="v-20">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-43" value="may revise" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-23" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-44" value="Naming note:&lt;br&gt;Code may keep numeric field `score`, but user-facing entity is RiskSignal / Early Warning Signal." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="60" y="1020" width="530" height="100" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="12-service-component---runtime-dataclass-graph" name="12 Service Component &amp; Runtime Dataclass Graph">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2200" pageHeight="1500" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="12 Service Component &amp; Runtime Dataclass Graph" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Current MVP code is pure Python domain functions behind FastAPI, with target governance services shown as required pilot guardrails." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="App.tsx&lt;br&gt;selectedId + shock state" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="240" width="270" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="MapView&lt;br&gt;nodes + edges + selected event" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="410" width="270" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Sidebar&lt;br&gt;business detail + tabs" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="580" width="270" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="RiskPanel / RecommendationCard / ShockButton" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="750" width="270" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="FastAPI main.py&lt;br&gt;health, businesses, graph, shock, recommendations" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="410" width="310" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="data_loader.py&lt;br&gt;load CSV into dict/list repositories" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="650" width="310" height="100" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="CSV datasets&lt;br&gt;businesses, supply_edges, financials, products, invoices" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="460" y="850" width="310" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="risk_scoring.py&lt;br&gt;RiskDriver, RiskResult&lt;br&gt;features_from_financials -&gt; score_from_features" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="220" width="340" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="supplier_matching.py&lt;br&gt;SupplierRecommendation&lt;br&gt;rank_suppliers" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="420" width="340" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="shock_simulation.py&lt;br&gt;AffectedNode, ShockImpact, ShockResult&lt;br&gt;simulate_shock" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="620" width="340" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="invoice_verification.py&lt;br&gt;canonical_invoice, invoice_hash,&lt;br&gt;double_financing_alert" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="820" width="340" height="130" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-20" value="Target Governance Services&lt;br&gt;ConsentService, AuditService, MaskingPolicy,&lt;br&gt;EvidenceService, DisputeWorkflow" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="430" width="390" height="170" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-21" value="API contract&lt;br&gt;/api/v1/graph&lt;br&gt;/businesses/{id}&lt;br&gt;/simulation/shock&lt;br&gt;/recommendations/suppliers&lt;br&gt;/invoices/{id}/verification" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1380" y="700" width="390" height="180" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="fetch / props" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="fetch / props" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="fetch / props" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="fetch / props" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="load_data" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="read" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="calculate_business_risk" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="rank_suppliers" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="simulate_shock" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="optional verification" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-32" value="cross-cutting gate" style="endArrow=block;html=1;rounded=0;strokeWidth=2;dashed=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-33" value="masking + consent + audit" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-21">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-34" value="implemented in main.py" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-21" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-35" value="financial rows + edges" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-36" value="businesses + products + edges" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-37" value="businesses + edges" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-38" value="invoice rows" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-39" value="Implementation note:&lt;br&gt;Backend currently has dataclasses and pure functions, not full Pydantic schemas or separate route modules." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1060" width="590" height="95" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="13-supply-network-data-graph" name="13 Supply Network Data Graph">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="13 Supply Network Data Graph" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Directed edges show supply flow from source supplier to target buyer. Public/pilot views should mask identity and exact volume unless consented." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Manufacturer&lt;br&gt;BIZ-002 Saigon NutriDrink" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="130" y="360" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Manufacturer&lt;br&gt;BIZ-003 Packaged Food" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="130" y="560" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Distributor&lt;br&gt;BIZ-005 Dai Tin&lt;br&gt;RiskSignal: red" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="520" y="455" width="230" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Wholesaler&lt;br&gt;masked alias W-014" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="340" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Retailer SME&lt;br&gt;masked alias R-021" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="260" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="Retailer SME&lt;br&gt;masked alias R-034" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="455" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Retailer SME&lt;br&gt;masked alias R-047" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="650" width="230" height="80" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Financial partner&lt;br&gt;consented risk/invoice package only" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="900" y="800" width="270" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="InvoiceVerification&lt;br&gt;hash + funded status" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="520" y="800" width="260" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-18" value="beverage / volume range" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-19" value="packaged food / volume range" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="source -&gt; target" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="monthly_volume range" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="direct downstream" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="downstream" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="buyer/seller invoice" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="share only with consent" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="risk summary only" style="endArrow=block;html=1;rounded=0;strokeWidth=2;dashed=1;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-27" value="Edge attributes:&lt;br&gt;product, product_category, monthly_volume, lead_time_days, transport_cost, reliability, payment_term_days" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="130" y="950" width="520" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-28" value="Masking levels:&lt;br&gt;public_aggregate -&gt; masked_business -&gt; consented_match -&gt; admin_audit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="760" y="950" width="450" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-29" value="Shock path:&lt;br&gt;distributor red signal can trigger scenario analysis and supplier shortlist, not an automatic commercial action." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="1300" y="950" width="420" height="110" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="14-rbac---data-visibility-graph" name="14 RBAC &amp; Data Visibility Graph">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1900" pageHeight="1300" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="14 RBAC &amp; Data Visibility Graph" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="Access is role + purpose + consent based. Every sensitive access produces an audit event." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="SME user" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="250" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Supplier user" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="430" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="Financial partner" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="610" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Admin / demo operator" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fontStyle=1;fillColor=#e8f1ff;strokeColor=#2f5fb3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="80" y="790" width="220" height="70" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Access policy&lt;br&gt;role + purpose + consent + masking level" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="440" y="505" width="290" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="AuditLog&lt;br&gt;event, actor, subject, purpose, request_id" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="440" y="720" width="290" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="Own profile&lt;br&gt;own suppliers&lt;br&gt;own financial summary" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="880" y="230" width="300" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Masked leads&lt;br&gt;accepted introductions&lt;br&gt;own products/capacity" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="880" y="410" width="300" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-17" value="Consented risk summary&lt;br&gt;invoice status&lt;br&gt;no raw graph by default" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="880" y="590" width="300" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-18" value="Synthetic full view&lt;br&gt;production export needs audit" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="880" y="770" width="300" height="90" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-19" value="Sensitive data classes&lt;br&gt;contacts, supplier/customer list, exact volume, financials, raw invoice" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="395" width="360" height="140" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-20" value="ConsentRecord&lt;br&gt;scope, purpose, expiry, revocation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="620" width="360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-21" value="Dispute / appeal&lt;br&gt;data correction and explanation review" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1330" y="800" width="360" height="110" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="request" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="request" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="request" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="request" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-26" value="allow/mask" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-27" value="record" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-28" value="allow/mask" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-29" value="record" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-16" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="allow/mask" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-17">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="record" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-17" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-32" value="allow/mask" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-18">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-33" value="record" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-18" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-34" value="deny unless consented" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-19">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-35" value="grant / revoke" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-20" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-36" value="evidence trail" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-21">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-37" value="requires" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-19" target="v-20">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-38" value="correction may change access/signal" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-21" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-39" value="Default API behavior:&lt;br&gt;`masked=true`; display_name differs from legal name; exact volume can be bucketed." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="80" y="1010" width="550" height="100" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="15-evidence--dispute---roadmap-graph" name="15 Evidence, Dispute &amp; Roadmap Graph">
+    <mxGraphModel dx="1422" dy="794" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="2000" pageHeight="1400" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+        <mxCell id="v-1" value="15 Evidence, Dispute &amp; Roadmap Graph" style="text;html=1;strokeColor=none;fillColor=none;fontSize=24;fontStyle=1;align=left;verticalAlign=middle;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="40" y="24" width="900" height="34" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-2" value="End-to-end accountability: every signal or recommendation can point back to evidence, version, consent and review status." style="text;html=1;strokeColor=none;fillColor=none;fontSize=12;fontColor=#4b5563;align=left;verticalAlign=top;whiteSpace=wrap;" vertex="1" parent="1">
+          <mxGeometry x="42" y="62" width="1180" height="52" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-3" value="Actor" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e8f1ff;strokeColor=#2f5fb3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-4" value="Platform" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#e9f8ef;strokeColor=#2f7d4a;" vertex="1" parent="1">
+          <mxGeometry x="165" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-5" value="Data" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#fff4db;strokeColor=#a66a00;" vertex="1" parent="1">
+          <mxGeometry x="290" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-6" value="Risk/alert" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#ffe9e9;strokeColor=#b33a3a;" vertex="1" parent="1">
+          <mxGeometry x="415" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-7" value="Finance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f0ecff;strokeColor=#6b4db3;" vertex="1" parent="1">
+          <mxGeometry x="540" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-8" value="Governance" style="rounded=1;whiteSpace=wrap;html=1;fontSize=10;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="665" y="116" width="110" height="28" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-9" value="Source documents&lt;br&gt;contracts, invoices, POS, ERP, logistics, certifications" style="shape=cylinder3d;boundedLbl=1;backgroundOutline=1;size=15;whiteSpace=wrap;html=1;fontSize=12;fillColor=#fff4db;strokeColor=#a66a00;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="90" y="300" width="300" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-10" value="Lineage record&lt;br&gt;source id, checksum, transform version" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="480" y="300" width="300" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-11" value="EvidencePackage&lt;br&gt;source refs + calculation version + purpose" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="870" y="300" width="320" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-12" value="Outputs&lt;br&gt;RiskSignal, SupplierShortlist, InvoiceVerificationSignal" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#ffe9e9;strokeColor=#b33a3a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="300" width="330" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-13" value="Human review&lt;br&gt;approve next action, add context, request correction" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="540" width="330" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-14" value="DisputeCase&lt;br&gt;claim, evidence refs, resolution, audit trail" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="870" y="540" width="320" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-15" value="AuditLog&lt;br&gt;view, export, consent, intro, recalculation" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="480" y="540" width="300" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-16" value="Allowed next action&lt;br&gt;monitor, request intro, RFQ/PO preview, partner referral" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1280" y="780" width="330" height="120" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-17" value="ingest" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-9" target="v-10">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-18" value="package" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-10" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-19" value="supports" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-12">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-20" value="requires context" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-13">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-21" value="human approved" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-13" target="v-16">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-22" value="appeal / correction" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-12" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-23" value="review refs" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-14" target="v-11">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-24" value="record" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-11" target="v-15">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-25" value="trace" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-15" target="v-14">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-26" value="MVP&lt;br&gt;synthetic data&lt;br&gt;rule-based functions&lt;br&gt;masked graph" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#e9f8ef;strokeColor=#2f7d4a;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1010" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-27" value="Pilot&lt;br&gt;consent records&lt;br&gt;supplier qualification&lt;br&gt;audit logs&lt;br&gt;backtesting" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="520" y="1010" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-28" value="Production&lt;br&gt;RBAC enforcement&lt;br&gt;Postgres/PostGIS&lt;br&gt;model registry&lt;br&gt;dispute workflow" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="920" y="1010" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-29" value="Finance ready&lt;br&gt;partner KYB/KYC&lt;br&gt;underwriting package&lt;br&gt;no platform credit approval" style="rounded=1;whiteSpace=wrap;html=1;arcSize=8;fontSize=12;fillColor=#f0ecff;strokeColor=#6b4db3;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1320" y="1010" width="300" height="150" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-30" value="maturity" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-26" target="v-27">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-31" value="maturity" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-27" target="v-28">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="e-32" value="maturity" style="endArrow=block;html=1;rounded=0;strokeWidth=2;edgeStyle=orthogonalEdgeStyle;fontSize=10;" edge="1" parent="1" source="v-28" target="v-29">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="v-33" value="Definition of done for pilot:&lt;br&gt;consent table, audit log, masking default, evidence refs, dispute path, model validation notes." style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fff9c4;strokeColor=#b59b00;" vertex="1" parent="1">
+          <mxGeometry x="120" y="1220" width="700" height="90" as="geometry"/>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

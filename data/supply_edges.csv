@@ -1,0 +1,121 @@
+edge_id,source_id,target_id,product,product_category,monthly_volume,lead_time_days,transport_cost,reliability,payment_term_days
+EDGE-001,BIZ-001,BIZ-006,Ca phe rang xay 500g,processed_agri,22900,3,9150000,0.91,30
+EDGE-002,BIZ-001,BIZ-008,Ca phe rang xay 500g,processed_agri,23800,4,9300000,0.89,30
+EDGE-003,BIZ-001,BIZ-015,Ca phe rang xay 500g,processed_agri,24700,2,9450000,0.87,30
+EDGE-004,BIZ-001,BIZ-016,Ca phe rang xay 500g,processed_agri,25600,3,9600000,0.93,30
+EDGE-005,BIZ-001,BIZ-023,Ca phe rang xay 500g,processed_agri,26500,4,9750000,0.91,30
+EDGE-006,BIZ-001,BIZ-030,Ca phe rang xay 500g,processed_agri,27400,2,9900000,0.89,30
+EDGE-007,BIZ-002,BIZ-005,Sua hat dong hop 1L,beverage,28300,3,10050000,0.87,30
+EDGE-008,BIZ-002,BIZ-007,Sua hat dong hop 1L,beverage,29200,4,10200000,0.93,30
+EDGE-009,BIZ-002,BIZ-013,Sua hat dong hop 1L,beverage,30100,2,10350000,0.91,30
+EDGE-010,BIZ-002,BIZ-019,Sua hat dong hop 1L,beverage,31000,3,10500000,0.89,30
+EDGE-011,BIZ-002,BIZ-022,Sua hat dong hop 1L,beverage,31900,4,10650000,0.87,30
+EDGE-012,BIZ-002,BIZ-025,Sua hat dong hop 1L,beverage,32800,2,10800000,0.93,30
+EDGE-013,BIZ-003,BIZ-014,Snack ngu coc 120g,packaged_food,33700,3,10950000,0.91,30
+EDGE-014,BIZ-003,BIZ-018,Snack ngu coc 120g,packaged_food,34600,4,11100000,0.89,30
+EDGE-015,BIZ-003,BIZ-021,Snack ngu coc 120g,packaged_food,35500,2,11250000,0.87,30
+EDGE-016,BIZ-003,BIZ-024,Snack ngu coc 120g,packaged_food,36400,3,11400000,0.93,30
+EDGE-017,BIZ-003,BIZ-027,Snack ngu coc 120g,packaged_food,37300,4,11550000,0.91,30
+EDGE-018,BIZ-003,BIZ-033,Snack ngu coc 120g,packaged_food,38200,2,11700000,0.89,30
+EDGE-019,BIZ-004,BIZ-017,Sua chua lanh 100g,cold_chain_food,39100,3,11850000,0.87,30
+EDGE-020,BIZ-004,BIZ-020,Sua chua lanh 100g,cold_chain_food,40000,4,12000000,0.93,30
+EDGE-021,BIZ-004,BIZ-026,Sua chua lanh 100g,cold_chain_food,40900,2,12150000,0.91,30
+EDGE-022,BIZ-004,BIZ-032,Sua chua lanh 100g,cold_chain_food,41800,3,12300000,0.89,30
+EDGE-023,BIZ-004,BIZ-034,Sua chua lanh 100g,cold_chain_food,42700,4,12450000,0.87,30
+EDGE-024,BIZ-004,BIZ-040,Sua chua lanh 100g,cold_chain_food,43600,2,12600000,0.93,30
+EDGE-025,BIZ-005,BIZ-022,Sua hat dong hop 1L,beverage,14500,2,5250000,0.91,30
+EDGE-026,BIZ-005,BIZ-025,Sua hat dong hop 1L,beverage,14720,3,5340000,0.89,45
+EDGE-027,BIZ-005,BIZ-028,Sua hat dong hop 1L,beverage,14940,4,5430000,0.87,15
+EDGE-028,BIZ-006,BIZ-023,Ca phe rang xay 500g,processed_agri,15160,1,5520000,0.85,30
+EDGE-029,BIZ-006,BIZ-030,Ca phe rang xay 500g,processed_agri,15380,2,5610000,0.83,45
+EDGE-030,BIZ-006,BIZ-031,Ca phe rang xay 500g,processed_agri,15600,3,5700000,0.91,15
+EDGE-031,BIZ-007,BIZ-022,Sua hat dong hop 1L,beverage,15820,4,5790000,0.89,30
+EDGE-032,BIZ-007,BIZ-028,Sua hat dong hop 1L,beverage,16040,1,5880000,0.87,45
+EDGE-033,BIZ-008,BIZ-030,Ca phe rang xay 500g,processed_agri,16260,2,5970000,0.85,15
+EDGE-034,BIZ-008,BIZ-031,Ca phe rang xay 500g,processed_agri,16480,3,6060000,0.83,30
+EDGE-035,BIZ-013,BIZ-022,Sua hat dong hop 1L,beverage,16700,4,6150000,0.91,45
+EDGE-036,BIZ-013,BIZ-028,Sua hat dong hop 1L,beverage,16920,1,6240000,0.89,15
+EDGE-037,BIZ-014,BIZ-021,Snack ngu coc 120g,packaged_food,17140,2,6330000,0.87,30
+EDGE-038,BIZ-014,BIZ-024,Snack ngu coc 120g,packaged_food,17360,3,6420000,0.85,45
+EDGE-039,BIZ-014,BIZ-033,Snack ngu coc 120g,packaged_food,17580,4,6510000,0.83,15
+EDGE-040,BIZ-015,BIZ-029,Ca phe rang xay 500g,processed_agri,17800,1,6600000,0.91,30
+EDGE-041,BIZ-015,BIZ-031,Ca phe rang xay 500g,processed_agri,18020,2,6690000,0.89,45
+EDGE-042,BIZ-016,BIZ-030,Ca phe rang xay 500g,processed_agri,18240,3,6780000,0.87,15
+EDGE-043,BIZ-016,BIZ-031,Ca phe rang xay 500g,processed_agri,18460,4,6870000,0.85,30
+EDGE-044,BIZ-017,BIZ-026,Sua chua lanh 100g,cold_chain_food,18680,1,6960000,0.83,45
+EDGE-045,BIZ-017,BIZ-032,Sua chua lanh 100g,cold_chain_food,18900,2,7050000,0.91,15
+EDGE-046,BIZ-017,BIZ-034,Sua chua lanh 100g,cold_chain_food,19120,3,7140000,0.89,30
+EDGE-047,BIZ-018,BIZ-021,Snack ngu coc 120g,packaged_food,19340,4,7230000,0.87,45
+EDGE-048,BIZ-018,BIZ-027,Snack ngu coc 120g,packaged_food,19560,1,7320000,0.85,15
+EDGE-049,BIZ-018,BIZ-033,Snack ngu coc 120g,packaged_food,19780,2,7410000,0.83,30
+EDGE-050,BIZ-019,BIZ-025,Sua hat dong hop 1L,beverage,20000,3,7500000,0.91,45
+EDGE-051,BIZ-019,BIZ-028,Sua hat dong hop 1L,beverage,20220,4,7590000,0.89,15
+EDGE-052,BIZ-020,BIZ-032,Sua chua lanh 100g,cold_chain_food,20440,1,7680000,0.87,30
+EDGE-053,BIZ-020,BIZ-034,Sua chua lanh 100g,cold_chain_food,20660,2,7770000,0.85,45
+EDGE-054,BIZ-005,BIZ-009,Sua hat dong hop 1L,beverage,5200,2,2400000,0.86,30
+EDGE-055,BIZ-005,BIZ-011,Sua hat dong hop 1L,beverage,5630,3,2520000,0.83,30
+EDGE-056,BIZ-005,BIZ-035,Sua hat dong hop 1L,beverage,6060,4,2640000,0.80,30
+EDGE-057,BIZ-005,BIZ-036,Sua hat dong hop 1L,beverage,6490,2,2760000,0.77,30
+EDGE-058,BIZ-005,BIZ-038,Sua hat dong hop 1L,beverage,6920,3,2880000,0.86,30
+EDGE-059,BIZ-005,BIZ-039,Sua hat dong hop 1L,beverage,7350,4,3000000,0.83,30
+EDGE-060,BIZ-005,BIZ-041,Sua hat dong hop 1L,beverage,7780,2,3120000,0.80,30
+EDGE-061,BIZ-005,BIZ-042,Sua hat dong hop 1L,beverage,8210,3,3240000,0.77,30
+EDGE-062,BIZ-005,BIZ-046,Sua hat dong hop 1L,beverage,8640,4,3360000,0.86,30
+EDGE-063,BIZ-005,BIZ-047,Sua hat dong hop 1L,beverage,9070,2,3480000,0.83,30
+EDGE-064,BIZ-005,BIZ-049,Sua hat dong hop 1L,beverage,9500,3,3600000,0.80,30
+EDGE-065,BIZ-005,BIZ-056,Sua hat dong hop 1L,beverage,9930,4,3720000,0.77,30
+EDGE-066,BIZ-006,BIZ-012,Ca phe rang xay 500g,processed_agri,9080,3,4800000,0.92,15
+EDGE-067,BIZ-006,BIZ-037,Ca phe rang xay 500g,processed_agri,9160,4,4850000,0.91,30
+EDGE-068,BIZ-006,BIZ-043,Ca phe rang xay 500g,processed_agri,9240,1,4900000,0.89,15
+EDGE-069,BIZ-006,BIZ-048,Ca phe rang xay 500g,processed_agri,9320,2,4950000,0.88,30
+EDGE-070,BIZ-006,BIZ-052,Ca phe rang xay 500g,processed_agri,9400,3,5000000,0.94,15
+EDGE-071,BIZ-006,BIZ-053,Ca phe rang xay 500g,processed_agri,9480,4,5050000,0.92,30
+EDGE-072,BIZ-006,BIZ-054,Ca phe rang xay 500g,processed_agri,9560,1,5100000,0.91,15
+EDGE-073,BIZ-006,BIZ-058,Ca phe rang xay 500g,processed_agri,9640,2,5150000,0.89,30
+EDGE-074,BIZ-006,BIZ-060,Ca phe rang xay 500g,processed_agri,9720,3,5200000,0.88,15
+EDGE-075,BIZ-007,BIZ-009,Sua hat dong hop 1L,beverage,9800,4,5250000,0.94,30
+EDGE-076,BIZ-007,BIZ-011,Sua hat dong hop 1L,beverage,9880,1,5300000,0.92,15
+EDGE-077,BIZ-007,BIZ-035,Sua hat dong hop 1L,beverage,9960,2,5350000,0.91,30
+EDGE-078,BIZ-007,BIZ-038,Sua hat dong hop 1L,beverage,10040,3,5400000,0.89,15
+EDGE-079,BIZ-007,BIZ-041,Sua hat dong hop 1L,beverage,10120,4,5450000,0.88,30
+EDGE-080,BIZ-007,BIZ-046,Sua hat dong hop 1L,beverage,10200,1,5500000,0.94,15
+EDGE-081,BIZ-007,BIZ-049,Sua hat dong hop 1L,beverage,10280,2,5550000,0.92,30
+EDGE-082,BIZ-007,BIZ-056,Sua hat dong hop 1L,beverage,10360,3,5600000,0.91,15
+EDGE-083,BIZ-013,BIZ-009,Sua hat dong hop 1L,beverage,10440,4,5650000,0.89,30
+EDGE-084,BIZ-013,BIZ-035,Sua hat dong hop 1L,beverage,10520,1,5700000,0.88,15
+EDGE-085,BIZ-013,BIZ-038,Sua hat dong hop 1L,beverage,10600,2,5750000,0.94,30
+EDGE-086,BIZ-013,BIZ-041,Sua hat dong hop 1L,beverage,10680,3,5800000,0.92,15
+EDGE-087,BIZ-013,BIZ-046,Sua hat dong hop 1L,beverage,10760,4,5850000,0.91,30
+EDGE-088,BIZ-013,BIZ-049,Sua hat dong hop 1L,beverage,10840,1,5900000,0.89,15
+EDGE-089,BIZ-014,BIZ-010,Snack ngu coc 120g,packaged_food,10920,2,5950000,0.88,30
+EDGE-090,BIZ-014,BIZ-036,Snack ngu coc 120g,packaged_food,11000,3,6000000,0.94,15
+EDGE-091,BIZ-014,BIZ-039,Snack ngu coc 120g,packaged_food,11080,4,6050000,0.92,30
+EDGE-092,BIZ-014,BIZ-042,Snack ngu coc 120g,packaged_food,11160,1,6100000,0.91,15
+EDGE-093,BIZ-014,BIZ-045,Snack ngu coc 120g,packaged_food,11240,2,6150000,0.89,30
+EDGE-094,BIZ-014,BIZ-047,Snack ngu coc 120g,packaged_food,11320,3,6200000,0.88,15
+EDGE-095,BIZ-014,BIZ-051,Snack ngu coc 120g,packaged_food,11400,4,6250000,0.94,30
+EDGE-096,BIZ-014,BIZ-055,Snack ngu coc 120g,packaged_food,11480,1,6300000,0.92,15
+EDGE-097,BIZ-014,BIZ-059,Snack ngu coc 120g,packaged_food,11560,2,6350000,0.91,30
+EDGE-098,BIZ-017,BIZ-040,Sua chua lanh 100g,cold_chain_food,11640,3,6400000,0.89,15
+EDGE-099,BIZ-017,BIZ-044,Sua chua lanh 100g,cold_chain_food,11720,4,6450000,0.88,30
+EDGE-100,BIZ-017,BIZ-050,Sua chua lanh 100g,cold_chain_food,11800,1,6500000,0.94,15
+EDGE-101,BIZ-017,BIZ-057,Sua chua lanh 100g,cold_chain_food,11880,2,6550000,0.92,30
+EDGE-102,BIZ-021,BIZ-036,Snack ngu coc 120g,packaged_food,7410,1,4270000,0.88,15
+EDGE-103,BIZ-021,BIZ-039,Snack ngu coc 120g,packaged_food,7465,2,4305000,0.86,15
+EDGE-104,BIZ-021,BIZ-047,Snack ngu coc 120g,packaged_food,7520,3,4340000,0.92,15
+EDGE-105,BIZ-021,BIZ-051,Snack ngu coc 120g,packaged_food,7575,1,4375000,0.90,15
+EDGE-106,BIZ-021,BIZ-055,Snack ngu coc 120g,packaged_food,7630,2,4410000,0.88,15
+EDGE-107,BIZ-022,BIZ-009,Sua hat dong hop 1L,beverage,7685,3,4445000,0.86,15
+EDGE-108,BIZ-022,BIZ-035,Sua hat dong hop 1L,beverage,7740,1,4480000,0.92,15
+EDGE-109,BIZ-022,BIZ-038,Sua hat dong hop 1L,beverage,7795,2,4515000,0.90,15
+EDGE-110,BIZ-022,BIZ-041,Sua hat dong hop 1L,beverage,7850,3,4550000,0.88,15
+EDGE-111,BIZ-023,BIZ-037,Ca phe rang xay 500g,processed_agri,7905,1,4585000,0.86,15
+EDGE-112,BIZ-023,BIZ-043,Ca phe rang xay 500g,processed_agri,7960,2,4620000,0.92,15
+EDGE-113,BIZ-023,BIZ-052,Ca phe rang xay 500g,processed_agri,8015,3,4655000,0.90,15
+EDGE-114,BIZ-024,BIZ-042,Snack ngu coc 120g,packaged_food,8070,1,4690000,0.88,15
+EDGE-115,BIZ-024,BIZ-045,Snack ngu coc 120g,packaged_food,8125,2,4725000,0.86,15
+EDGE-116,BIZ-025,BIZ-011,Sua hat dong hop 1L,beverage,8180,3,4760000,0.92,15
+EDGE-117,BIZ-025,BIZ-046,Sua hat dong hop 1L,beverage,8235,1,4795000,0.90,15
+EDGE-118,BIZ-028,BIZ-049,Sua hat dong hop 1L,beverage,8290,2,4830000,0.88,15
+EDGE-119,BIZ-028,BIZ-056,Sua hat dong hop 1L,beverage,8345,3,4865000,0.86,15
+EDGE-120,BIZ-030,BIZ-012,Ca phe rang xay 500g,processed_agri,8400,1,4900000,0.92,15

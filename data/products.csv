@@ -1,0 +1,61 @@
+business_id,sku,product_name,category,specification,available_capacity,min_order_value,price_range,certifications
+BIZ-001,SKU-AGR-COFFEE-BIZ-001,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",179500,120000000,premium,VietGAP;ISO 22000
+BIZ-002,SKU-BEV-1L-BIZ-002,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",179000,120000000,mid,HACCP;ISO 22000
+BIZ-003,SKU-PKG-SNACK-BIZ-003,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",178500,120000000,mid,HACCP
+BIZ-004,SKU-COLD-YOGURT-BIZ-004,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",88000,60000000,mid,HACCP;Cold Chain
+BIZ-005,SKU-BEV-1L-BIZ-005,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",102500,60000000,mid,HACCP;ISO 22000
+BIZ-006,SKU-AGR-COFFEE-BIZ-006,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",102000,60000000,premium,VietGAP;ISO 22000
+BIZ-007,SKU-BEV-1L-BIZ-007,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",84000,60000000,mid,HACCP;ISO 22000
+BIZ-008,SKU-AGR-COFFEE-BIZ-008,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",21500,25000000,premium,VietGAP;ISO 22000
+BIZ-009,SKU-BEV-1L-BIZ-009,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",21000,25000000,mid,HACCP;ISO 22000
+BIZ-010,SKU-PKG-SNACK-BIZ-010,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",14500,8000000,mid,HACCP
+BIZ-011,SKU-BEV-1L-BIZ-011,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",35000,25000000,mid,HACCP;ISO 22000
+BIZ-012,SKU-AGR-COFFEE-BIZ-012,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",13500,8000000,premium,VietGAP;ISO 22000
+BIZ-013,SKU-BEV-1L-BIZ-013,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",96000,60000000,mid,HACCP;ISO 22000
+BIZ-014,SKU-PKG-SNACK-BIZ-014,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",78000,60000000,mid,HACCP
+BIZ-015,SKU-AGR-COFFEE-BIZ-015,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",30500,25000000,premium,VietGAP;ISO 22000
+BIZ-016,SKU-AGR-COFFEE-BIZ-016,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",30000,25000000,premium,VietGAP;ISO 22000
+BIZ-017,SKU-COLD-YOGURT-BIZ-017,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",91500,60000000,mid,HACCP;Cold Chain
+BIZ-018,SKU-PKG-SNACK-BIZ-018,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",91000,60000000,mid,HACCP
+BIZ-019,SKU-BEV-1L-BIZ-019,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",28500,25000000,mid,HACCP;ISO 22000
+BIZ-020,SKU-COLD-YOGURT-BIZ-020,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",43000,25000000,mid,HACCP;Cold Chain
+BIZ-021,SKU-PKG-SNACK-BIZ-021,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",25000,25000000,mid,HACCP
+BIZ-022,SKU-BEV-1L-BIZ-022,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",24500,25000000,mid,HACCP;ISO 22000
+BIZ-023,SKU-AGR-COFFEE-BIZ-023,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",24000,25000000,premium,VietGAP;ISO 22000
+BIZ-024,SKU-PKG-SNACK-BIZ-024,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",23500,25000000,mid,HACCP
+BIZ-025,SKU-BEV-1L-BIZ-025,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",38000,25000000,mid,HACCP;ISO 22000
+BIZ-026,SKU-COLD-YOGURT-BIZ-026,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",16500,8000000,mid,HACCP;Cold Chain
+BIZ-027,SKU-PKG-SNACK-BIZ-027,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",37000,25000000,mid,HACCP
+BIZ-028,SKU-BEV-1L-BIZ-028,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",19000,25000000,mid,HACCP;ISO 22000
+BIZ-029,SKU-AGR-COFFEE-BIZ-029,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",1500,8000000,premium,VietGAP;ISO 22000
+BIZ-030,SKU-AGR-COFFEE-BIZ-030,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",33000,25000000,premium,VietGAP;ISO 22000
+BIZ-031,SKU-AGR-COFFEE-BIZ-031,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",11500,8000000,premium,VietGAP;ISO 22000
+BIZ-032,SKU-COLD-YOGURT-BIZ-032,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",32000,25000000,mid,HACCP;Cold Chain
+BIZ-033,SKU-PKG-SNACK-BIZ-033,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",10500,8000000,mid,HACCP
+BIZ-034,SKU-COLD-YOGURT-BIZ-034,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",31000,25000000,mid,HACCP;Cold Chain
+BIZ-035,SKU-BEV-1L-BIZ-035,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",7000,8000000,mid,HACCP;ISO 22000
+BIZ-036,SKU-PKG-SNACK-BIZ-036,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",6500,8000000,mid,HACCP
+BIZ-037,SKU-AGR-COFFEE-BIZ-037,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",6000,8000000,premium,VietGAP;ISO 22000
+BIZ-038,SKU-BEV-1L-BIZ-038,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",5500,8000000,mid,HACCP;ISO 22000
+BIZ-039,SKU-PKG-SNACK-BIZ-039,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",5000,8000000,mid,HACCP
+BIZ-040,SKU-COLD-YOGURT-BIZ-040,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",19500,8000000,mid,HACCP;Cold Chain
+BIZ-041,SKU-BEV-1L-BIZ-041,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",19000,8000000,mid,HACCP;ISO 22000
+BIZ-042,SKU-PKG-SNACK-BIZ-042,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",1500,8000000,mid,HACCP
+BIZ-043,SKU-AGR-COFFEE-BIZ-043,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",1500,8000000,premium,VietGAP;ISO 22000
+BIZ-044,SKU-COLD-YOGURT-BIZ-044,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",1500,8000000,mid,HACCP;Cold Chain
+BIZ-045,SKU-PKG-SNACK-BIZ-045,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",14500,8000000,mid,HACCP
+BIZ-046,SKU-BEV-1L-BIZ-046,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",35000,25000000,mid,HACCP;ISO 22000
+BIZ-047,SKU-PKG-SNACK-BIZ-047,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",13500,8000000,mid,HACCP
+BIZ-048,SKU-AGR-COFFEE-BIZ-048,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",13000,8000000,premium,VietGAP;ISO 22000
+BIZ-049,SKU-BEV-1L-BIZ-049,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",1500,8000000,mid,HACCP;ISO 22000
+BIZ-050,SKU-COLD-YOGURT-BIZ-050,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",9500,8000000,mid,HACCP;Cold Chain
+BIZ-051,SKU-PKG-SNACK-BIZ-051,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",9000,8000000,mid,HACCP
+BIZ-052,SKU-AGR-COFFEE-BIZ-052,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",8500,8000000,premium,VietGAP;ISO 22000
+BIZ-053,SKU-AGR-COFFEE-BIZ-053,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",29000,25000000,premium,VietGAP;ISO 22000
+BIZ-054,SKU-AGR-COFFEE-BIZ-054,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",7500,8000000,premium,VietGAP;ISO 22000
+BIZ-055,SKU-PKG-SNACK-BIZ-055,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",22000,8000000,mid,HACCP
+BIZ-056,SKU-BEV-1L-BIZ-056,Sua hat dong hop 1L,beverage,"UHT, 1L, khong duong",4000,8000000,mid,HACCP;ISO 22000
+BIZ-057,SKU-COLD-YOGURT-BIZ-057,Sua chua lanh 100g,cold_chain_food,"2-6C, han dung 21 ngay",3500,8000000,mid,HACCP;Cold Chain
+BIZ-058,SKU-AGR-COFFEE-BIZ-058,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",3000,8000000,premium,VietGAP;ISO 22000
+BIZ-059,SKU-PKG-SNACK-BIZ-059,Snack ngu coc 120g,packaged_food,"Goi 120g, shelf-stable",2500,8000000,mid,HACCP
+BIZ-060,SKU-AGR-COFFEE-BIZ-060,Ca phe rang xay 500g,processed_agri,"Arabica/Robusta blend, 500g",17000,8000000,premium,VietGAP;ISO 22000

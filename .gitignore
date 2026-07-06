@@ -1,0 +1,46 @@
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/
+env/
+
+# Node / Vite
+node_modules/
+frontend/node_modules/
+frontend/dist/
+dist/
+.vite/
+
+# Local runtime data
+logs/
+*.log
+backend/app/data/*.db
+backend/app/data/*.sqlite
+backend/app/data/evidence_objects/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Codex/local agent state
+.agents/
+.codex/
+
+# Temporary build output
+tmp-vite-dist/
+tmp/
+temp/

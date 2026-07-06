@@ -1,0 +1,5 @@
+certification_id,business_id,certification_type,issuer,effective_date,expiry_date,status,verification_status,document_hash
+CERT-005-HACCP,BIZ-005,HACCP,Demo Food Safety Board,2025-07-06,2026-07-05,EXPIRING_SOON,VERIFIED,05bf61402ad735c41996c53b87d6a1eefd664d867ba93b5a151b93fb7b82c2f6
+CERT-002-ISO,BIZ-002,ISO 22000,Demo Quality Registry,2026-01-01,2027-12-31,VALID,VERIFIED,6fd7ee62b01c85e015831e9a038f1532b9e3218d27a4d59b5e1c2b65cb39f0b0
+CERT-007-HACCP,BIZ-007,HACCP,Demo Food Safety Board,2026-02-01,2027-02-01,VALID,VERIFIED,d6f7c7286b3866af945abe638bf70a04a761462e4a2b54fb37de4df1aeeb49fc
+CERT-017-COLD,BIZ-017,Cold Chain Handling,Demo Logistics Registry,2026-01-10,2027-01-10,VALID,VERIFIED,3ed6804bf742498ce836b2b3f74368a074c64f2157ae3b3ecb26fbb5c188d7fa

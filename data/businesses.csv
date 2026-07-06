@@ -1,0 +1,63 @@
+business_id,name,type,industry,product_category,province,lat,lng,scale,monthly_revenue,capacity,financial_health_score,supply_risk_score
+BIZ-001,Highland Agri Foods,manufacturer,F&B/FMCG,processed_agri,Lam Dong,11.940400,108.458300,large,6716666666,182500,77,25
+BIZ-002,Saigon NutriDrink,manufacturer,F&B/FMCG,beverage,TP.HCM,10.776900,106.700900,large,7233333333,185000,78,26
+BIZ-003,Dong Nai Packaged Food,manufacturer,F&B/FMCG,packaged_food,Dong Nai,10.957400,106.842700,large,7750000000,187500,79,27
+BIZ-004,Binh Duong Cold Chain Foods,manufacturer,F&B/FMCG,cold_chain_food,Binh Duong,10.980400,106.651900,medium,4000000000,100000,74,34
+BIZ-005,Dai Tin Distribution,distributor,F&B/FMCG,beverage,Binh Duong,10.995100,106.679200,medium,4250000000,102500,43,78
+BIZ-006,Mekong Fresh Distributor,distributor,F&B/FMCG,processed_agri,TP.HCM,10.823100,106.629700,medium,4500000000,105000,76,26
+BIZ-007,An Phu FMCG Hub,distributor,F&B/FMCG,beverage,Dong Nai,10.946700,106.824300,medium,4750000000,90000,77,27
+BIZ-008,Dalat Pure Foods,distributor,F&B/FMCG,processed_agri,Lam Dong,11.933300,108.421000,small,1300000000,30500,66,40
+BIZ-009,Thu Duc Retail Mart,retailer,F&B/FMCG,beverage,TP.HCM,10.849400,106.753700,small,780000000,33000,67,41
+BIZ-010,Bien Hoa Mini Market,retailer,F&B/FMCG,packaged_food,Dong Nai,10.957600,106.842600,micro,390000000,14500,61,39
+BIZ-011,Di An Convenience,retailer,F&B/FMCG,beverage,Binh Duong,10.906800,106.769400,small,910000000,38000,69,33
+BIZ-012,Bao Loc Specialty Store,retailer,F&B/FMCG,processed_agri,Lam Dong,11.548100,107.807700,micro,450000000,19500,63,41
+BIZ-013,Gia Dinh Beverage Supply,distributor,F&B/FMCG,beverage,TP.HCM,10.803200,106.696000,medium,4000000000,105000,75,31
+BIZ-014,Tan Uyen FMCG Distribution,distributor,F&B/FMCG,packaged_food,Binh Duong,11.063600,106.789700,medium,4250000000,90000,76,32
+BIZ-015,Xuan Loc Agri Trade,distributor,F&B/FMCG,processed_agri,Dong Nai,10.939700,107.245200,small,1170000000,30500,73,27
+BIZ-016,Duc Trong Food Link,distributor,F&B/FMCG,processed_agri,Lam Dong,11.735600,108.368100,small,1235000000,33000,66,36
+BIZ-017,Song Than Cold Logistics,logistics_partner,F&B/FMCG,cold_chain_food,Binh Duong,10.904100,106.745000,medium,5000000000,97500,71,33
+BIZ-018,Nha Be Grocery Supply,distributor,F&B/FMCG,packaged_food,TP.HCM,10.695600,106.740400,medium,3000000000,100000,72,34
+BIZ-019,Trang Bom Beverage Link,distributor,F&B/FMCG,beverage,Dong Nai,10.953700,107.006700,small,845000000,40500,69,39
+BIZ-020,Da Lat Dairy Route,distributor,F&B/FMCG,cold_chain_food,Lam Dong,11.940000,108.438000,small,910000000,43000,70,30
+BIZ-021,Cho Lon Wholesale Foods,wholesaler,F&B/FMCG,packaged_food,TP.HCM,10.752100,106.663500,small,975000000,28000,71,31
+BIZ-022,Go Vap Beverage Agent,wholesaler,F&B/FMCG,beverage,TP.HCM,10.838700,106.665300,small,1040000000,30500,72,32
+BIZ-023,Thu Duc Agri Agent,wholesaler,F&B/FMCG,processed_agri,TP.HCM,10.844200,106.768400,small,1105000000,33000,73,33
+BIZ-024,Ben Cat FMCG Wholesale,wholesaler,F&B/FMCG,packaged_food,Binh Duong,11.151700,106.607000,small,1170000000,35500,66,42
+BIZ-025,Thuan An Beverage Agent,wholesaler,F&B/FMCG,beverage,Binh Duong,10.931600,106.711000,small,1235000000,38000,67,33
+BIZ-026,Bau Bang Cold Agent,wholesaler,F&B/FMCG,cold_chain_food,Binh Duong,11.267300,106.624800,micro,600000000,19500,61,41
+BIZ-027,Long Thanh Food Wholesale,wholesaler,F&B/FMCG,packaged_food,Dong Nai,10.789500,106.949000,small,780000000,43000,69,35
+BIZ-028,Nhon Trach Beverage Agent,wholesaler,F&B/FMCG,beverage,Dong Nai,10.695200,106.883100,small,845000000,28000,70,36
+BIZ-029,Tan Phu Agri Wholesale,wholesaler,F&B/FMCG,processed_agri,Dong Nai,11.108600,107.407600,micro,420000000,9500,64,44
+BIZ-030,Da Lat Specialty Agent,wholesaler,F&B/FMCG,processed_agri,Lam Dong,11.934500,108.425200,small,975000000,33000,72,28
+BIZ-031,Bao Loc Coffee Agent,wholesaler,F&B/FMCG,processed_agri,Lam Dong,11.549100,107.807000,micro,480000000,14500,66,36
+BIZ-032,Duc Trong Dairy Agent,wholesaler,F&B/FMCG,cold_chain_food,Lam Dong,11.735100,108.373000,small,1105000000,38000,66,38
+BIZ-033,Phu Nhuan Snack Agent,wholesaler,F&B/FMCG,packaged_food,TP.HCM,10.799200,106.680400,micro,540000000,19500,60,46
+BIZ-034,Bien Hoa Cold Chain Agent,wholesaler,F&B/FMCG,cold_chain_food,Dong Nai,10.965800,106.834500,small,1235000000,43000,68,40
+BIZ-035,District 1 Mini Mart,retailer,F&B/FMCG,beverage,TP.HCM,10.775800,106.700400,micro,600000000,7000,62,38
+BIZ-036,District 7 Family Store,retailer,F&B/FMCG,packaged_food,TP.HCM,10.735600,106.721800,micro,360000000,9500,63,39
+BIZ-037,Binh Thanh Organic Shop,retailer,F&B/FMCG,processed_agri,TP.HCM,10.810600,106.709100,micro,390000000,12000,64,40
+BIZ-038,Tan Phu Convenience,retailer,F&B/FMCG,beverage,TP.HCM,10.790200,106.628200,micro,420000000,14500,65,41
+BIZ-039,Hoc Mon Grocery,retailer,F&B/FMCG,packaged_food,TP.HCM,10.883500,106.586400,micro,450000000,17000,66,42
+BIZ-040,Thu Duc Milk Corner,retailer,F&B/FMCG,cold_chain_food,TP.HCM,10.848200,106.772100,micro,480000000,19500,59,41
+BIZ-041,Thuan An Family Mart,retailer,F&B/FMCG,beverage,Binh Duong,10.933000,106.712200,micro,510000000,22000,60,42
+BIZ-042,Ben Cat Grocery,retailer,F&B/FMCG,packaged_food,Binh Duong,11.153500,106.607400,micro,540000000,7000,61,43
+BIZ-043,Tan Uyen Organic Store,retailer,F&B/FMCG,processed_agri,Binh Duong,11.063800,106.790600,micro,570000000,9500,62,44
+BIZ-044,Di An Milk Store,retailer,F&B/FMCG,cold_chain_food,Binh Duong,10.906100,106.770700,micro,600000000,12000,63,45
+BIZ-045,Bau Bang Mini Mart,retailer,F&B/FMCG,packaged_food,Binh Duong,11.265100,106.626600,micro,360000000,14500,64,36
+BIZ-046,Thu Dau Mot Beverage Shop,retailer,F&B/FMCG,beverage,Binh Duong,10.980100,106.655500,small,845000000,38000,72,30
+BIZ-047,Bien Hoa Family Foods,retailer,F&B/FMCG,packaged_food,Dong Nai,10.958000,106.844900,micro,420000000,19500,66,38
+BIZ-048,Long Khanh Coffee Store,retailer,F&B/FMCG,processed_agri,Dong Nai,10.945900,107.243700,micro,450000000,22000,59,47
+BIZ-049,Nhon Trach Mini Mart,retailer,F&B/FMCG,beverage,Dong Nai,10.695700,106.884400,micro,480000000,7000,60,48
+BIZ-050,Long Thanh Cold Foods,retailer,F&B/FMCG,cold_chain_food,Dong Nai,10.790000,106.950200,micro,510000000,9500,61,39
+BIZ-051,Trang Bom Grocery,retailer,F&B/FMCG,packaged_food,Dong Nai,10.954400,107.007800,micro,540000000,12000,62,40
+BIZ-052,Xuan Loc Agri Shop,retailer,F&B/FMCG,processed_agri,Dong Nai,10.940100,107.246100,micro,570000000,14500,63,41
+BIZ-053,Da Lat Farm Mart,retailer,F&B/FMCG,processed_agri,Lam Dong,11.939900,108.433500,small,1300000000,38000,71,35
+BIZ-054,Bao Loc Coffee Corner,retailer,F&B/FMCG,processed_agri,Lam Dong,11.547500,107.808800,micro,360000000,19500,65,43
+BIZ-055,Duc Trong Family Store,retailer,F&B/FMCG,packaged_food,Lam Dong,11.734400,108.371200,micro,390000000,22000,66,34
+BIZ-056,Lam Ha Beverage Shop,retailer,F&B/FMCG,beverage,Lam Dong,11.801000,108.238800,micro,420000000,7000,59,43
+BIZ-057,Don Duong Dairy Store,retailer,F&B/FMCG,cold_chain_food,Lam Dong,11.805800,108.576300,micro,450000000,9500,60,44
+BIZ-058,Da Huoai Specialty Mart,retailer,F&B/FMCG,processed_agri,Lam Dong,11.416800,107.642500,micro,480000000,12000,61,45
+BIZ-059,Cat Tien Grocery,retailer,F&B/FMCG,packaged_food,Lam Dong,11.587500,107.393200,micro,510000000,14500,62,46
+BIZ-060,Lac Duong Farm Goods,retailer,F&B/FMCG,processed_agri,Lam Dong,12.003200,108.401800,micro,540000000,17000,63,37
+BIZ-061,VietWorking Capital Partner,financial_partner,Finance,finance,TP.HCM,10.781000,106.705000,medium,4750000000,0,88,18
+BIZ-062,Saigon Invoice Finance,financial_partner,Finance,finance,TP.HCM,10.786000,106.704000,medium,5000000000,0,88,18

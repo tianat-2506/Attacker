@@ -1,0 +1,3 @@
+invoice_id,seller_id,buyer_id,amount,issue_date,due_date,invoice_hash,funding_status,confirmed_by
+INV-0241,BIZ-002,BIZ-005,240000000,2026-06-05,2026-07-05,generated-by-domain-module,funded,buyer;seller
+INV-0242,BIZ-005,BIZ-009,68000000,2026-06-08,2026-07-08,generated-by-domain-module,unfunded,buyer;seller

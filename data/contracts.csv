@@ -1,0 +1,5 @@
+contract_id,supplier_id,buyer_id,product_category,status,effective_date,expiry_date,payment_term_days,sla_lead_time_days,has_exclusivity,has_backup_supplier_clause,verification_status,source_label,document_hash
+CON-001,BIZ-002,BIZ-005,beverage,ACTIVE,2026-01-01,2026-12-31,30,3,false,true,VERIFIED,Demo contract register,c139aab2f9c3aa7dab8826afd868faa84cf260e5f80271ec61c8a3c0e3c9fc3f
+CON-002,BIZ-005,BIZ-009,beverage,ACTIVE,2026-01-15,2026-12-31,30,2,false,true,VERIFIED,Demo contract register,1bd6359685d79d0d43c8e88ae63dbf3a2a092e3dd087eecd6098ec62dcde62fc
+CON-003,BIZ-005,BIZ-011,beverage,ACTIVE,2026-02-01,2026-11-30,30,2,false,false,VERIFIED,Demo contract register,82677bdca38222c52ceb8e6f64186a32c146a29819bad380af57e3da91c7ecc3
+CON-004,BIZ-007,BIZ-009,beverage,PILOT,2026-06-01,2026-09-30,15,3,false,true,VERIFIED,Demo supplier qualification,85ca56d0090dce45c3f90feb124861684b74d4a2f04d16469ba8791397d229ac
