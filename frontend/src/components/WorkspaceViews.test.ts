@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accessStatusLabel, canRequestRiskSignal, canShowSensitiveCompanyData, recommendationComponentsForAccess, restrictedRecommendationComponentCount } from "../utils/accessDecision";
+import { accessStatusLabel, canRequestRiskSignal, canShowSensitiveCompanyData, recommendationComponentsForAccess, recommendationReasonsForAccess, restrictedRecommendationComponentCount, restrictedRecommendationReasonCount } from "../utils/accessDecision";
 import {
   connectionRequestFilterLabel,
   connectionRequestIsActionable,
@@ -65,6 +65,13 @@ describe("access decision helpers", () => {
     expect(recommendationComponentsForAccess(components, { status: "masked" }).map(([label]) => label)).toEqual(["product_spec_fit", "distance_score"]);
     expect(restrictedRecommendationComponentCount(components, { status: "masked" })).toBe(3);
     expect(recommendationComponentsForAccess(components, { status: "consented" })).toHaveLength(5);
+  });
+
+  it("hides sensitive recommendation reasons until consented access is available", () => {
+    const reasons = ["Dung spec UHT 1L", "Reliability 93%", "Chap nhan net-30", "Lead time 1 ngay"];
+    expect(recommendationReasonsForAccess(reasons, { status: "masked" })).toEqual(["Dung spec UHT 1L", "Lead time 1 ngay"]);
+    expect(restrictedRecommendationReasonCount(reasons, { status: "masked" })).toBe(2);
+    expect(recommendationReasonsForAccess(reasons, { status: "owner" })).toEqual(reasons);
   });
 
   it("renders full access status labels instead of only the first underscore", () => {

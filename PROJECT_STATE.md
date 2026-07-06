@@ -19,6 +19,11 @@
 
 ## Latest Slice
 
+- Matching fallback/reason masking slice completed.
+- Demo fallback shortlist now excludes the selected disrupted supplier and buyer, and carries selected-period fallback advisory text.
+- Matching cards now hide sensitive reason chips such as reliability, health, payment term, risk, capacity, score and price when supplier access is masked or pending consent.
+- Masked recommendation cards show a restricted-reasons count alongside restricted metrics.
+- Added client fallback test and access helper tests for recommendation reasons.
 - Dynamic disrupted-supplier recommendations slice completed.
 - Frontend `getRecommendations` now accepts `disruptedSupplierId` and sends it as `disrupted_supplier_id`.
 - App loads recommendation shortlist in a dedicated effect keyed by buyer, selected business and period, instead of during full app load.
@@ -141,13 +146,15 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 34 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 36 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
-  - `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 11 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 34 tests.
+  - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 36 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
+  - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
+  - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.
   - Recommendation API client test confirms selected `disrupted_supplier_id` is sent in the request body.
   - Recommendation helper test confirms masked cards expose product/distance only and count restricted metrics.
   - Risk API client test confirms `evidence_scope`, `policy_decision_id`, and `audit_event_id` map into `RiskSignal`.

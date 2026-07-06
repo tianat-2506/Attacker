@@ -62,7 +62,7 @@ import type {
   SupplyMapRegistration,
   SupplyEdge
 } from "../types";
-import { accessStatusLabel, canShowSensitiveCompanyData, recommendationComponentsForAccess, restrictedRecommendationComponentCount } from "../utils/accessDecision";
+import { accessStatusLabel, canShowSensitiveCompanyData, recommendationComponentsForAccess, recommendationReasonsForAccess, restrictedRecommendationComponentCount, restrictedRecommendationReasonCount } from "../utils/accessDecision";
 import {
   CONNECTION_REQUEST_FILTERS,
   canActivateConnection,
@@ -635,6 +635,8 @@ export function MatchingWorkspace({ recommendations, request, buyerName, disrupt
           const access = accessByBusinessId[recommendation.supplierId];
           const visibleComponents = recommendationComponentsForAccess(recommendation.components, access);
           const restrictedComponentCount = restrictedRecommendationComponentCount(recommendation.components, access);
+          const visibleReasons = recommendationReasonsForAccess(recommendation.reasons, access);
+          const restrictedReasonCount = restrictedRecommendationReasonCount(recommendation.reasons, access);
           const periodLabel = recommendationPeriodLabel(recommendation, selectedPeriod);
           return (
             <article className={index === 0 ? "supplier-card best-match" : "supplier-card"} key={recommendation.supplierId}>
@@ -644,7 +646,10 @@ export function MatchingWorkspace({ recommendations, request, buyerName, disrupt
                 {visibleComponents.slice(0, 6).map(([label, value]) => <div key={label}><span>{label.replace(/_/g, " ")}</span><i><b style={{ width: `${Math.min(100, value)}%` }} /></i><strong>{Math.round(value)}</strong></div>)}
                 {restrictedComponentCount ? <div><span>restricted metrics</span><i><b style={{ width: "100%" }} /></i><strong>{restrictedComponentCount}</strong></div> : null}
               </div>
-              <div className="reason-chips">{recommendation.reasons.map((reason) => <span key={reason}><CheckCircle2 size={13} />{reason}</span>)}</div>
+              <div className="reason-chips">
+                {visibleReasons.map((reason) => <span key={reason}><CheckCircle2 size={13} />{reason}</span>)}
+                {restrictedReasonCount ? <span><ShieldAlert size={13} />{restrictedReasonCount} restricted reasons</span> : null}
+              </div>
               <div className="tradeoff"><Info size={14} /><span>{restrictedComponentCount ? "Commercial, financial, reliability and payment-term components remain hidden until relationship and consent checks pass." : access?.status === "pending_consent" ? "Introduction requested; contact and commercial terms remain hidden until supplier consent." : index === 0 ? "Strong product and capacity fit; supplier consent still required." : index === 1 ? "Shorter route, but payment terms require review." : "Useful split-order option; lower capacity headroom."}</span></div>
               <button className="primary-button" type="button" disabled={!canConnect || access?.status === "pending_consent"} onClick={() => onConnect(recommendation.supplierId)}><Send size={16} />{!canConnect ? "Review only" : access?.status === "pending_consent" ? "Consent pending" : "Request introduction"}</button>
             </article>

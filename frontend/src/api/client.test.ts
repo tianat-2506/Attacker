@@ -219,6 +219,17 @@ describe("api client trust headers", () => {
     expect(recommendations[0].advisoryNotice).toContain("selected period 2026-07");
   });
 
+  it("filters fallback recommendations away from the selected disrupted supplier", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({ detail: { code: "SERVICE_UNAVAILABLE" } }), { status: 503 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const recommendations = await getRecommendations("BIZ-009", "2026-07", "BIZ-007");
+
+    expect(recommendations.map((item) => item.supplierId)).not.toContain("BIZ-007");
+    expect(recommendations[0].periodKey).toBe("2026-07");
+    expect(recommendations[0].advisoryNotice).toContain("excludes the selected disrupted supplier");
+  });
+
   it("maps periodic intake endpoints and preserves selected period in requests", async () => {
     const submissionPayload = {
       id: "SUB-1",
