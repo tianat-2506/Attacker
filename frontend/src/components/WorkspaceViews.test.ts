@@ -7,7 +7,7 @@ import {
   connectionRequestPerspectiveLabel
 } from "../utils/connectionRequests";
 import { evidenceRecordStatus, evidenceStatusLabel, evidenceVerificationBucket, evidenceWorkflowLabel, evidenceWorkflowStatus } from "../utils/evidenceStatus";
-import { invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
+import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import type { ConnectionRequest, DemoAccount } from "../types";
 
 describe("evidenceVerificationBucket", () => {
@@ -91,6 +91,17 @@ describe("invoice funding status labels", () => {
     expect(invoiceFundingStateLabel("unfunded")).toBe("no lender funding recorded");
     expect(invoiceFundingStateLabel("verified")).toBe("reviewed registry signal");
     expect(invoiceFundingStateNotice("verified")).toBe("Review signal only; no funding decision.");
+  });
+
+  it("keeps financial assurance details policy-gated", () => {
+    const partyNotice = invoiceAssuranceReviewNotice("buyer_party");
+    const restrictedNotice = invoiceAssuranceReviewNotice("restricted_financial");
+
+    expect(partyNotice.title).toBe("Financial assurance review gate");
+    expect(partyNotice.detail).toContain("scan-cleared evidence");
+    expect(restrictedNotice.detail).toContain("policy-gated");
+    expect(restrictedNotice.detail).toContain("no financing approval");
+    expect(`${partyNotice.detail} ${restrictedNotice.detail}`).not.toContain("GUA-001");
   });
 });
 

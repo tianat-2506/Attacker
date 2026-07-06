@@ -84,7 +84,7 @@ import {
   evidenceWorkflowStatus,
   type EvidenceWorkflowStatus
 } from "../utils/evidenceStatus";
-import { invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
+import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { MapView } from "./MapView";
 
@@ -1326,9 +1326,10 @@ export function InvoiceWorkspace({ invoice, account, accessNotice }: { invoice: 
   const hashMatch = invoice.storedHash === invoice.computedHash;
   const fundingStateLabel = invoiceFundingStateLabel(invoice.fundingStatus);
   const fundingStateNotice = invoiceFundingStateNotice(invoice.fundingStatus);
+  const assuranceNotice = invoiceAssuranceReviewNotice(invoice.accessScope);
   return (
     <div className="page-stack invoice-workspace">
-      <header className="workspace-heading"><div><span className="eyebrow">Evidence integrity & financing guardrail</span><h1>Invoice Integrity Review</h1><p>{invoice.invoiceId} · seller {invoice.sellerId} · buyer {invoice.buyerId}</p></div><span className={invoice.doubleFinancingAlert ? "invoice-state danger" : "invoice-state clear"}>{invoice.doubleFinancingAlert ? <ShieldAlert size={18} /> : <ShieldCheck size={18} />}{invoice.doubleFinancingAlert ? "Review required" : "No duplicate registry signal"}</span></header>
+      <header className="workspace-heading"><div><span className="eyebrow">Evidence integrity & financing guardrail</span><h1>Invoice Integrity Review</h1><p>{invoice.invoiceId} / seller {invoice.sellerId} / buyer {invoice.buyerId}</p></div><span className={invoice.doubleFinancingAlert ? "invoice-state danger" : "invoice-state clear"}>{invoice.doubleFinancingAlert ? <ShieldAlert size={18} /> : <ShieldCheck size={18} />}{invoice.doubleFinancingAlert ? "Review required" : "No duplicate registry signal"}</span></header>
       <section className="tool-panel finance-scope-strip">
         <span><strong>{scopeLabel(invoice.accessScope)}</strong><small>{invoice.dataScope ?? "restricted_financial"}</small></span>
         <span><strong>{account.actorRole.replace("_", " ")}</strong><small>{account.organizationId}</small></span>
@@ -1347,7 +1348,7 @@ export function InvoiceWorkspace({ invoice, account, accessNotice }: { invoice: 
           <div className="hash-compare"><div><span>Stored hash</span><code>{invoice.storedHash}</code></div><div><span>Computed hash</span><code>{invoice.computedHash}</code></div></div>
         </section>
       </div>
-      <section className="guarantee-band"><FileKey2 size={21} /><span><strong>Linked financial assurance</strong><small>Performance guarantee GUA-001 · VND 350M · issuer BIZ-061 · expires 2026-09-30</small></span><span className="review-state">review</span></section>
+      <section className="guarantee-band"><FileKey2 size={21} /><span><strong>{assuranceNotice.title}</strong><small>{assuranceNotice.detail}</small></span><span className="review-state">{assuranceNotice.stateLabel}</span></section>
       <DataNotice>{`${invoice.advisoryNotice} Funding lifecycle states are registry/lender records, not VietSupply financing approval.`}</DataNotice>
     </div>
   );
