@@ -534,11 +534,10 @@ export default function App() {
     setApiMode("loading");
     async function loadApplication() {
       let invoiceNotice: string | null = null;
-      const [graph, scenarioData, dashboardData, shortlist, invoiceData, auditData] = await Promise.all([
+      const [graph, scenarioData, dashboardData, invoiceData, auditData] = await Promise.all([
         dataPermissions.canReadGraph ? getGraph() : Promise.resolve({ nodes: fallbackBusinesses, edges: fallbackEdges, fallback: false }),
         getScenario(),
         getDashboard(),
-        dataPermissions.canReadRecommendations ? getRecommendations(activeAccount.defaultBusinessId, selectedPeriod) : Promise.resolve([]),
         dataPermissions.canReadInvoice ? getInvoiceVerification("INV-0242").catch(() => {
           invoiceNotice = "Invoice register access requires seller/buyer party membership or explicit invoice-claim consent.";
           return null;
@@ -550,7 +549,6 @@ export default function App() {
       setAllEdges(graph.edges);
       setScenario(scenarioData);
       setDashboard(dashboardData);
-      setRecommendations(shortlist);
       setInvoice(invoiceData);
       setInvoiceAccessNotice(invoiceNotice);
       setAudit(auditData);
@@ -561,7 +559,23 @@ export default function App() {
     }
     loadApplication();
     return () => { mounted = false; };
-  }, [activeAccount.defaultBusinessId, activeAccount.id, canReadOps, dataPermissions.canReadGraph, dataPermissions.canReadInvoice, dataPermissions.canReadRecommendations, selectedPeriod]);
+  }, [activeAccount.id, canReadOps, dataPermissions.canReadGraph, dataPermissions.canReadInvoice]);
+
+  useEffect(() => {
+    let mounted = true;
+    if (!dataPermissions.canReadRecommendations) {
+      setRecommendations([]);
+      return () => { mounted = false; };
+    }
+    getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, selectedId)
+      .then((shortlist) => {
+        if (mounted) setRecommendations(shortlist);
+      })
+      .catch(() => {
+        if (mounted) setRecommendations([]);
+      });
+    return () => { mounted = false; };
+  }, [activeAccount.defaultBusinessId, activeAccount.id, dataPermissions.canReadRecommendations, selectedId, selectedPeriod]);
 
   useEffect(() => {
     let mounted = true;
@@ -715,7 +729,7 @@ export default function App() {
     setSelectedId("BIZ-005");
     const [result, shortlist] = await Promise.all([
       simulateShock(),
-      dataPermissions.canReadRecommendations ? getRecommendations(activeAccount.defaultBusinessId, selectedPeriod) : Promise.resolve([])
+      dataPermissions.canReadRecommendations ? getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, "BIZ-005") : Promise.resolve([])
     ]);
     setShock(result);
     setRecommendations(shortlist);

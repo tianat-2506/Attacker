@@ -19,6 +19,11 @@
 
 ## Latest Slice
 
+- Dynamic disrupted-supplier recommendations slice completed.
+- Frontend `getRecommendations` now accepts `disruptedSupplierId` and sends it as `disrupted_supplier_id`.
+- App loads recommendation shortlist in a dedicated effect keyed by buyer, selected business and period, instead of during full app load.
+- Matching header selected disrupted supplier and backend recommendation request now stay aligned when the selected business changes.
+- Demo shock simulation still explicitly uses `BIZ-005`, matching the seeded shock scenario.
 - Matching component masking slice completed.
 - Matching cards now hide commercial/financial/reliability/payment-term component scores when supplier access is `masked` or `pending_consent`.
 - Masked recommendation cards still show low-sensitivity product/distance fit and a restricted-metrics count.
@@ -140,10 +145,10 @@
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
-  - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 14 tests.
+  - `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 11 tests.
   - `npm.cmd exec vitest -- run --cache=false` passed, 34 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
-  - Initial same build command once printed `built` then exited 1 due Windows Node `UV_HANDLE_CLOSING`; rerun after deleting `.vite-check-dist` passed.
+  - Recommendation API client test confirms selected `disrupted_supplier_id` is sent in the request body.
   - Recommendation helper test confirms masked cards expose product/distance only and count restricted metrics.
   - Risk API client test confirms `evidence_scope`, `policy_decision_id`, and `audit_event_id` map into `RiskSignal`.
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.

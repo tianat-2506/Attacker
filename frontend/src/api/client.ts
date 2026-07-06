@@ -504,9 +504,9 @@ export async function getFinance(businessId: string, periodKey?: string | null):
   }
 }
 
-export async function getRecommendations(buyerId = "BIZ-009", periodKey?: string | null): Promise<Recommendation[]> {
+export async function getRecommendations(buyerId = "BIZ-009", periodKey?: string | null, disruptedSupplierId = "BIZ-005"): Promise<Recommendation[]> {
   try {
-    const payload = await requestJson("/api/v1/recommendations/suppliers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ buyer_id: buyerId, disrupted_supplier_id: "BIZ-005", period_key: periodKey, product_category: "beverage", product_specification: "UHT, 1L, khong duong", required_monthly_volume: 12000, preferred_payment_term_days: 30, top_k: 3 }) });
+    const payload = await requestJson("/api/v1/recommendations/suppliers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ buyer_id: buyerId, disrupted_supplier_id: disruptedSupplierId, period_key: periodKey, product_category: "beverage", product_specification: "UHT, 1L, khong duong", required_monthly_volume: 12000, preferred_payment_term_days: 30, top_k: 3 }) });
     return (payload.data ?? []).map(apiRecommendationToCard);
   } catch (error) {
     return demoFallback(error, () => recommendations);

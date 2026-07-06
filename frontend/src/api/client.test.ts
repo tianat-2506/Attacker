@@ -209,10 +209,12 @@ describe("api client trust headers", () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({ data: [{ supplier_id: "BIZ-007", supplier_name: "An Phu FMCG Hub", match_score: 82, new_edge_preview: { lead_time_days: 2 }, reason_codes: ["period_context"], components: { capacity: 80 }, period_key: "2026-07", advisory_notice: "Suggested alternative for selected period 2026-07 only." }] }), { status: 200 }));
     vi.stubGlobal("fetch", fetchMock);
 
-    const recommendations = await getRecommendations("BIZ-009", "2026-07");
+    const recommendations = await getRecommendations("BIZ-009", "2026-07", "BIZ-013");
 
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
-    expect(JSON.parse(String(init.body)).period_key).toBe("2026-07");
+    const body = JSON.parse(String(init.body));
+    expect(body.period_key).toBe("2026-07");
+    expect(body.disrupted_supplier_id).toBe("BIZ-013");
     expect(recommendations[0].periodKey).toBe("2026-07");
     expect(recommendations[0].advisoryNotice).toContain("selected period 2026-07");
   });
