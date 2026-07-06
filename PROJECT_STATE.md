@@ -11,6 +11,7 @@
 ## Source Pointers
 
 - Run docs: `README.md`, `docs/17-run-project-after-restart.md`.
+- Multi-account workflow: `docs/19-multi-account-collaboration-protocol.md`.
 - Source inputs: `Prompt_Codex_VietSupply_Radar.pdf`, `Noi_dung_hoi_thoai_du_an_VietSupply_Radar.pdf`, `deep-research-report.md`.
 - Diagrams: `docs/16-current-demo-diagrams.md`, `docs/diagrams/*.drawio`.
 - Tech assessment: `docs/18-deep-research-technical-assessment.md`.
@@ -18,6 +19,9 @@
 
 ## Latest Slice
 
+- Multi-account GitHub collaboration protocol documented.
+- Rule now persisted: every account/session pulls latest GitHub state first, updates `PROJECT_STATE.md` before context runs low, commits, and pushes back to GitHub before ending.
+- Parallel work should use task branches or clearly separated file ownership; no force push or wholesale state rewrite.
 - Frontend mutation handler permission guardrail completed.
 - App handlers now return before sending API mutations when the active account lacks permission for:
   - supply-map registration create/review.
