@@ -588,7 +588,7 @@ export function RiskWorkspace({ signal, subjectName, canOpenMatching, onOpenMatc
   );
 }
 
-export function MatchingWorkspace({ recommendations, request, selectedPeriod, accessByBusinessId, canConnect, onConnect }: { recommendations: Recommendation[]; request: ConnectionRequest | null; selectedPeriod: string; accessByBusinessId: Record<string, DemoAccessDecision>; canConnect: boolean; onConnect: (supplierId: string) => void }) {
+export function MatchingWorkspace({ recommendations, request, buyerName, disruptedSupplierName, selectedPeriod, accessByBusinessId, canConnect, onConnect }: { recommendations: Recommendation[]; request: ConnectionRequest | null; buyerName: string; disruptedSupplierName: string; selectedPeriod: string; accessByBusinessId: Record<string, DemoAccessDecision>; canConnect: boolean; onConnect: (supplierId: string) => void }) {
   const periodNotice = matchingPeriodNotice(recommendations, selectedPeriod);
   return (
     <div className="page-stack matching-workspace">
@@ -596,7 +596,7 @@ export function MatchingWorkspace({ recommendations, request, selectedPeriod, ac
         <div>
           <span className="eyebrow">Human-reviewed recovery</span>
           <h1>Alternative Supplier Shortlist</h1>
-          <p>Buyer: Thu Duc Retail Mart / disrupted supplier: Dai Tin Distribution / period {selectedPeriod}</p>
+          <p>Buyer: {buyerName} / disrupted supplier: {disruptedSupplierName} / period {selectedPeriod}</p>
         </div>
         <span className="qualification-badge"><ShieldCheck size={16} />Qualified candidates only</span>
       </header>
