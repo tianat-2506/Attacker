@@ -150,9 +150,9 @@ class TrustFoundationTests(unittest.TestCase):
             app_mode="demo",
         )
 
-        signal = self.service.risk_signal_payload("BIZ-009", context=buyer_context, period_key="2026-06")
+        signal = self.service.risk_signal_payload("BIZ-005", context=buyer_context, period_key="2026-06")
 
-        self.assertEqual(signal["business_id"], "BIZ-009")
+        self.assertEqual(signal["business_id"], "BIZ-005")
         self.assertEqual(signal["risk_type"], "HIGH_LEVEL_SUPPLY_RISK")
         self.assertEqual(signal["evidence_scope"], "evidence_blocked_by_policy")
         self.assertEqual(signal["evidence"], [])

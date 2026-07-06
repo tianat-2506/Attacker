@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accessStatusLabel, canShowSensitiveCompanyData } from "../utils/accessDecision";
+import { accessStatusLabel, canRequestRiskSignal, canShowSensitiveCompanyData } from "../utils/accessDecision";
 import {
   connectionRequestFilterLabel,
   connectionRequestIsActionable,
@@ -52,6 +52,12 @@ describe("access decision helpers", () => {
     expect(canShowSensitiveCompanyData({ status: "ops_review" })).toBe(true);
     expect(canShowSensitiveCompanyData({ status: "masked" })).toBe(false);
     expect(canShowSensitiveCompanyData({ status: "pending_consent" })).toBe(false);
+  });
+
+  it("allows masked high-level risk previews without opening sensitive company data", () => {
+    expect(canRequestRiskSignal({ status: "masked", allowedFields: ["masked profile", "high-level risk signal"] })).toBe(true);
+    expect(canRequestRiskSignal({ status: "masked", allowedFields: ["masked profile"] })).toBe(false);
+    expect(canRequestRiskSignal({ status: "pending_consent", allowedFields: ["shortlist rationale"] })).toBe(false);
   });
 
   it("renders full access status labels instead of only the first underscore", () => {

@@ -69,6 +69,7 @@ import {
 } from "./components/WorkspaceViews";
 import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges, recommendations as fallbackRecommendations } from "./utils/demoData";
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
+import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import type {
   AppView,
@@ -381,6 +382,9 @@ export default function App() {
   }, [activeAccount, verifiedCapabilities]);
   const scopedCompanyNodes = useMemo(() => scopedBusinessNodesForAccount(activeAccount, allNodes), [activeAccount, allNodes]);
   const canReadSelectedBusiness = useMemo(() => accountCanReadOwnBusiness(activeAccount, selectedId), [activeAccount, selectedId]);
+  const accessByBusinessId = useMemo(() => Object.fromEntries(allNodes.map((node) => [node.id, demoAccessDecisionFor(activeAccount, node.id, connectionRequest)])), [activeAccount, allNodes, connectionRequest]);
+  const selectedAccessDecision = accessByBusinessId[selectedId] ?? demoAccessDecisionFor(activeAccount, selectedId, connectionRequest);
+  const canReadSelectedRisk = useMemo(() => canRequestRiskSignal(selectedAccessDecision), [selectedAccessDecision]);
   const canReviewOnboarding = useMemo(() => verifiedCapabilities?.canReviewSupplyMapRegistration ?? ["demo_operator", "reviewer", "system_admin"].includes(activeAccount.actorRole), [activeAccount, verifiedCapabilities]);
   const canCreateOnboarding = useMemo(() => verifiedCapabilities?.canCreateSupplyMapRegistration ?? ["demo_operator", "sme_submitter", "buyer_admin", "supplier_admin", "org_admin", "lender"].includes(activeAccount.actorRole), [activeAccount, verifiedCapabilities]);
   const canRequestIntroduction = useMemo(() => verifiedCapabilities?.canCreateConnectionRequest ?? ["demo_operator", "buyer_admin", "org_admin"].includes(activeAccount.actorRole), [activeAccount, verifiedCapabilities]);
@@ -597,12 +601,12 @@ export default function App() {
     setFinanceAccessNotice(null);
     const shouldLoadBusiness = dataPermissions.canReadBusiness && canReadSelectedBusiness;
     const shouldLoadEvidence = dataPermissions.canReadEvidence && canReadSelectedBusiness;
-    const shouldLoadRisk = dataPermissions.canReadRiskRun && canReadSelectedBusiness;
+    const shouldLoadRisk = dataPermissions.canReadRiskRun && canReadSelectedRisk;
     const shouldLoadFinance = dataPermissions.canReadFinance && canReadSelectedBusiness;
     let riskNotice: string | null = null;
     let financeNotice: string | null = null;
-    if (dataPermissions.canReadRiskRun && !canReadSelectedBusiness) {
-      riskNotice = "Risk detail is restricted to own organization or active relationship/consent scope.";
+    if (dataPermissions.canReadRiskRun && !canReadSelectedRisk) {
+      riskNotice = "Risk signal is restricted to own organization, a visible high-level risk scope, or active relationship/consent.";
     }
     if (dataPermissions.canReadFinance && !canReadSelectedBusiness) {
       financeNotice = "Financial data is restricted to own organization or active financial-summary consent.";
@@ -629,7 +633,7 @@ export default function App() {
         setFinanceAccessNotice(financeNotice);
       });
     return () => { mounted = false; };
-  }, [selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
+  }, [selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, canReadSelectedRisk, dataPermissions]);
 
   useEffect(() => {
     let mounted = true;
@@ -706,8 +710,6 @@ export default function App() {
   const filteredNodes = useMemo(() => allNodes.filter((node) => (region === "ALL" || node.province === region) && (category === "ALL" || node.category === category)), [allNodes, region, category]);
   const filteredIds = useMemo(() => new Set(filteredNodes.map((node) => node.id)), [filteredNodes]);
   const filteredEdges = useMemo(() => allEdges.filter((edge) => filteredIds.has(edge.sourceId) && filteredIds.has(edge.targetId)), [allEdges, filteredIds]);
-  const accessByBusinessId = useMemo(() => Object.fromEntries(allNodes.map((node) => [node.id, demoAccessDecisionFor(activeAccount, node.id, connectionRequest)])), [activeAccount, allNodes, connectionRequest]);
-  const selectedAccessDecision = accessByBusinessId[selectedId] ?? demoAccessDecisionFor(activeAccount, selectedId, connectionRequest);
 
   async function handleSimulate() {
     setSelectedId("BIZ-005");
