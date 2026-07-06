@@ -19,6 +19,10 @@
 
 ## Latest Slice
 
+- Risk workspace stakeholder subject guardrail completed.
+- Risk view now displays the selected business name instead of hardcoded `Dai Tin Distribution`.
+- Risk evidence chain now shows an explicit empty state when no evidence is visible for the current account/business/period scope.
+- Risk evidence facts now fallback safely when a document has no visible facts.
 - Session handoff/workload map documented for multi-account continuation.
 - New accounts should use `docs/20-session-handoff-and-workload-map.md` for the startup prompt, recommended parallel tracks, high-conflict files, and end-of-session state template.
 - Multi-account GitHub collaboration protocol documented.
@@ -108,7 +112,8 @@
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
   - `npm.cmd exec vitest -- run --cache=false` passed, 31 tests.
-  - `Select-String -LiteralPath frontend\src\App.tsx -Pattern 'openView\(\"companies\"\)'` confirms search navigation uses the guarded view path.
+  - `npm.cmd exec vite -- build --outDir ..\tmp-vite-dist` passed; temp output removed.
+  - `rg -n "RiskWorkspace|subjectName|No visible evidence documents|Dai Tin Distribution" frontend\src\App.tsx frontend\src\components\WorkspaceViews.tsx` confirms Risk header uses selected subject; remaining Dai Tin references are scenario/seed text.
 - Latest targeted backend proof:
   - `python -B -m unittest backend.tests.test_database_service.DatabaseServiceTests.test_recommendations_are_shortlist_not_disrupted_supplier` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_selected_period_context_does_not_silently_fallback_for_finance_or_evidence` passed.

@@ -545,11 +545,11 @@ export function CompaniesWorkspace({
   );
 }
 
-export function RiskWorkspace({ signal, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; canOpenMatching: boolean; onOpenMatching: () => void }) {
+export function RiskWorkspace({ signal, subjectName, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; subjectName: string; canOpenMatching: boolean; onOpenMatching: () => void }) {
   if (!signal) return <div className="loading-state">Loading evidence-based risk signal...</div>;
   return (
     <div className="risk-workspace page-stack">
-      <header className="workspace-heading"><div><span className="eyebrow">Evidence-based analysis</span><h1>Risk Signal Review</h1><p>Dai Tin Distribution · rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
+      <header className="workspace-heading"><div><span className="eyebrow">Evidence-based analysis</span><h1>Risk Signal Review</h1><p>{subjectName} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
       <section className="risk-summary-band">
         <div className="risk-severity"><AlertTriangle size={28} /><span><small>{signal.riskType.replace(/_/g, " ")}</small><strong>{signal.level}</strong></span></div>
         <p>{signal.summary}</p>
@@ -568,11 +568,12 @@ export function RiskWorkspace({ signal, canOpenMatching, onOpenMatching }: { sig
         </section>
         <section className="evidence-chain tool-panel">
           <div className="panel-heading"><span>Linked evidence chain</span><Database size={16} /></div>
+          {!signal.evidence.length ? <div className="empty-document-state">No visible evidence documents for this account, business and period scope.</div> : null}
           {signal.evidence.map((document, index) => (
             <div className="chain-row" key={document.id}>
               <span className="chain-index">{index + 1}</span>
               <EvidenceIcon type={document.type} />
-              <span><strong>{document.title}</strong><small>{document.facts[document.facts.length - 1]}</small></span>
+              <span><strong>{document.title}</strong><small>{document.facts[document.facts.length - 1] ?? "No visible evidence facts for this scope."}</small></span>
               <EvidenceStatusPill status={document.verificationStatus} />
             </div>
           ))}
