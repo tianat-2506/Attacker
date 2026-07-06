@@ -69,6 +69,7 @@ import {
 } from "./components/WorkspaceViews";
 import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges, recommendations as fallbackRecommendations } from "./utils/demoData";
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
+import { invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import type {
@@ -380,6 +381,8 @@ export default function App() {
       canReadRecommendations: (verifiedCapabilities?.canReadMatchRun ?? activeAccount.allowedViews.includes("matching")) || Boolean(verifiedCapabilities?.canReadGraph)
     };
   }, [activeAccount, verifiedCapabilities]);
+  const selectedInvoiceId = useMemo(() => invoiceIdForWorkspace(activeAccount, selectedId), [activeAccount, selectedId]);
+  const canRequestInvoiceWorkspace = dataPermissions.canReadInvoice && allowedViewIds.includes("invoice");
   const scopedCompanyNodes = useMemo(() => scopedBusinessNodesForAccount(activeAccount, allNodes), [activeAccount, allNodes]);
   const canReadSelectedBusiness = useMemo(() => accountCanReadOwnBusiness(activeAccount, selectedId), [activeAccount, selectedId]);
   const accessByBusinessId = useMemo(() => Object.fromEntries(allNodes.map((node) => [node.id, demoAccessDecisionFor(activeAccount, node.id, connectionRequest)])), [activeAccount, allNodes, connectionRequest]);
@@ -531,17 +534,40 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
+    if (!canRequestInvoiceWorkspace) {
+      setInvoice(null);
+      setInvoiceAccessNotice(null);
+      return () => { mounted = false; };
+    }
+    if (!selectedInvoiceId) {
+      setInvoice(null);
+      setInvoiceAccessNotice("No invoice register item is mapped to the selected organization. Choose a seller or buyer with invoice records.");
+      return () => { mounted = false; };
+    }
+    setInvoice(null);
+    setInvoiceAccessNotice(null);
+    getInvoiceVerification(selectedInvoiceId)
+      .then((invoiceData) => {
+        if (!mounted) return;
+        setInvoice(invoiceData);
+        setInvoiceAccessNotice(null);
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setInvoice(null);
+        setInvoiceAccessNotice(`Invoice ${selectedInvoiceId} requires seller/buyer party membership or explicit invoice-claim consent.`);
+      });
+    return () => { mounted = false; };
+  }, [activeAccount.id, canRequestInvoiceWorkspace, selectedInvoiceId]);
+
+  useEffect(() => {
+    let mounted = true;
     setApiMode("loading");
     async function loadApplication() {
-      let invoiceNotice: string | null = null;
-      const [graph, scenarioData, dashboardData, invoiceData, auditData] = await Promise.all([
+      const [graph, scenarioData, dashboardData, auditData] = await Promise.all([
         dataPermissions.canReadGraph ? getGraph() : Promise.resolve({ nodes: fallbackBusinesses, edges: fallbackEdges, fallback: false }),
         getScenario(),
         getDashboard(),
-        dataPermissions.canReadInvoice ? getInvoiceVerification("INV-0242").catch(() => {
-          invoiceNotice = "Invoice register access requires seller/buyer party membership or explicit invoice-claim consent.";
-          return null;
-        }) : Promise.resolve(null),
         canReadOps ? getAudit() : Promise.resolve(null)
       ]);
       if (!mounted) return;
@@ -549,8 +575,6 @@ export default function App() {
       setAllEdges(graph.edges);
       setScenario(scenarioData);
       setDashboard(dashboardData);
-      setInvoice(invoiceData);
-      setInvoiceAccessNotice(invoiceNotice);
       setAudit(auditData);
       const opsData = canReadOps ? await getAdminOps("BIZ-009").catch(() => null) : null;
       if (!mounted) return;
@@ -559,7 +583,7 @@ export default function App() {
     }
     loadApplication();
     return () => { mounted = false; };
-  }, [activeAccount.id, canReadOps, dataPermissions.canReadGraph, dataPermissions.canReadInvoice]);
+  }, [activeAccount.id, canReadOps, dataPermissions.canReadGraph]);
 
   useEffect(() => {
     let mounted = true;
