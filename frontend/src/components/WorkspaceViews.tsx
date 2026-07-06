@@ -62,7 +62,7 @@ import type {
   SupplyMapRegistration,
   SupplyEdge
 } from "../types";
-import { accessStatusLabel, canShowSensitiveCompanyData } from "../utils/accessDecision";
+import { accessStatusLabel, canShowSensitiveCompanyData, recommendationComponentsForAccess, restrictedRecommendationComponentCount } from "../utils/accessDecision";
 import {
   CONNECTION_REQUEST_FILTERS,
   canActivateConnection,
@@ -620,7 +620,7 @@ export function MatchingWorkspace({ recommendations, request, buyerName, disrupt
           <h1>Alternative Supplier Shortlist</h1>
           <p>Buyer: {buyerName} / disrupted supplier: {disruptedSupplierName} / period {selectedPeriod}</p>
         </div>
-        <span className="qualification-badge"><ShieldCheck size={16} />Qualified candidates only</span>
+        <span className="qualification-badge"><ShieldCheck size={16} />Review-gated shortlist</span>
       </header>
       <section className="matching-criteria">
         {[["Product/spec", "25%"], ["Capacity", "20%"], ["Distance", "15%"], ["Financial health", "15%"], ["Reliability", "10%"], ["Payment term", "10%"]].map(([label, weight]) => <div key={label}><span>{label}</span><strong>{weight}</strong></div>)}
@@ -633,16 +633,19 @@ export function MatchingWorkspace({ recommendations, request, buyerName, disrupt
         ) : null}
         {recommendations.map((recommendation, index) => {
           const access = accessByBusinessId[recommendation.supplierId];
+          const visibleComponents = recommendationComponentsForAccess(recommendation.components, access);
+          const restrictedComponentCount = restrictedRecommendationComponentCount(recommendation.components, access);
           const periodLabel = recommendationPeriodLabel(recommendation, selectedPeriod);
           return (
             <article className={index === 0 ? "supplier-card best-match" : "supplier-card"} key={recommendation.supplierId}>
               <header><div>{index === 0 ? <span className="best-label">Best fit</span> : <span className="rank-label">#{index + 1}</span>}<h2>{recommendation.supplierName}</h2><p>{recommendation.leadTimeDays} day expected lead time / period {periodLabel}</p></div><span className="match-score"><strong>{recommendation.score}</strong><small>/100</small></span></header>
               <div className="supplier-access-strip"><span className={`access-badge ${accessTone(access?.status ?? "masked")}`}>{(access?.status ?? "masked").replace("_", " ")}</span><small>{access?.reason ?? "Cross-organization data is masked until consent is granted."}</small></div>
               <div className="component-bars">
-                {Object.entries(recommendation.components).slice(0, 6).map(([label, value]) => <div key={label}><span>{label.replace(/_/g, " ")}</span><i><b style={{ width: `${Math.min(100, value)}%` }} /></i><strong>{Math.round(value)}</strong></div>)}
+                {visibleComponents.slice(0, 6).map(([label, value]) => <div key={label}><span>{label.replace(/_/g, " ")}</span><i><b style={{ width: `${Math.min(100, value)}%` }} /></i><strong>{Math.round(value)}</strong></div>)}
+                {restrictedComponentCount ? <div><span>restricted metrics</span><i><b style={{ width: "100%" }} /></i><strong>{restrictedComponentCount}</strong></div> : null}
               </div>
               <div className="reason-chips">{recommendation.reasons.map((reason) => <span key={reason}><CheckCircle2 size={13} />{reason}</span>)}</div>
-              <div className="tradeoff"><Info size={14} /><span>{access?.status === "pending_consent" ? "Introduction requested; contact and commercial terms remain hidden until supplier consent." : index === 0 ? "Strong product and capacity fit; supplier consent still required." : index === 1 ? "Shorter route, but payment terms require review." : "Useful split-order option; lower capacity headroom."}</span></div>
+              <div className="tradeoff"><Info size={14} /><span>{restrictedComponentCount ? "Commercial, financial, reliability and payment-term components remain hidden until relationship and consent checks pass." : access?.status === "pending_consent" ? "Introduction requested; contact and commercial terms remain hidden until supplier consent." : index === 0 ? "Strong product and capacity fit; supplier consent still required." : index === 1 ? "Shorter route, but payment terms require review." : "Useful split-order option; lower capacity headroom."}</span></div>
               <button className="primary-button" type="button" disabled={!canConnect || access?.status === "pending_consent"} onClick={() => onConnect(recommendation.supplierId)}><Send size={16} />{!canConnect ? "Review only" : access?.status === "pending_consent" ? "Consent pending" : "Request introduction"}</button>
             </article>
           );

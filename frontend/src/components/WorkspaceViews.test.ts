@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { accessStatusLabel, canRequestRiskSignal, canShowSensitiveCompanyData } from "../utils/accessDecision";
+import { accessStatusLabel, canRequestRiskSignal, canShowSensitiveCompanyData, recommendationComponentsForAccess, restrictedRecommendationComponentCount } from "../utils/accessDecision";
 import {
   connectionRequestFilterLabel,
   connectionRequestIsActionable,
@@ -58,6 +58,13 @@ describe("access decision helpers", () => {
     expect(canRequestRiskSignal({ status: "masked", allowedFields: ["masked profile", "high-level risk signal"] })).toBe(true);
     expect(canRequestRiskSignal({ status: "masked", allowedFields: ["masked profile"] })).toBe(false);
     expect(canRequestRiskSignal({ status: "pending_consent", allowedFields: ["shortlist rationale"] })).toBe(false);
+  });
+
+  it("hides sensitive recommendation components until consented access is available", () => {
+    const components = { product_spec_fit: 95, distance_score: 82, financial_health: 64, payment_term_fit: 40, delivery_reliability: 76 };
+    expect(recommendationComponentsForAccess(components, { status: "masked" }).map(([label]) => label)).toEqual(["product_spec_fit", "distance_score"]);
+    expect(restrictedRecommendationComponentCount(components, { status: "masked" })).toBe(3);
+    expect(recommendationComponentsForAccess(components, { status: "consented" })).toHaveLength(5);
   });
 
   it("renders full access status labels instead of only the first underscore", () => {

@@ -19,6 +19,11 @@
 
 ## Latest Slice
 
+- Matching component masking slice completed.
+- Matching cards now hide commercial/financial/reliability/payment-term component scores when supplier access is `masked` or `pending_consent`.
+- Masked recommendation cards still show low-sensitivity product/distance fit and a restricted-metrics count.
+- Matching header wording changed from `Qualified candidates only` to `Review-gated shortlist`.
+- Added helper tests for recommendation component visibility by access status.
 - Risk UI evidence-scope display completed.
 - Frontend `RiskSignal` now carries `evidenceScope`, `policyDecisionId`, and `auditEventId` from `/risk-signal`.
 - Risk workspace now labels blocked-evidence responses as `High-level advisory`, not evidence-based analysis.
@@ -131,13 +136,15 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 33 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 34 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
-  - `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 11 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 33 tests.
+  - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 14 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 34 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
+  - Initial same build command once printed `built` then exited 1 due Windows Node `UV_HANDLE_CLOSING`; rerun after deleting `.vite-check-dist` passed.
+  - Recommendation helper test confirms masked cards expose product/distance only and count restricted metrics.
   - Risk API client test confirms `evidence_scope`, `policy_decision_id`, and `audit_event_id` map into `RiskSignal`.
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
