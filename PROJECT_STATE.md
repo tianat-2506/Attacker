@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Invoice selection scope slice completed.
+- App no longer boots by always reading `INV-0242`; invoice review now resolves a demo invoice candidate from active account plus selected business and requests it only when the Invoice view is allowed.
+- Added `frontend/src/utils/invoiceSelection.ts` and tests for selected org, own org fallback and no-mapped-invoice lockout.
 - Invoice assurance review-gate slice completed.
 - Invoice workspace no longer hardcodes `GUA-001`, guarantee amount, issuer or expiry as a visible linked financial assurance.
 - Invoice financial assurance band now says guarantee/collateral links require scan-cleared evidence, consented access and human review, with policy-gated wording for restricted scopes.
@@ -150,13 +153,14 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 37 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 41 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
+  - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 37 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 41 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
   - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
   - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.
