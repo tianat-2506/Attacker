@@ -305,6 +305,7 @@ export default function App() {
   const [detail, setDetail] = useState<BusinessDetail | null>(null);
   const [evidence, setEvidence] = useState<EvidenceVault | null>(null);
   const [riskSignal, setRiskSignal] = useState<RiskSignal | null>(null);
+  const [riskAccessNotice, setRiskAccessNotice] = useState<string | null>(null);
   const [finance, setFinance] = useState<FinanceData | null>(null);
   const [financeAccessNotice, setFinanceAccessNotice] = useState<string | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>(fallbackRecommendations);
@@ -372,6 +373,7 @@ export default function App() {
       canReadEvidence: verifiedCapabilities?.canReadEvidence ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "sme_submitter", "supplier_admin", "reviewer", "lender", "org_admin"]),
       canReadFinance: verifiedCapabilities?.canReadFinancials ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "sme_submitter", "supplier_admin", "reviewer", "lender", "org_admin"]),
       canReadInvoice: verifiedCapabilities?.canReadInvoice ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "sme_submitter", "supplier_admin", "lender", "org_admin"]),
+      canReadRiskRun: verifiedCapabilities?.canReadRiskRun ?? activeAccount.allowedViews.includes("risk"),
       canReadConnectionRequests: verifiedCapabilities?.canReadConnectionRequest ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "reviewer", "buyer_admin", "supplier_admin", "org_admin"]),
       canDecideConnectionRequest: verifiedCapabilities?.canDecideConnectionRequest ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "reviewer", "supplier_admin", "org_admin"]),
       canReadRecommendations: (verifiedCapabilities?.canReadMatchRun ?? activeAccount.allowedViews.includes("matching")) || Boolean(verifiedCapabilities?.canReadGraph)
@@ -431,6 +433,7 @@ export default function App() {
     setDetail(null);
     setEvidence(null);
     setRiskSignal(null);
+    setRiskAccessNotice(null);
     setFinance(null);
     setFinanceAccessNotice(null);
     setInvoiceAccessNotice(null);
@@ -589,19 +592,28 @@ export default function App() {
     setEvidenceViewError(null);
     setViewingEvidenceVersionId(null);
     setRiskSignal(null);
+    setRiskAccessNotice(null);
     setFinance(null);
     setFinanceAccessNotice(null);
     const shouldLoadBusiness = dataPermissions.canReadBusiness && canReadSelectedBusiness;
     const shouldLoadEvidence = dataPermissions.canReadEvidence && canReadSelectedBusiness;
+    const shouldLoadRisk = dataPermissions.canReadRiskRun && canReadSelectedBusiness;
     const shouldLoadFinance = dataPermissions.canReadFinance && canReadSelectedBusiness;
+    let riskNotice: string | null = null;
     let financeNotice: string | null = null;
+    if (dataPermissions.canReadRiskRun && !canReadSelectedBusiness) {
+      riskNotice = "Risk detail is restricted to own organization or active relationship/consent scope.";
+    }
     if (dataPermissions.canReadFinance && !canReadSelectedBusiness) {
       financeNotice = "Financial data is restricted to own organization or active financial-summary consent.";
     }
     Promise.all([
       shouldLoadBusiness ? getBusinessDetail(selectedId, selectedPeriod).catch(() => null) : Promise.resolve(null),
       shouldLoadEvidence ? getEvidence(selectedId, selectedPeriod).catch(() => null) : Promise.resolve(null),
-      shouldLoadEvidence ? getRiskSignal(selectedId, selectedPeriod).catch(() => null) : Promise.resolve(null),
+      shouldLoadRisk ? getRiskSignal(selectedId, selectedPeriod).catch(() => {
+        riskNotice = "Risk signal access was denied or unavailable for this account scope.";
+        return null;
+      }) : Promise.resolve(null),
       shouldLoadFinance ? getFinance(selectedId, selectedPeriod).catch(() => {
         financeNotice = "Financial data is restricted to own organization or active financial-summary consent.";
         return null;
@@ -612,6 +624,7 @@ export default function App() {
         setDetail(detailData);
         setEvidence(evidenceData);
         setRiskSignal(riskData);
+        setRiskAccessNotice(riskNotice);
         setFinance(financeData);
         setFinanceAccessNotice(financeNotice);
       });
@@ -1219,7 +1232,7 @@ export default function App() {
           {activeView === "companies" ? <CompaniesWorkspace nodes={scopedCompanyNodes} selectedId={selectedId} onSelect={setSelectedId} detail={detail} evidence={evidence} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId) : []} accessDecision={selectedAccessDecision} downloadTicket={evidenceDownloadTicket} viewError={evidenceViewError} viewingEvidenceVersionId={viewingEvidenceVersionId} onViewEvidence={handleViewEvidenceDocument} onCloseDownloadTicket={() => { setEvidenceDownloadTicket(null); setEvidenceViewError(null); }} /> : null}
           {activeView === "intake" ? <DataIntakeWorkspace nodes={intakePermissions.canApproveDraft ? allNodes : scopedCompanyNodes} selectedId={selectedId} selectedPeriod={selectedPeriod} periods={periods} submission={intakeSubmission} snapshot={periodSnapshot} importBatch={importBatch} errorReport={intakeErrorReport} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId && item.periodKey === selectedPeriod) : []} vaultDocuments={dataPermissions.canReadEvidence && canReadSelectedBusiness ? evidence?.documents ?? [] : []} evidenceScanJob={evidenceScanJob} permittedBusinessIds={permittedIntakeBusinessIds} actionPermissions={intakePermissions} reviewQueue={reviewQueue} reviewQueueNotice={reviewQueueNotice} busy={intakeBusy} onSelect={setSelectedId} onPeriodChange={setSelectedPeriod} onCreateDraft={handleCreateDraft} onSaveDraft={handleSaveDraft} onValidate={handleValidateDraft} onSubmit={handleSubmitDraft} onReviewDecision={handleReviewDecision} onReviewQueueSelect={handleReviewQueueSelect} onImportCsv={handleImportCsv} onEvidenceUpload={handleEvidenceUpload} onRunEvidenceScan={handleRunEvidenceScan} onLoadErrorReport={handleLoadErrorReport} /> : null}
           {activeView === "onboarding" ? <OnboardingWorkspace account={activeAccount} registrations={visibleSupplyMapRegistrations} connectionRequests={connectionRequests} canCreate={canCreateOnboarding} canReview={canReviewOnboarding} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onCreate={handleCreateSupplyMapRegistration} onDecision={handleSupplyMapRegistrationDecision} onConnectionDecision={handleConnectionRequestDecision} /> : null}
-          {activeView === "risk" ? <RiskWorkspace signal={riskSignal} subjectName={selected?.name ?? riskSignal?.businessId ?? selectedId} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
+          {activeView === "risk" ? <RiskWorkspace signal={riskSignal} subjectName={selected?.name ?? riskSignal?.businessId ?? selectedId} accessNotice={riskAccessNotice} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
           {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={selected?.name ?? selectedId} selectedPeriod={selectedPeriod} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
           {activeView === "finance" ? <FinanceWorkspace finance={finance} account={activeAccount} accessNotice={financeAccessNotice} /> : null}
           {activeView === "invoice" ? <InvoiceWorkspace invoice={invoice} account={activeAccount} accessNotice={invoiceAccessNotice} /> : null}

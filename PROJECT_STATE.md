@@ -19,6 +19,12 @@
 
 ## Latest Slice
 
+- Risk signal trust-boundary slice completed.
+- Backend `risk_signal_payload` now authorizes `read_risk_run` separately from `read_evidence`.
+- If an actor can read risk but cannot read linked evidence, backend returns a high-level advisory signal with `evidence_scope="evidence_blocked_by_policy"` and no evidence documents.
+- Full evidence-backed risk signal remains available only when evidence policy passes; all risk reads now write `RISK_SIGNAL_VIEWED` with policy/audit ids.
+- Frontend Risk workspace now shows a policy-gated locked state when the selected business is outside account scope, instead of indefinite loading.
+- Frontend data permissions now track `canReadRiskRun` separately from evidence/finance permissions.
 - Dashboard alert subject routing completed.
 - Backend dashboard alerts now carry `business_id` for the affected demo business.
 - Frontend maps dashboard alert `business_id` to `businessId`; fallback alerts carry the same subject ids.
@@ -114,7 +120,7 @@
 
 ## Verification
 
-- Backend full: `python -B -m unittest discover -s backend\tests` passed, 129 tests, 2 skipped.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 32 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
@@ -123,9 +129,11 @@
   - `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 11 tests.
   - `npm.cmd exec vitest -- run --cache=false` passed, 32 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
+  - Risk workspace typecheck confirms `accessNotice` locked-state prop path.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
 - Latest targeted backend proof:
-  - `python -B -m unittest discover -s backend\tests` passed, 129 tests, 2 skipped.
+  - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_risk_signal_can_be_high_level_without_evidence_access backend.tests.test_database_service.DatabaseServiceTests.test_risk_signal_is_backed_by_procurement_evidence` passed.
+  - `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
   - `python -B -m unittest backend.tests.test_database_service.DatabaseServiceTests.test_recommendations_are_shortlist_not_disrupted_supplier` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_selected_period_context_does_not_silently_fallback_for_finance_or_evidence` passed.
 - Live connection inbox smoke request `REQ-6BF5994C8C52`:

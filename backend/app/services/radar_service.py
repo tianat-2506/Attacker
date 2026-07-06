@@ -60,6 +60,7 @@ DENIED_RESOURCE_EVENTS = {
     "read_evidence": "EVIDENCE_READ_DENIED",
     "read_financials": "FINANCIALS_READ_DENIED",
     "read_invoice": "INVOICE_READ_DENIED",
+    "read_risk_run": "RISK_SIGNAL_READ_DENIED",
 }
 
 
@@ -722,10 +723,71 @@ class VietSupplyRadarService:
         }
 
     def risk_signal_payload(self, business_id: str, context: RequestContext | None = None, period_key: str | None = None) -> dict[str, Any]:
+        active_context = _context(context)
+        decision = self._require_resource_access(
+            "read_risk_run",
+            active_context,
+            resource_type="risk_signal",
+            resource_id=business_id,
+            resource_organization_id=business_id,
+            data_classification="partner_visible",
+            consent_scope="risk_signal",
+            allow_relationship=True,
+            denied_event_type="RISK_SIGNAL_READ_DENIED",
+        )
+        self.audit.record_policy_decision(active_context, decision)
         business = self.businesses.get(business_id)
         if business is None:
             raise NotFoundError(business_id)
-        evidence = self.evidence_payload(business_id, context=context, period_key=period_key)["documents"]
+        evidence_scope = "linked_evidence_visible"
+        try:
+            evidence = self.evidence_payload(business_id, context=active_context, period_key=period_key)["documents"]
+        except AccessDeniedError:
+            evidence_scope = "evidence_blocked_by_policy"
+            evidence = []
+        if evidence_scope == "evidence_blocked_by_policy":
+            score = business.supply_risk_score
+            level = "HIGH" if score >= 70 else "MEDIUM" if score >= 40 else "LOW"
+            event_id = self.audit.record_context(
+                "RISK_SIGNAL_VIEWED",
+                active_context,
+                business_id,
+                policy_decision=decision,
+                payload={"period_key": period_key, "evidence_scope": evidence_scope},
+            )
+            return {
+                "signal_id": f"RISK-{business_id}-HIGH-LEVEL",
+                "business_id": business_id,
+                "period_key": period_key,
+                "risk_type": "HIGH_LEVEL_SUPPLY_RISK",
+                "level": level,
+                "confidence": 52,
+                "summary": "High-level supply risk indicator is visible, but linked evidence and commercial details are blocked by policy for this account.",
+                "triggers": [
+                    {
+                        "rule": "Supply risk band",
+                        "observed": score,
+                        "threshold": 70,
+                        "result": "triggered" if score >= 70 else "not_triggered",
+                    }
+                ],
+                "evidence_ids": [],
+                "evidence": [],
+                "suggested_actions": [
+                    "Request consented evidence access before operational decisions.",
+                    "Use this as a review prompt only; do not treat it as a legal or finance conclusion.",
+                    "Escalate to a reviewer when supplier introduction or financial action is required.",
+                ],
+                "formula_version": "risk-signal-rules-v1.1",
+                "policy_decision_id": decision.decision_id,
+                "audit_event_id": event_id,
+                "evidence_scope": evidence_scope,
+                "disclaimer": (
+                    f"Advisory high-level signal for selected period {period_key}; linked evidence is not visible under this account scope. It is not a legal breach finding, credit decision or instruction to replace a supplier."
+                    if period_key
+                    else "Advisory high-level signal; linked evidence is not visible under this account scope. It is not a legal breach finding, credit decision or instruction to replace a supplier."
+                ),
+            }
         late_orders = [item for item in evidence if item["type"] == "PURCHASE_ORDER" and "LATE" in item["status"]]
         overdue_orders = [item for item in evidence if item["type"] == "PURCHASE_ORDER" and "OVERDUE" in item["status"]]
         delayed_notes = [
@@ -735,6 +797,13 @@ class VietSupplyRadarService:
         ]
         expiring_certificates = [item for item in evidence if item["type"] == "CERTIFICATION" and item["status"] == "EXPIRING_SOON"]
         evidence_ids = [item["id"] for item in late_orders + overdue_orders + delayed_notes + expiring_certificates]
+        event_id = self.audit.record_context(
+            "RISK_SIGNAL_VIEWED",
+            active_context,
+            business_id,
+            policy_decision=decision,
+            payload={"period_key": period_key, "evidence_scope": evidence_scope},
+        )
         return {
             "signal_id": f"RISK-{business_id}-DELIVERY",
             "business_id": business_id,
@@ -756,6 +825,9 @@ class VietSupplyRadarService:
                 "Require a human approver before any commercial action.",
             ],
             "formula_version": "risk-signal-rules-v1.1",
+            "policy_decision_id": decision.decision_id,
+            "audit_event_id": event_id,
+            "evidence_scope": evidence_scope,
             "disclaimer": (
                 f"Advisory signal for selected period {period_key} based on synthetic evidence. It is not a legal breach finding, credit decision or instruction to replace a supplier."
                 if period_key

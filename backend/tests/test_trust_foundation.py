@@ -139,6 +139,26 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertNotIn("overview", reviewer_me["workspace_access"]["allowed_views"])
         self.assertEqual(reviewer_me["workspace_access"]["default_view"], "intake")
 
+    def test_risk_signal_can_be_high_level_without_evidence_access(self) -> None:
+        buyer_context = context_from_headers(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="buyer-admin-009",
+            actor_role="buyer_admin",
+            purpose="supplier_risk_review",
+            scopes="demo:read buyer:intro",
+            app_mode="demo",
+        )
+
+        signal = self.service.risk_signal_payload("BIZ-009", context=buyer_context, period_key="2026-06")
+
+        self.assertEqual(signal["business_id"], "BIZ-009")
+        self.assertEqual(signal["risk_type"], "HIGH_LEVEL_SUPPLY_RISK")
+        self.assertEqual(signal["evidence_scope"], "evidence_blocked_by_policy")
+        self.assertEqual(signal["evidence"], [])
+        self.assertIn("not a legal breach finding", signal["disclaimer"])
+        self.assertTrue(any(event["event_type"] == "RISK_SIGNAL_VIEWED" for event in self.service.audit_payload()["events"]))
+
     def test_oidc_provider_does_not_fallback_to_dev_jwt_without_jwks(self) -> None:
         token = issue_dev_jwt(subject="user-biz-009", organization_id="BIZ-009", roles=["sme_submitter"])
         with patch.dict("os.environ", {"AUTH_PROVIDER": "oidc"}, clear=False):

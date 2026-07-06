@@ -548,8 +548,21 @@ export function CompaniesWorkspace({
   );
 }
 
-export function RiskWorkspace({ signal, subjectName, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; subjectName: string; canOpenMatching: boolean; onOpenMatching: () => void }) {
-  if (!signal) return <div className="loading-state">Loading evidence-based risk signal...</div>;
+function RiskLockedState({ subjectName, message }: { subjectName: string; message?: string | null }) {
+  return (
+    <div className="risk-workspace page-stack">
+      <header className="workspace-heading"><div><span className="eyebrow">Policy-gated analysis</span><h1>Risk Signal Review</h1><p>{subjectName}</p></div><span className="qualification-badge"><ShieldAlert size={16} />Consent required</span></header>
+      <section className="tool-panel access-empty-state">
+        <ShieldAlert size={22} />
+        <span><strong>No risk signal detail is available for this account scope.</strong><small>{message ?? "Risk detail requires own-organization access, an active relationship, or scoped consent."}</small></span>
+      </section>
+      <DataNotice>Risk indicators are advisory review prompts only; they are not legal findings, credit decisions or supplier replacement instructions.</DataNotice>
+    </div>
+  );
+}
+
+export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; subjectName: string; accessNotice?: string | null; canOpenMatching: boolean; onOpenMatching: () => void }) {
+  if (!signal) return accessNotice ? <RiskLockedState subjectName={subjectName} message={accessNotice} /> : <div className="loading-state">Loading evidence-based risk signal...</div>;
   return (
     <div className="risk-workspace page-stack">
       <header className="workspace-heading"><div><span className="eyebrow">Evidence-based analysis</span><h1>Risk Signal Review</h1><p>{subjectName} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
