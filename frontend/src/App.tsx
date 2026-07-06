@@ -710,6 +710,11 @@ export default function App() {
     setActiveView(allowedViewIds.includes(view) ? view : defaultViewId);
   }
 
+  function handleOpenRisk(businessId?: string | null) {
+    if (businessId) setSelectedId(businessId);
+    openView("risk");
+  }
+
   async function handleConnectionRequest(supplierId: string) {
     if (!canRequestIntroduction) return;
     try {
@@ -1209,7 +1214,7 @@ export default function App() {
         <div className="view-heading-mobile"><span>{accessibleNavItems.find((item) => item.id === activeView)?.label}</span><i>{activeAccount.label}</i></div>
 
         <div className="view-content">
-          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={() => openView("risk")} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
+          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
           {activeView === "map" ? <MapWorkspace {...networkProps} selected={selected} detail={detail} accessDecision={selectedAccessDecision} /> : null}
           {activeView === "companies" ? <CompaniesWorkspace nodes={scopedCompanyNodes} selectedId={selectedId} onSelect={setSelectedId} detail={detail} evidence={evidence} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId) : []} accessDecision={selectedAccessDecision} downloadTicket={evidenceDownloadTicket} viewError={evidenceViewError} viewingEvidenceVersionId={viewingEvidenceVersionId} onViewEvidence={handleViewEvidenceDocument} onCloseDownloadTicket={() => { setEvidenceDownloadTicket(null); setEvidenceViewError(null); }} /> : null}
           {activeView === "intake" ? <DataIntakeWorkspace nodes={intakePermissions.canApproveDraft ? allNodes : scopedCompanyNodes} selectedId={selectedId} selectedPeriod={selectedPeriod} periods={periods} submission={intakeSubmission} snapshot={periodSnapshot} importBatch={importBatch} errorReport={intakeErrorReport} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId && item.periodKey === selectedPeriod) : []} vaultDocuments={dataPermissions.canReadEvidence && canReadSelectedBusiness ? evidence?.documents ?? [] : []} evidenceScanJob={evidenceScanJob} permittedBusinessIds={permittedIntakeBusinessIds} actionPermissions={intakePermissions} reviewQueue={reviewQueue} reviewQueueNotice={reviewQueueNotice} busy={intakeBusy} onSelect={setSelectedId} onPeriodChange={setSelectedPeriod} onCreateDraft={handleCreateDraft} onSaveDraft={handleSaveDraft} onValidate={handleValidateDraft} onSubmit={handleSubmitDraft} onReviewDecision={handleReviewDecision} onReviewQueueSelect={handleReviewQueueSelect} onImportCsv={handleImportCsv} onEvidenceUpload={handleEvidenceUpload} onRunEvidenceScan={handleRunEvidenceScan} onLoadErrorReport={handleLoadErrorReport} /> : null}

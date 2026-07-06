@@ -213,6 +213,7 @@ class VietSupplyRadarService:
                     "title": "Delivery risk signal at Dai Tin Distribution",
                     "detail": "3 reviewed purchase-order records exceeded the contracted delivery SLA.",
                     "age": "27 min",
+                    "business_id": "BIZ-005",
                 },
                 {
                     "id": "ALT-002",
@@ -220,6 +221,7 @@ class VietSupplyRadarService:
                     "title": "Certificate expiry window",
                     "detail": "HACCP evidence enters the 30-day review window.",
                     "age": "1 hr",
+                    "business_id": "BIZ-005",
                 },
                 {
                     "id": "ALT-003",
@@ -227,6 +229,7 @@ class VietSupplyRadarService:
                     "title": "Negative operating cash-flow trend",
                     "detail": "Three consecutive demo snapshots show cash out above cash in.",
                     "age": "3 hr",
+                    "business_id": "BIZ-005",
                 },
                 {
                     "id": "ALT-004",
@@ -234,6 +237,7 @@ class VietSupplyRadarService:
                     "title": "Alternative supplier pilot signal",
                     "detail": "An Phu FMCG Hub completed one on-time sample delivery.",
                     "age": "5 hr",
+                    "business_id": "BIZ-007",
                 },
             ],
             "risky_businesses": [business.to_api_node(masked=False) for business in risky],

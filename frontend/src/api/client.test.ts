@@ -15,6 +15,7 @@ import {
   getBusinessDetail,
   getConnectionRequests,
   getDataSubmissionErrorReport,
+  getDashboard,
   getEvidence,
   getFinance,
   getGraph,
@@ -165,6 +166,40 @@ describe("api client trust headers", () => {
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/evidence" && url.searchParams.get("period") === "2026-07")).toBe(true);
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/risk-signal" && url.searchParams.get("period") === "2026-07")).toBe(true);
     expect(urls.some((url) => url.pathname === "/api/v1/businesses/BIZ-005/finance" && url.searchParams.get("period") === "2026-07")).toBe(true);
+  });
+
+  it("maps dashboard alert business ids for risk navigation", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({
+      data: {
+        overview: {
+          active_companies: 62,
+          at_risk_nodes: 5,
+          affected_smes: 0,
+          supply_health_score: 72,
+          monthly_network_volume: 547000,
+          advisory_notice: "Decision support only."
+        },
+        disruption_trend: [],
+        regional_flow: [],
+        recent_alerts: [
+          {
+            id: "ALT-001",
+            severity: "high",
+            title: "Delivery risk signal at Dai Tin Distribution",
+            detail: "3 reviewed purchase-order records exceeded the contracted delivery SLA.",
+            age: "27 min",
+            business_id: "BIZ-005"
+          }
+        ],
+        risky_businesses: [],
+        data_scope: "Synthetic demonstration dataset."
+      }
+    }), { status: 200, headers: { "Content-Type": "application/json" } }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const dashboard = await getDashboard();
+
+    expect(dashboard.recentAlerts[0].businessId).toBe("BIZ-005");
   });
 
   it("adds the selected period to supplier recommendation requests", async () => {

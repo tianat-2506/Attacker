@@ -190,7 +190,7 @@ export function OverviewWorkspace({
   onSimulate: () => void;
   onReset: () => void;
   canOpenRisk: boolean;
-  onOpenRisk: () => void;
+  onOpenRisk: (businessId?: string | null) => void;
   canOpenMatching: boolean;
   onOpenMatching: () => void;
 }) {
@@ -240,9 +240,9 @@ export function OverviewWorkspace({
           </div>
 
           <section className="alerts-list" aria-label="Recent alerts">
-            <div className="list-title"><h3>Recent alerts</h3><button className="text-button" type="button" disabled={!canOpenRisk} onClick={onOpenRisk}>{canOpenRisk ? "Review risk" : "Risk unavailable"}</button></div>
+            <div className="list-title"><h3>Recent alerts</h3><button className="text-button" type="button" disabled={!canOpenRisk} onClick={() => onOpenRisk()}>{canOpenRisk ? "Review risk" : "Risk unavailable"}</button></div>
             {dashboard.recentAlerts.map((alert) => (
-              <button className="alert-row" key={alert.id} type="button" disabled={!canOpenRisk} onClick={onOpenRisk}>
+              <button className="alert-row" key={alert.id} type="button" disabled={!canOpenRisk} onClick={() => onOpenRisk(alert.businessId)}>
                 <span className={`alert-icon ${alert.severity}`}><AlertTriangle size={16} /></span>
                 <span><strong>{alert.title}</strong><small>{alert.detail}</small></span>
                 <time>{alert.age}</time>

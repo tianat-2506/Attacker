@@ -140,6 +140,7 @@ export interface AlertItem {
   title: string;
   detail: string;
   age: string;
+  businessId?: string | null;
 }
 
 export interface DashboardData {

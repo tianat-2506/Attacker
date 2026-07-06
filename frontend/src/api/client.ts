@@ -3,6 +3,7 @@ import { defaultDemoAccount, demoAccountHeaders } from "../utils/demoAccounts";
 import type {
   AdminOpsData,
   AppView,
+  AlertItem,
   AuditData,
   AuditEvent,
   AuthMe,
@@ -169,6 +170,17 @@ function apiRecommendationToCard(item: any): Recommendation {
     components: item.components ?? {},
     periodKey: item.period_key,
     advisoryNotice: item.advisory_notice
+  };
+}
+
+function apiAlertItem(item: any): AlertItem {
+  return {
+    id: item.id,
+    severity: item.severity,
+    title: item.title,
+    detail: item.detail,
+    age: item.age,
+    businessId: item.business_id ?? item.businessId ?? null
   };
 }
 
@@ -395,7 +407,7 @@ export async function getDashboard(): Promise<DashboardData> {
       },
       disruptionTrend: (data.disruption_trend ?? []).map((item: any) => ({ month: item.month, total: Number(item.total), highCritical: Number(item.high_critical) })),
       regionalFlow: (data.regional_flow ?? []).map((item: any) => ({ region: item.region, volume: Number(item.volume), share: Number(item.share) })),
-      recentAlerts: data.recent_alerts ?? [],
+      recentAlerts: (data.recent_alerts ?? []).map(apiAlertItem),
       riskyBusinesses: (data.risky_businesses ?? []).map(apiNodeToBusiness),
       dataScope: data.data_scope
     };
@@ -404,7 +416,7 @@ export async function getDashboard(): Promise<DashboardData> {
       overview: fallbackOverview,
       disruptionTrend: [{ month: "Dec", total: 18, highCritical: 4 }, { month: "Jan", total: 23, highCritical: 6 }, { month: "Feb", total: 21, highCritical: 5 }, { month: "Mar", total: 31, highCritical: 8 }, { month: "Apr", total: 27, highCritical: 6 }, { month: "May", total: 24, highCritical: 7 }],
       regionalFlow: [{ region: "TP.HCM", volume: 210000, share: 38.4 }, { region: "Binh Duong", volume: 156000, share: 28.5 }, { region: "Dong Nai", volume: 108000, share: 19.7 }, { region: "Lam Dong", volume: 73000, share: 13.4 }],
-      recentAlerts: [{ id: "ALT-001", severity: "high", title: "Delivery risk signal at Dai Tin Distribution", detail: "3 reviewed purchase-order records exceeded the contracted delivery SLA.", age: "27 min" }, { id: "ALT-002", severity: "medium", title: "Certificate expiry window", detail: "HACCP evidence enters the 30-day review window.", age: "1 hr" }, { id: "ALT-003", severity: "info", title: "Alternative supplier pilot signal", detail: "An Phu FMCG Hub completed one on-time sample delivery.", age: "5 hr" }],
+      recentAlerts: [{ id: "ALT-001", severity: "high", title: "Delivery risk signal at Dai Tin Distribution", detail: "3 reviewed purchase-order records exceeded the contracted delivery SLA.", age: "27 min", businessId: "BIZ-005" }, { id: "ALT-002", severity: "medium", title: "Certificate expiry window", detail: "HACCP evidence enters the 30-day review window.", age: "1 hr", businessId: "BIZ-005" }, { id: "ALT-003", severity: "info", title: "Alternative supplier pilot signal", detail: "An Phu FMCG Hub completed one on-time sample delivery.", age: "5 hr", businessId: "BIZ-007" }],
       riskyBusinesses: [...businesses].sort((a, b) => b.risk - a.risk).slice(0, 5),
       dataScope: "Synthetic fallback dataset."
     }));
