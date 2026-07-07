@@ -78,6 +78,7 @@ import {
   canLoadConnectionRequestsForView,
   canLoadEvidenceVaultForView,
   canLoadFinanceForView,
+  canLoadGraphForView,
   canLoadIntakePeriodContextForView,
   canLoadRecommendationsForView,
   canLoadReviewQueueForView,
@@ -581,7 +582,7 @@ export default function App() {
     setApiMode("loading");
     async function loadApplication() {
       const [graph, scenarioData, dashboardData] = await Promise.all([
-        dataPermissions.canReadGraph ? getGraph() : Promise.resolve({ nodes: fallbackBusinesses, edges: fallbackEdges, fallback: false }),
+        canLoadGraphForView(activeView, dataPermissions.canReadGraph) ? getGraph() : Promise.resolve({ nodes: fallbackBusinesses, edges: fallbackEdges, fallback: false }),
         getScenario(),
         getDashboard()
       ]);
@@ -594,7 +595,7 @@ export default function App() {
     }
     loadApplication();
     return () => { mounted = false; };
-  }, [activeAccount.id, dataPermissions.canReadGraph]);
+  }, [activeAccount.id, activeView, dataPermissions.canReadGraph]);
 
   useEffect(() => {
     let mounted = true;

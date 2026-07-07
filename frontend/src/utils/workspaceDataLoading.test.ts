@@ -5,6 +5,7 @@ import {
   canLoadConnectionRequestsForView,
   canLoadEvidenceVaultForView,
   canLoadFinanceForView,
+  canLoadGraphForView,
   canLoadIntakePeriodContextForView,
   canLoadRecommendationsForView,
   canLoadReviewQueueForView,
@@ -16,6 +17,10 @@ describe("workspace data loading guardrails", () => {
   it("loads sensitive workspace data only for the active view that needs it", () => {
     expect(canLoadBusinessDetailForView("map", true, true)).toBe(true);
     expect(canLoadBusinessDetailForView("overview", true, true)).toBe(false);
+
+    expect(canLoadGraphForView("overview", true)).toBe(true);
+    expect(canLoadGraphForView("map", true)).toBe(true);
+    expect(canLoadGraphForView("finance", true)).toBe(false);
 
     expect(canLoadEvidenceVaultForView("companies", true, true)).toBe(true);
     expect(canLoadEvidenceVaultForView("intake", true, true)).toBe(true);
@@ -49,6 +54,7 @@ describe("workspace data loading guardrails", () => {
 
   it("keeps all loaders closed when role or subject scope is denied", () => {
     expect(canLoadBusinessDetailForView("companies", true, false)).toBe(false);
+    expect(canLoadGraphForView("map", false)).toBe(false);
     expect(canLoadEvidenceVaultForView("companies", false, true)).toBe(false);
     expect(canLoadRiskSignalForView("risk", true, false)).toBe(false);
     expect(canLoadFinanceForView("finance", false, true)).toBe(false);

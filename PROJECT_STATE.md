@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Graph bootstrap lazy-load guardrail slice completed.
+- Supply graph now loads during bootstrap only for Overview, Map, Companies and Matching workspaces; Finance/Audit/Intake direct URLs keep fallback graph state until graph is needed.
+- Added `canLoadGraphForView` coverage to prevent commercial graph reads from non-graph workspaces.
 - Data Intake review queue lazy-load guardrail slice completed.
 - Review queue now loads only while Data Intake is active and the account can approve drafts.
 - Direct review refresh helper is also gated by the active Data Intake workspace.

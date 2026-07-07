@@ -8,6 +8,10 @@ export function canLoadBusinessDetailForView(activeView: AppView, canReadBusines
   return viewIs(activeView, ["map", "companies"]) && canReadBusiness && canReadSelectedBusiness;
 }
 
+export function canLoadGraphForView(activeView: AppView, canReadGraph: boolean) {
+  return viewIs(activeView, ["overview", "map", "companies", "matching"]) && canReadGraph;
+}
+
 export function canLoadEvidenceVaultForView(activeView: AppView, canReadEvidence: boolean, canReadSelectedBusiness: boolean) {
   return viewIs(activeView, ["companies", "intake"]) && canReadEvidence && canReadSelectedBusiness;
 }
