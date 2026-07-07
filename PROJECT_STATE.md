@@ -35,18 +35,16 @@
 
 ## Latest Slice
 
-- Period snapshot reviewer-history slice completed.
-- SQLite and Postgres pilot period snapshots now expose `review_decision` metadata for approved submissions.
-- Frontend `PeriodSnapshot` maps `reviewDecision` and Data Intake shows the reviewer decision/note in the approved snapshot panel.
-- Empty/no-approved snapshots return `review_decision=null`.
+- SQLite period snapshot evidence-version provenance slice completed.
+- Approved snapshot evidence rows now include latest `evidence_version_id`, `object_version`, hash/content metadata and scan status when a Vault upload/version exists.
+- Snapshot evidence still strips `object_key`; form/CSV evidence without an object version keeps existing document-level fallback metadata.
+- Regression coverage proves uploaded clean `GUARANTEE` evidence exposes version metadata without leaking object storage keys.
 
 ## Verification
 
-- Latest targeted backend: periodic intake approve/reject snapshot tests and Postgres pilot period snapshot tests passed.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
+- Latest targeted backend: uploaded-evidence snapshot and manual snapshot tests passed.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 137 tests, 2 skipped.
-- Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
+- Latest frontend baseline from prior slice: `npm.cmd exec tsc -- --noEmit` and `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 
 ## Hard Boundaries
 
@@ -59,7 +57,7 @@
 - Continue functional completion over UI polish:
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Continue tightening Intake/Vault provenance for evidence object versions and reviewer history UI/history drawer.
+- Continue tightening reviewer history UI/history drawer and Postgres live-readiness proof.
 - Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
 - Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
 

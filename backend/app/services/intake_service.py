@@ -747,9 +747,25 @@ class PeriodicIntakeService:
             ).fetchall()
             evidence = connection.execute(
                 """
-                SELECT * FROM evidence_documents
-                WHERE organization_id = ? AND reporting_period_id = ?
-                ORDER BY created_at DESC
+                SELECT
+                  document.*,
+                  version.evidence_version_id,
+                  COALESCE(version.object_version, document.object_version) AS latest_object_version,
+                  COALESCE(version.document_hash, document.document_hash) AS latest_document_hash,
+                  COALESCE(version.content_type, document.content_type) AS latest_content_type,
+                  COALESCE(version.byte_size, document.byte_size) AS latest_byte_size,
+                  COALESCE(version.malware_scan_status, document.malware_scan_status) AS latest_malware_scan_status
+                FROM evidence_documents document
+                LEFT JOIN evidence_versions version
+                  ON version.evidence_version_id = (
+                    SELECT ev.evidence_version_id
+                    FROM evidence_versions ev
+                    WHERE ev.evidence_document_id = document.evidence_document_id
+                    ORDER BY ev.created_at DESC, ev.evidence_version_id DESC
+                    LIMIT 1
+                  )
+                WHERE document.organization_id = ? AND document.reporting_period_id = ?
+                ORDER BY document.created_at DESC
                 """,
                 (organization_id, period["reporting_period_id"]),
             ).fetchall()
@@ -773,6 +789,23 @@ class PeriodicIntakeService:
 
     def _public_evidence_row(self, row: dict[str, Any]) -> dict[str, Any]:
         row.pop("object_key", None)
+        if row.get("evidence_version_id") is None:
+            row.pop("evidence_version_id", None)
+        latest_object_version = row.pop("latest_object_version", None)
+        latest_document_hash = row.pop("latest_document_hash", None)
+        latest_content_type = row.pop("latest_content_type", None)
+        latest_byte_size = row.pop("latest_byte_size", None)
+        latest_malware_scan_status = row.pop("latest_malware_scan_status", None)
+        if latest_object_version is not None:
+            row["object_version"] = latest_object_version
+        if latest_document_hash is not None:
+            row["document_hash"] = latest_document_hash
+        if latest_content_type is not None:
+            row["content_type"] = latest_content_type
+        if latest_byte_size is not None:
+            row["byte_size"] = latest_byte_size
+        if latest_malware_scan_status is not None:
+            row["malware_scan_status"] = latest_malware_scan_status
         return row
 
     def _snapshot_review_decision(self, connection: Any, submission_id: str) -> dict[str, Any] | None:
