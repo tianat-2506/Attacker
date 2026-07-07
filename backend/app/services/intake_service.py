@@ -788,8 +788,10 @@ class PeriodicIntakeService:
         if period is None:
             raise IntakeNotFoundError(submission["reporting_period_id"])
         source_record_id = f"SECTION-{submission['submission_id']}"
+        raw_lineage = self._raw_record_lineage(connection, submission["submission_id"])
         financials = sections.get("financials") or {}
         if financials:
+            financial_source_record_id = self._source_record_id(raw_lineage, "financials", 1, source_record_id)
             connection.execute(
                 """
                 INSERT OR REPLACE INTO period_financial_snapshots (
@@ -816,7 +818,7 @@ class PeriodicIntakeService:
                     _rate(financials.get("late_payment_rate")),
                     _rate(financials.get("delivery_delay_rate")),
                     submission["submission_id"],
-                    source_record_id,
+                    financial_source_record_id,
                     period["period_start"],
                     now,
                 ),
@@ -824,6 +826,7 @@ class PeriodicIntakeService:
 
         for index, item in enumerate(self._list_payload(sections.get("products")), start=1):
             sku = str(item.get("sku") or f"SKU-{index:03d}")
+            item_source_record_id = self._source_record_id(raw_lineage, "products", index, f"{source_record_id}-PRODUCT-{index}")
             connection.execute(
                 """
                 INSERT OR REPLACE INTO product_capabilities (
@@ -853,17 +856,17 @@ class PeriodicIntakeService:
                     str(item.get("case_pack") or "standard"),
                     str(item.get("substitution_group") or item.get("category") or "general"),
                     submission["submission_id"],
-                    f"{source_record_id}-PRODUCT-{index}",
+                    item_source_record_id,
                     period["period_start"],
                     now,
                 ),
             )
 
-        approved_evidence_count = 0
         for index, item in enumerate(self._list_payload(sections.get("evidence")), start=1):
             malware_scan_status = str(item.get("malware_scan_status") or "pending_scan")
             if malware_scan_status != "clean":
                 continue
+            item_source_record_id = self._source_record_id(raw_lineage, "evidence", index, f"{source_record_id}-EVIDENCE-{index}")
             title = str(item.get("title") or item.get("file_name") or f"Evidence {index}")
             digest = str(item.get("document_hash") or hashlib.sha256(title.encode("utf-8")).hexdigest())
             connection.execute(
@@ -888,7 +891,7 @@ class PeriodicIntakeService:
                     str(item.get("classification") or "confidential"),
                     malware_scan_status,
                     submission["submission_id"],
-                    f"{source_record_id}-EVIDENCE-{index}",
+                    item_source_record_id,
                     period["period_start"],
                     now,
                 ),
@@ -944,6 +947,28 @@ class PeriodicIntakeService:
             (submission["reporting_period_id"],),
         )
         self._record_versioned_artifacts(connection, submission, dict(period), financials, self._list_payload(sections.get("products")), now)
+
+    def _raw_record_lineage(self, connection: Any, submission_id: str) -> dict[str, list[str]]:
+        rows = connection.execute(
+            """
+            SELECT batch.dataset, record.raw_record_id
+            FROM raw_records record
+            JOIN ingestion_batches batch ON batch.batch_id = record.batch_id
+            WHERE batch.submission_id = ?
+            ORDER BY batch.dataset, record.row_number
+            """,
+            (submission_id,),
+        ).fetchall()
+        lineage: dict[str, list[str]] = defaultdict(list)
+        for row in rows:
+            lineage[row["dataset"]].append(row["raw_record_id"])
+        return lineage
+
+    def _source_record_id(self, raw_lineage: dict[str, list[str]], dataset: str, row_number: int, fallback: str) -> str:
+        rows = raw_lineage.get(dataset) or []
+        if 0 < row_number <= len(rows):
+            return rows[row_number - 1]
+        return fallback
 
     def _record_versioned_artifacts(
         self,

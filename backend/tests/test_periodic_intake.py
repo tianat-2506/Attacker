@@ -285,6 +285,59 @@ class PeriodicIntakeTests(unittest.TestCase):
         submission = self.service.intake.validate_submission(first["submission_id"], self.context)
         self.assertEqual(submission["validation_summary"]["errors"], 0)
 
+    def test_csv_raw_records_link_to_approved_canonical_rows(self) -> None:
+        financials_csv = "\n".join(
+            [
+                "revenue,cash_in,cash_out,debt,accounts_receivable,accounts_payable,inventory_value,late_payment_rate,delivery_delay_rate",
+                "720000000,740000000,690000000,130000000,70000000,60000000,110000000,0.02,0.01",
+            ]
+        )
+        products_csv = "\n".join(
+            [
+                "sku,product_name,category,available_capacity,min_order_value",
+                "CSV-SKU-A,CSV product A,beverage,1200,5000000",
+                "CSV-SKU-B,CSV product B,beverage,800,3000000",
+            ]
+        )
+        financials_batch = self.service.intake.create_import_batch(
+            organization_id="BIZ-009",
+            period_key="2026-04",
+            dataset="financials",
+            file_name="financials-2026-04.csv",
+            csv_text=financials_csv,
+            context=self.context,
+        )
+        products_batch = self.service.intake.create_import_batch(
+            organization_id="BIZ-009",
+            period_key="2026-04",
+            dataset="products",
+            file_name="products-2026-04.csv",
+            csv_text=products_csv,
+            context=self.context,
+            submission_id=financials_batch["submission_id"],
+        )
+        validated = self.service.intake.validate_submission(financials_batch["submission_id"], self.context)
+        submitted = self.service.intake.submit_submission(validated["id"], self.context)
+
+        self.service.intake.review_decision(submitted["review_task"]["id"], "approve", "CSV raw lineage accepted.", self.context)
+        snapshot = self.service.intake.period_snapshot("BIZ-009", "2026-04")
+
+        with closing(self.database.connect()) as connection:
+            financial_raw = connection.execute(
+                "SELECT raw_record_id FROM raw_records WHERE batch_id = ? ORDER BY row_number",
+                (financials_batch["id"],),
+            ).fetchone()
+            product_raw_rows = connection.execute(
+                "SELECT raw_record_id FROM raw_records WHERE batch_id = ? ORDER BY row_number",
+                (products_batch["id"],),
+            ).fetchall()
+
+        products_by_sku = {item["sku"]: item for item in snapshot["products"]}
+        self.assertEqual(snapshot["financials"][0]["source_record_id"], financial_raw["raw_record_id"])
+        self.assertEqual(products_by_sku["CSV-SKU-A"]["source_record_id"], product_raw_rows[0]["raw_record_id"])
+        self.assertEqual(products_by_sku["CSV-SKU-B"]["source_record_id"], product_raw_rows[1]["raw_record_id"])
+        self.assertIn(financials_batch["submission_id"], snapshot["source_submission_ids"])
+
     def test_csv_validation_errors_quarantine_batch_and_export_error_report(self) -> None:
         csv_text = "\n".join(
             [

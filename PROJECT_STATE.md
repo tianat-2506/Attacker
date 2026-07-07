@@ -35,15 +35,15 @@
 
 ## Latest Slice
 
-- Intake approved snapshot provenance slice completed.
-- Clean evidence uploaded through Vault tickets for the selected period is counted in approved period snapshot evidence summary, even when not repeated in the form/CSV evidence section.
-- `period_snapshots.source_submission_ids_json` now includes upload provenance IDs such as `UPLOAD-{evidence_version_id}` alongside the approved data submission id.
-- Regression coverage proves a clean uploaded `GUARANTEE` remains `restricted_financial` and carries `source_submission_id`/`source_record_id` into the approved snapshot.
+- CSV raw-record lineage slice completed.
+- Approved canonical financial/product rows now use CSV `raw_records.raw_record_id` as `source_record_id` when materialized from CSV import batches.
+- Manual form fallback still uses the existing section-derived source ids.
+- Regression coverage proves approved CSV financials and products link back to the exact raw rows used for ingestion.
 
 ## Verification
 
-- Latest backend targeted: `python -B -m unittest backend.tests.test_periodic_intake.PeriodicIntakeTests.test_uploaded_clean_evidence_is_counted_and_sourced_in_approved_snapshot backend.tests.test_periodic_intake.PeriodicIntakeTests.test_draft_validate_submit_approve_materializes_period_snapshot backend.tests.test_periodic_intake.PeriodicIntakeTests.test_pending_scan_evidence_blocks_approval` passed.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 136 tests, 2 skipped.
+- Latest backend targeted: `python -B -m unittest backend.tests.test_periodic_intake.PeriodicIntakeTests.test_csv_raw_records_link_to_approved_canonical_rows backend.tests.test_periodic_intake.PeriodicIntakeTests.test_csv_import_replay_is_idempotent backend.tests.test_periodic_intake.PeriodicIntakeTests.test_draft_validate_submit_approve_materializes_period_snapshot` passed.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 137 tests, 2 skipped.
 - Frontend baseline from prior slices: `npm.cmd exec tsc -- --noEmit`, `npm.cmd exec vitest -- run --cache=false` 51 tests, and `npm.cmd exec vite -- build --outDir .vite-check-dist` passed.
 - Latest slice did not require frontend rerun.
 
@@ -58,7 +58,7 @@
 - Continue functional completion over UI polish:
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Continue tightening Intake/Vault provenance for CSV raw records, object versions, and reviewer history.
+- Continue tightening Intake/Vault provenance for evidence object versions and reviewer history.
 - Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
 - Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
 
