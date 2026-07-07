@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Matching/onboarding background-read guardrail slice completed.
+- Supplier recommendations now load only while Matching is the active workspace.
+- Connection request lists now load only while Onboarding is the active workspace; direct user actions still refresh their own results.
 - View-aware sensitive data loading slice completed.
 - Selected business detail, evidence vault, risk signal, finance data, pending evidence uploads and intake period snapshot now load only for active workspaces that use them.
 - Added `frontend/src/utils/workspaceDataLoading.ts` tests so Overview/Matching/Finance do not accidentally trigger unrelated sensitive reads.

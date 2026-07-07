@@ -23,3 +23,11 @@ export function canLoadFinanceForView(activeView: AppView, canReadFinance: boole
 export function canLoadIntakePeriodContextForView(activeView: AppView, canReadFinance: boolean, canReadSelectedBusiness: boolean) {
   return activeView === "intake" && canReadFinance && canReadSelectedBusiness;
 }
+
+export function canLoadRecommendationsForView(activeView: AppView, canReadRecommendations: boolean) {
+  return activeView === "matching" && canReadRecommendations;
+}
+
+export function canLoadConnectionRequestsForView(activeView: AppView, canReadConnectionRequests: boolean) {
+  return activeView === "onboarding" && canReadConnectionRequests;
+}

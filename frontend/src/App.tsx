@@ -74,9 +74,11 @@ import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import {
   canLoadBusinessDetailForView,
+  canLoadConnectionRequestsForView,
   canLoadEvidenceVaultForView,
   canLoadFinanceForView,
   canLoadIntakePeriodContextForView,
+  canLoadRecommendationsForView,
   canLoadRiskSignalForView
 } from "./utils/workspaceDataLoading";
 import type {
@@ -594,7 +596,7 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
-    if (!dataPermissions.canReadRecommendations) {
+    if (!canLoadRecommendationsForView(activeView, dataPermissions.canReadRecommendations)) {
       setRecommendations([]);
       return () => { mounted = false; };
     }
@@ -606,11 +608,11 @@ export default function App() {
         if (mounted) setRecommendations([]);
       });
     return () => { mounted = false; };
-  }, [activeAccount.defaultBusinessId, activeAccount.id, dataPermissions.canReadRecommendations, selectedId, selectedPeriod]);
+  }, [activeAccount.defaultBusinessId, activeAccount.id, activeView, dataPermissions.canReadRecommendations, selectedId, selectedPeriod]);
 
   useEffect(() => {
     let mounted = true;
-    if (!dataPermissions.canReadConnectionRequests) {
+    if (!canLoadConnectionRequestsForView(activeView, dataPermissions.canReadConnectionRequests)) {
       setConnectionRequests([]);
       return () => { mounted = false; };
     }
@@ -621,7 +623,7 @@ export default function App() {
       })
       .catch(() => undefined);
     return () => { mounted = false; };
-  }, [activeAccount.id, dataPermissions.canReadConnectionRequests]);
+  }, [activeAccount.id, activeView, dataPermissions.canReadConnectionRequests]);
 
   useEffect(() => {
     const nextSearch = workspaceSearchWithState(window.location.search, {
