@@ -28,6 +28,7 @@ EVIDENCE_REQUIREMENTS = (
     ("INVOICE", "Invoice evidence", "Invoice"),
     ("CONTRACT", "Commercial contract", "Relationship"),
 )
+RESTRICTED_FINANCIAL_EVIDENCE_TYPES = {"GUARANTEE", "INVOICE"}
 
 
 class IntakeNotFoundError(KeyError):
@@ -1235,10 +1236,23 @@ class PeriodicIntakeService:
     def _validate_evidence(self, payload: Any) -> list[dict[str, Any]]:
         issues: list[dict[str, Any]] = []
         for index, item in enumerate(self._list_payload(payload), start=1):
+            document_type = str(item.get("document_type") or item.get("type") or "").upper()
+            classification = str(item.get("classification") or "confidential")
             if not item.get("title") and not item.get("file_name"):
                 issues.append(self._issue("evidence", "title", "TITLE_REQUIRED", "error", "Evidence title or file name is required.", row=index))
             if not item.get("document_hash"):
                 issues.append(self._issue("evidence", "document_hash", "HASH_RECOMMENDED", "warning", "Document hash is missing; demo will derive one from title.", row=index))
+            if document_type in RESTRICTED_FINANCIAL_EVIDENCE_TYPES and classification != "restricted_financial":
+                issues.append(
+                    self._issue(
+                        "evidence",
+                        "classification",
+                        "RESTRICTED_FINANCIAL_CLASSIFICATION_REQUIRED",
+                        "error",
+                        "Guarantee and invoice evidence must use restricted_financial classification.",
+                        row=index,
+                    )
+                )
             if item.get("malware_scan_status") != "clean":
                 issues.append(
                     self._issue(

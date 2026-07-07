@@ -1,6 +1,7 @@
 import { businesses, defaultShock, edges, recommendations, riskDrivers } from "../utils/demoData";
 import { defaultDemoAccount, demoAccountHeaders } from "../utils/demoAccounts";
 import { demoInvoiceFallbackById } from "../utils/demoInvoices";
+import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassification";
 import type {
   AdminOpsData,
   AppView,
@@ -1168,10 +1169,12 @@ export async function revokeConsent(consentId: string): Promise<ConsentRecord> {
 }
 
 export async function createEvidenceUploadTicket(params: { organizationId: string; fileName: string; contentType: string; byteSize: number; documentType?: string; periodKey?: string | null; classification?: string; purpose?: string }): Promise<EvidenceUploadTicket> {
+  const documentType = params.documentType ?? "CERTIFICATION";
+  const classification = normalizeEvidenceUploadClassification(documentType, params.classification);
   const payload = await requestJson("/api/v1/evidence/upload-url", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ organization_id: params.organizationId, file_name: params.fileName, document_type: params.documentType ?? "CERTIFICATION", period_key: params.periodKey, content_type: params.contentType, byte_size: params.byteSize, classification: params.classification ?? "confidential", purpose: params.purpose ?? "evidence_intake" })
+    body: JSON.stringify({ organization_id: params.organizationId, file_name: params.fileName, document_type: documentType, period_key: params.periodKey, content_type: params.contentType, byte_size: params.byteSize, classification, purpose: params.purpose ?? "evidence_intake" })
   });
   return apiEvidenceUploadTicket(payload.data);
 }

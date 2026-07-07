@@ -31,6 +31,7 @@ INVOICE_TRANSITIONS = {
     "released": set(),
     "disputed": {"released"},
 }
+RESTRICTED_FINANCIAL_EVIDENCE_TYPES = {"GUARANTEE", "INVOICE"}
 
 
 class EvidenceUploadValidationError(ValueError):
@@ -66,6 +67,11 @@ def _safe_path_segment(value: str) -> str:
 def invoice_identity_hash(seller_id: str, buyer_id: str, invoice_hash: str, amount: int, due_date: str) -> str:
     raw = f"{seller_id}|{buyer_id}|{invoice_hash}|{amount}|{due_date}"
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
+
+
+def _require_evidence_upload_classification(document_type: str, classification: str) -> None:
+    if document_type.upper() in RESTRICTED_FINANCIAL_EVIDENCE_TYPES and classification != "restricted_financial":
+        raise ValueError(f"{document_type} uploads must use restricted_financial classification.")
 
 
 class GovernanceService:
@@ -291,6 +297,7 @@ class GovernanceService:
         document_type: str = "CERTIFICATION",
         period_key: str | None = None,
     ) -> dict[str, Any]:
+        _require_evidence_upload_classification(document_type, classification)
         decision = PolicyService.require(
             "create_evidence_upload",
             context,

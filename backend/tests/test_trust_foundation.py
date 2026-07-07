@@ -505,7 +505,7 @@ class TrustFoundationTests(unittest.TestCase):
             period_key="2026-07",
             content_type="application/pdf",
             byte_size=2048,
-            classification="confidential",
+            classification="restricted_financial",
             purpose="evidence_intake",
             context=owner_context,
         )
@@ -524,6 +524,25 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertNotIn("object_key", listed["tickets"][0])
         self.assertTrue(listed["policy_decision_id"])
         self.assertTrue(listed["audit_event_id"])
+
+    def test_financial_evidence_upload_requires_restricted_financial_classification(self) -> None:
+        owner_context = context_from_headers(
+            authorization=f"Bearer {issue_dev_jwt(subject='supplier-admin-005', organization_id='BIZ-005', roles=['supplier_admin'])}",
+            app_mode="demo",
+        )
+
+        with self.assertRaises(ValueError):
+            self.service.governance.create_evidence_upload_url(
+                organization_id="BIZ-005",
+                file_name="guarantee-2026-07.pdf",
+                document_type="GUARANTEE",
+                period_key="2026-07",
+                content_type="application/pdf",
+                byte_size=2048,
+                classification="confidential",
+                purpose="evidence_intake",
+                context=owner_context,
+            )
 
     def test_cross_org_cannot_list_or_complete_evidence_upload_ticket(self) -> None:
         owner_context = context_from_headers(
@@ -680,7 +699,7 @@ class TrustFoundationTests(unittest.TestCase):
             period_key="2026-07",
             content_type="application/pdf",
             byte_size=len(content),
-            classification="confidential",
+            classification="restricted_financial",
             purpose="evidence_intake",
             context=owner_context,
         )

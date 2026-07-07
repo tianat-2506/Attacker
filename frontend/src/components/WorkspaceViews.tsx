@@ -84,6 +84,7 @@ import {
   evidenceWorkflowStatus,
   type EvidenceWorkflowStatus
 } from "../utils/evidenceStatus";
+import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassification";
 import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { MapView } from "./MapView";
@@ -995,9 +996,18 @@ export function DataIntakeWorkspace({
 
   async function submitEvidenceUpload() {
     if (!uploadFile || !actionPermissions.canUploadEvidence) return;
-    await onEvidenceUpload(uploadFile, uploadDocumentType, uploadClassification);
+    await onEvidenceUpload(uploadFile, uploadDocumentType, normalizeEvidenceUploadClassification(uploadDocumentType, uploadClassification));
     setUploadFile(null);
     setUploadInputVersion((current) => current + 1);
+  }
+
+  function updateUploadDocumentType(documentType: EvidenceDocument["type"]) {
+    setUploadDocumentType(documentType);
+    setUploadClassification(normalizeEvidenceUploadClassification(documentType, uploadClassification));
+  }
+
+  function updateUploadClassification(classification: string) {
+    setUploadClassification(normalizeEvidenceUploadClassification(uploadDocumentType, classification));
   }
 
   function applyEvidenceRequirement(requirement: (typeof intakeEvidenceRequirements)[number]) {
@@ -1067,8 +1077,8 @@ export function DataIntakeWorkspace({
             </div>
             {actionPermissions.canUploadEvidence ? (
               <div className="upload-control-grid">
-                <label><span>Document type</span><select value={uploadDocumentType} onChange={(event) => setUploadDocumentType(event.target.value as EvidenceDocument["type"])}><option value="CERTIFICATION">Certification</option><option value="GUARANTEE">Guarantee</option><option value="INVOICE">Invoice</option><option value="PURCHASE_ORDER">Purchase order</option><option value="DELIVERY_NOTE">Delivery note</option><option value="CONTRACT">Contract</option></select></label>
-                <label><span>Classification</span><select value={uploadClassification} onChange={(event) => setUploadClassification(event.target.value)}><option value="confidential">confidential</option><option value="restricted_financial">restricted financial</option><option value="partner_visible">partner visible</option><option value="public">public</option></select></label>
+                <label><span>Document type</span><select value={uploadDocumentType} onChange={(event) => updateUploadDocumentType(event.target.value as EvidenceDocument["type"])}><option value="CERTIFICATION">Certification</option><option value="GUARANTEE">Guarantee</option><option value="INVOICE">Invoice</option><option value="PURCHASE_ORDER">Purchase order</option><option value="DELIVERY_NOTE">Delivery note</option><option value="CONTRACT">Contract</option></select></label>
+                <label><span>Classification</span><select value={uploadClassification} onChange={(event) => updateUploadClassification(event.target.value)}><option value="confidential">confidential</option><option value="restricted_financial">restricted financial</option><option value="partner_visible">partner visible</option><option value="public">public</option></select></label>
                 <label className="file-picker"><span>File</span><input key={uploadInputVersion} type="file" onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)} /></label>
                 <button className="icon-text-button" type="button" disabled={busy || !uploadFile} onClick={submitEvidenceUpload}><Upload size={15} />Create ticket</button>
               </div>

@@ -447,6 +447,8 @@ if FastAPI is not None:
             return {"data": payload, "meta": {"request_id": context.request_id}, "errors": []}
         except AccessDeniedError as exc:
             raise_access_denied(exc)
+        except ValueError as exc:
+            raise HTTPException(status_code=422, detail={"code": "INVALID_EVIDENCE_CLASSIFICATION", "message": str(exc)}) from exc
 
     @app.get("/api/v1/evidence/upload-tickets")
     def list_evidence_upload_tickets(

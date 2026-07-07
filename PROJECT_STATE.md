@@ -19,6 +19,10 @@
 
 ## Latest Slice
 
+- Evidence financial-classification guardrail slice completed.
+- Intake upload tickets and manual/CSV evidence metadata now require `restricted_financial` classification for `GUARANTEE` and `INVOICE`.
+- Frontend `createEvidenceUploadTicket` and Data Intake controls normalize finance evidence uploads to `restricted_financial`; backend rejects lower classifications with `INVALID_EVIDENCE_CLASSIFICATION`.
+- Added `frontend/src/utils/evidenceClassification.ts` coverage plus backend tests for upload-ticket and intake-validator rejection paths.
 - Graph bootstrap lazy-load guardrail slice completed.
 - Supply graph now loads during bootstrap only for Overview, Map, Companies and Matching workspaces; Finance/Audit/Intake direct URLs keep fallback graph state until graph is needed.
 - Added `canLoadGraphForView` coverage to prevent commercial graph reads from non-graph workspaces.
@@ -178,11 +182,12 @@
 
 ## Verification
 
-- Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed, 132 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 46 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 48 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
+  - `npm.cmd exec vitest -- run src\utils\evidenceClassification.test.ts src\api\client.test.ts --cache=false` passed, 15 tests.
   - `npm.cmd exec tsc -- --noEmit` passed.
   - `npm.cmd exec vitest -- run src\utils\workspaceDataLoading.test.ts src\utils\invoiceSelection.test.ts --cache=false` passed, 8 tests.
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts --cache=false` passed, 6 tests.
@@ -191,7 +196,7 @@
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 46 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 48 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
   - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
   - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.
@@ -201,8 +206,9 @@
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
 - Latest targeted backend proof:
+  - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_pending_evidence_upload_tickets_are_persisted_and_listed_without_object_key backend.tests.test_trust_foundation.TrustFoundationTests.test_financial_evidence_upload_requires_restricted_financial_classification backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_content_is_persisted_and_forced_to_pending_scan backend.tests.test_periodic_intake.PeriodicIntakeTests.test_financial_evidence_metadata_requires_restricted_financial_classification` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_risk_signal_can_be_high_level_without_evidence_access` passed.
-  - `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
+  - `python -B -m unittest discover -s backend\tests` passed, 132 tests, 2 skipped.
   - `python -B -m unittest backend.tests.test_database_service.DatabaseServiceTests.test_recommendations_are_shortlist_not_disrupted_supplier` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_selected_period_context_does_not_silently_fallback_for_finance_or_evidence` passed.
 - Live connection inbox smoke request `REQ-6BF5994C8C52`:

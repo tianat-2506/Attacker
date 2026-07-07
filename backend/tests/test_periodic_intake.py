@@ -273,6 +273,30 @@ class PeriodicIntakeTests(unittest.TestCase):
         self.assertEqual(stored_batch["status"], "quarantined")
         self.assertGreaterEqual(raw_error_count, 2)
 
+    def test_financial_evidence_metadata_requires_restricted_financial_classification(self) -> None:
+        submission = self.service.intake.create_submission(
+            organization_id="BIZ-009",
+            period_key="2026-12",
+            source_type="manual",
+            sections={
+                "evidence": [
+                    {
+                        "document_type": "GUARANTEE",
+                        "title": "Performance guarantee",
+                        "document_hash": "hash-guarantee-demo",
+                        "classification": "confidential",
+                        "malware_scan_status": "clean",
+                    }
+                ]
+            },
+            context=self.context,
+        )
+
+        validated = self.service.intake.validate_submission(submission["id"], self.context)
+
+        self.assertEqual(validated["validation_summary"]["errors"], 1)
+        self.assertEqual(validated["issues"][0]["code"], "RESTRICTED_FINANCIAL_CLASSIFICATION_REQUIRED")
+
     def test_rejected_submission_does_not_materialize_snapshot(self) -> None:
         submission = self.service.intake.create_submission(
             organization_id="BIZ-009",
