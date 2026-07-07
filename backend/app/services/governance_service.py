@@ -755,15 +755,23 @@ class GovernanceService:
         supersedes_version_id: str | None,
         context: RequestContext,
     ) -> dict[str, Any]:
+        with closing(self.database.connect()) as connection:
+            row = connection.execute(
+                "SELECT * FROM evidence_documents WHERE evidence_document_id = ? AND organization_id = ?",
+                (evidence_document_id, organization_id),
+            ).fetchone()
+        document = dict(row) if row is not None else None
         decision = PolicyService.require(
             "create_evidence_version",
             context,
             resource_type="evidence",
             resource_id=evidence_document_id,
             resource_organization_id=organization_id,
-            data_classification="confidential",
+            data_classification=(document.get("classification") if document else None) or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
+        if document is None:
+            raise IntakeNotFoundError(evidence_document_id)
         version_id = _id("EVV")
         now = _now()
         with closing(self.database.connect()) as connection:
@@ -771,10 +779,11 @@ class GovernanceService:
                 """
                 INSERT INTO evidence_versions (
                   evidence_version_id, evidence_document_id, tenant_id, organization_id, object_key,
+                  period_key, document_type, file_name, classification,
                   object_version, document_hash, content_type, byte_size, malware_scan_status,
                   retention_status, legal_hold, uploader_id, supersedes_version_id, created_at
                 )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'active', 0, ?, ?, ?)
                 """,
                 (
                     version_id,
@@ -782,6 +791,10 @@ class GovernanceService:
                     context.tenant_id,
                     organization_id,
                     object_key,
+                    (document.get("valid_from") or now)[:7],
+                    document.get("document_type"),
+                    document.get("title"),
+                    document.get("classification"),
                     version_id,
                     document_hash,
                     content_type,
@@ -818,7 +831,7 @@ class GovernanceService:
         with closing(self.database.connect()) as connection:
             row = connection.execute(
                 """
-                SELECT version.*, COALESCE(document.classification, 'confidential') AS classification
+                SELECT version.*, COALESCE(document.classification, version.classification, 'confidential') AS policy_classification
                 FROM evidence_versions version
                 LEFT JOIN evidence_documents document ON document.evidence_document_id = version.evidence_document_id
                 WHERE version.evidence_version_id = ?
@@ -850,6 +863,7 @@ class GovernanceService:
                 organization_id=item.get("organization_id"),
                 object_key=item.get("object_key"),
                 object_storage_status="not_issued",
+                data_classification=item.get("policy_classification") or "confidential",
             )
             raise AccessDeniedError(
                 "EVIDENCE_VERSION_NOT_CLEAN",
@@ -863,7 +877,7 @@ class GovernanceService:
             resource_type="evidence_version",
             resource_id=evidence_version_id,
             resource_organization_id=item["organization_id"],
-            data_classification=item["classification"],
+            data_classification=item.get("policy_classification") or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
         event_id = self.audit.record_context(
@@ -925,6 +939,7 @@ class GovernanceService:
         organization_id: str | None = None,
         object_key: str | None = None,
         object_storage_status: str | None = None,
+        data_classification: str | None = None,
     ) -> None:
         decision = PolicyDecision(
             decision_id=_id("POL"),
@@ -933,7 +948,7 @@ class GovernanceService:
             reason=reason,
             resource_type=resource_type,
             resource_id=resource_id,
-            data_classification="confidential",
+            data_classification=data_classification or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
         self.audit.record_context(
@@ -1021,22 +1036,29 @@ class GovernanceService:
         details: str | None,
         context: RequestContext,
     ) -> dict[str, Any]:
+        with closing(self.database.connect()) as connection:
+            row = connection.execute(
+                """
+                SELECT version.*, COALESCE(document.classification, version.classification, 'confidential') AS policy_classification
+                FROM evidence_versions version
+                LEFT JOIN evidence_documents document ON document.evidence_document_id = version.evidence_document_id
+                WHERE version.evidence_version_id = ? AND version.organization_id = ?
+                """,
+                (evidence_version_id, organization_id),
+            ).fetchone()
+        version = dict(row) if row is not None else None
         decision = PolicyService.require(
             "record_malware_scan_result",
             context,
             resource_type="evidence_version",
             resource_id=evidence_version_id,
             resource_organization_id=organization_id,
-            data_classification="confidential",
+            data_classification=(version.get("policy_classification") if version else None) or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
+        if version is None:
+            raise IntakeNotFoundError(evidence_version_id)
         with closing(self.database.connect()) as connection:
-            row = connection.execute(
-                "SELECT * FROM evidence_versions WHERE evidence_version_id = ? AND organization_id = ?",
-                (evidence_version_id, organization_id),
-            ).fetchone()
-            if row is None:
-                raise IntakeNotFoundError(evidence_version_id)
             connection.execute(
                 """
                 UPDATE evidence_versions
@@ -1045,15 +1067,15 @@ class GovernanceService:
                 """,
                 (malware_scan_status, evidence_version_id, organization_id),
             )
-            if row["evidence_document_id"]:
+            if version["evidence_document_id"]:
                 connection.execute(
                     "UPDATE evidence_documents SET malware_scan_status = ? WHERE evidence_document_id = ?",
-                    (malware_scan_status, row["evidence_document_id"]),
+                    (malware_scan_status, version["evidence_document_id"]),
                 )
-            if row["evidence_document_id"] and malware_scan_status in {"infected", "failed"}:
+            if version["evidence_document_id"] and malware_scan_status in {"infected", "failed"}:
                 connection.execute(
                     "UPDATE evidence_documents SET retention_status = 'retention_locked' WHERE evidence_document_id = ?",
-                    (row["evidence_document_id"],),
+                    (version["evidence_document_id"],),
                 )
             connection.commit()
             updated = dict(
@@ -1102,24 +1124,26 @@ class GovernanceService:
         expires_at: str | None,
         context: RequestContext,
     ) -> dict[str, Any]:
+        with closing(self.database.connect()) as connection:
+            row = connection.execute(
+                "SELECT * FROM evidence_documents WHERE evidence_document_id = ? AND organization_id = ?",
+                (evidence_document_id, organization_id),
+            ).fetchone()
+        document = dict(row) if row is not None else None
         decision = PolicyService.require(
             "grant_evidence_access",
             context,
             resource_type="evidence_access_grant",
             resource_id=evidence_document_id,
             resource_organization_id=organization_id,
-            data_classification="confidential",
+            data_classification=(document.get("classification") if document else None) or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
+        if document is None:
+            raise IntakeNotFoundError(evidence_document_id)
         grant_id = _id("EVG")
         now = _now()
         with closing(self.database.connect()) as connection:
-            document = connection.execute(
-                "SELECT * FROM evidence_documents WHERE evidence_document_id = ? AND organization_id = ?",
-                (evidence_document_id, organization_id),
-            ).fetchone()
-            if document is None:
-                raise IntakeNotFoundError(evidence_document_id)
             connection.execute(
                 """
                 INSERT INTO evidence_access_grants (
@@ -1174,7 +1198,7 @@ class GovernanceService:
         with closing(self.database.connect()) as connection:
             row = connection.execute(
                 """
-                SELECT grant.*, document.organization_id
+                SELECT grant.*, document.organization_id, document.classification
                 FROM evidence_access_grants grant
                 JOIN evidence_documents document ON document.evidence_document_id = grant.evidence_document_id
                 WHERE grant.grant_id = ?
@@ -1190,7 +1214,7 @@ class GovernanceService:
                 resource_type="evidence_access_grant",
                 resource_id=grant_id,
                 resource_organization_id=grant["organization_id"],
-                data_classification="confidential",
+                data_classification=grant.get("classification") or "confidential",
             )
             self.audit.record_policy_decision(context, decision)
             connection.execute(
@@ -1230,23 +1254,25 @@ class GovernanceService:
         reason: str,
         context: RequestContext,
     ) -> dict[str, Any]:
+        with closing(self.database.connect()) as connection:
+            row = connection.execute(
+                "SELECT * FROM evidence_documents WHERE evidence_document_id = ? AND organization_id = ?",
+                (evidence_document_id, organization_id),
+            ).fetchone()
+        document = dict(row) if row is not None else None
         decision = PolicyService.require(
             "update_evidence_retention",
             context,
             resource_type="evidence",
             resource_id=evidence_document_id,
             resource_organization_id=organization_id,
-            data_classification="confidential",
+            data_classification=(document.get("classification") if document else None) or "confidential",
         )
         self.audit.record_policy_decision(context, decision)
+        if document is None:
+            raise IntakeNotFoundError(evidence_document_id)
         with closing(self.database.connect()) as connection:
-            row = connection.execute(
-                "SELECT * FROM evidence_documents WHERE evidence_document_id = ? AND organization_id = ?",
-                (evidence_document_id, organization_id),
-            ).fetchone()
-            if row is None:
-                raise IntakeNotFoundError(evidence_document_id)
-            if row["legal_hold"] and retention_status == "deleted":
+            if document["legal_hold"] and retention_status == "deleted":
                 raise ValueError("Evidence on legal hold cannot be marked deleted.")
             connection.execute(
                 """

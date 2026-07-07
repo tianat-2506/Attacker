@@ -730,6 +730,122 @@ class TrustFoundationTests(unittest.TestCase):
             ).fetchone()
         self.assertEqual(completion_policy["data_classification"], "restricted_financial")
 
+    def test_restricted_evidence_governance_actions_preserve_classification(self) -> None:
+        owner_context = context_from_headers(
+            authorization=f"Bearer {issue_dev_jwt(subject='supplier-admin-005', organization_id='BIZ-005', roles=['supplier_admin'])}",
+            app_mode="demo",
+        )
+        scanner_context = context_from_headers(
+            authorization=f"Bearer {issue_dev_jwt(subject='scanner-001', organization_id='BIZ-005', roles=['evidence_scanner'])}",
+            app_mode="demo",
+        )
+        created = self.service.governance.create_evidence_upload_url(
+            organization_id="BIZ-005",
+            file_name="restricted-guarantee.pdf",
+            document_type="GUARANTEE",
+            period_key="2026-07",
+            content_type="application/pdf",
+            byte_size=4096,
+            classification="restricted_financial",
+            purpose="evidence_intake",
+            context=owner_context,
+        )
+        completed = self.service.governance.complete_evidence_upload_ticket(
+            evidence_version_id=created["evidence_version_id"],
+            organization_id="BIZ-005",
+            document_hash="d" * 64,
+            malware_scan_status="pending_scan",
+            title="Restricted financial guarantee",
+            context=owner_context,
+        )
+
+        with self.assertRaises(AccessDeniedError):
+            self.service.governance.create_evidence_download_url(created["evidence_version_id"], context=owner_context)
+        scan = self.service.governance.record_evidence_scan_result(
+            evidence_version_id=created["evidence_version_id"],
+            organization_id="BIZ-005",
+            malware_scan_status="clean",
+            scanner_name="demo-scanner",
+            scanner_version="0.1",
+            scanned_at=None,
+            details="Synthetic clean result for test.",
+            context=scanner_context,
+        )
+        version = self.service.governance.add_evidence_version(
+            evidence_document_id=completed["evidence_document_id"],
+            organization_id="BIZ-005",
+            object_key="s3://vietsupply-evidence/tenant-demo/BIZ-005/restricted-guarantee-v2.pdf",
+            document_hash="e" * 64,
+            content_type="application/pdf",
+            byte_size=2048,
+            malware_scan_status="pending_scan",
+            supersedes_version_id=created["evidence_version_id"],
+            context=owner_context,
+        )
+        grant = self.service.governance.create_evidence_access_grant(
+            evidence_document_id=completed["evidence_document_id"],
+            organization_id="BIZ-005",
+            grantee_organization_id="BIZ-062",
+            scope="evidence_review",
+            purpose="management_review",
+            expires_at="2026-12-31T23:59:59Z",
+            context=owner_context,
+        )
+        revoked = self.service.governance.revoke_evidence_access_grant(grant["grant_id"], context=owner_context)
+        retention = self.service.governance.update_evidence_retention(
+            evidence_document_id=completed["evidence_document_id"],
+            organization_id="BIZ-005",
+            retention_status="retention_locked",
+            legal_hold=True,
+            reason="restricted financial evidence retention test",
+            context=owner_context,
+        )
+
+        tracked_decision_ids = [
+            completed["policy_decision_id"],
+            scan["policy_decision_id"],
+            version["policy_decision_id"],
+            grant["policy_decision_id"],
+            revoked["policy_decision_id"],
+            retention["policy_decision_id"],
+        ]
+        placeholders = ", ".join("?" for _ in tracked_decision_ids)
+        with closing(self.database.connect()) as connection:
+            classifications = {
+                row["decision_id"]: row["data_classification"]
+                for row in connection.execute(
+                    f"SELECT decision_id, data_classification FROM policy_decisions WHERE decision_id IN ({placeholders})",
+                    tuple(tracked_decision_ids),
+                ).fetchall()
+            }
+            download_denial = connection.execute(
+                """
+                SELECT data_classification
+                FROM policy_decisions
+                WHERE action = 'read_evidence'
+                  AND resource_id = ?
+                  AND effect = 'deny'
+                ORDER BY created_at DESC
+                LIMIT 1
+                """,
+                (created["evidence_version_id"],),
+            ).fetchone()
+            stored_version = connection.execute(
+                """
+                SELECT classification, document_type, period_key
+                FROM evidence_versions
+                WHERE evidence_version_id = ?
+                """,
+                (version["evidence_version_id"],),
+            ).fetchone()
+
+        self.assertEqual(set(classifications), set(tracked_decision_ids))
+        self.assertTrue(all(value == "restricted_financial" for value in classifications.values()))
+        self.assertEqual(download_denial["data_classification"], "restricted_financial")
+        self.assertEqual(stored_version["classification"], "restricted_financial")
+        self.assertEqual(stored_version["document_type"], "GUARANTEE")
+        self.assertEqual(stored_version["period_key"], "2026-07")
+
     def test_evidence_upload_hash_mismatch_rejects_without_materializing_document(self) -> None:
         owner_context = context_from_headers(
             authorization=f"Bearer {issue_dev_jwt(subject='supplier-admin-005', organization_id='BIZ-005', roles=['supplier_admin'])}",
