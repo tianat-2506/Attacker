@@ -24,6 +24,10 @@ export function canLoadIntakePeriodContextForView(activeView: AppView, canReadFi
   return activeView === "intake" && canReadFinance && canReadSelectedBusiness;
 }
 
+export function canLoadReviewQueueForView(activeView: AppView, canApproveDraft: boolean) {
+  return activeView === "intake" && canApproveDraft;
+}
+
 export function canLoadRecommendationsForView(activeView: AppView, canReadRecommendations: boolean) {
   return activeView === "matching" && canReadRecommendations;
 }

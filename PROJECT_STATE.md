@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Data Intake review queue lazy-load guardrail slice completed.
+- Review queue now loads only while Data Intake is active and the account can approve drafts.
+- Direct review refresh helper is also gated by the active Data Intake workspace.
 - Supply-map registration lazy-load guardrail slice completed.
 - Supply-map registration list now loads only while Onboarding is active and the account can create or review onboarding records.
 - Leaving Onboarding clears the registration list from frontend state; direct create/review actions still update their own results.

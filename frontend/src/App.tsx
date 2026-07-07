@@ -80,6 +80,7 @@ import {
   canLoadFinanceForView,
   canLoadIntakePeriodContextForView,
   canLoadRecommendationsForView,
+  canLoadReviewQueueForView,
   canLoadRiskSignalForView,
   canLoadSupplyMapRegistrationsForView
 } from "./utils/workspaceDataLoading";
@@ -522,7 +523,7 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
-    if (!intakePermissions.canApproveDraft) {
+    if (!canLoadReviewQueueForView(activeView, intakePermissions.canApproveDraft)) {
       setReviewQueue([]);
       setReviewQueueNotice(null);
       return () => { mounted = false; };
@@ -539,7 +540,7 @@ export default function App() {
         setReviewQueueNotice("Review queue is unavailable for this account or backend mode.");
       });
     return () => { mounted = false; };
-  }, [activeAccount.id, intakePermissions.canApproveDraft]);
+  }, [activeAccount.id, activeView, intakePermissions.canApproveDraft]);
 
   useEffect(() => {
     if (activeView === "intake" && !permittedIntakeBusinessIds.includes(selectedId)) {
@@ -919,7 +920,7 @@ export default function App() {
   }
 
   async function refreshReviewQueue() {
-    if (!intakePermissions.canApproveDraft) return;
+    if (!canLoadReviewQueueForView(activeView, intakePermissions.canApproveDraft)) return;
     const queue = await getReviewQueue("open", 25);
     setReviewQueue(queue.reviewTasks);
     setReviewQueueNotice(queue.advisoryNotice);
