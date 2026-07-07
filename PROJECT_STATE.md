@@ -19,6 +19,10 @@
 
 ## Latest Slice
 
+- Pending evidence upload period-scope slice completed.
+- Frontend evidence upload refreshes now request `GET /api/v1/evidence/upload-tickets` with the selected monthly `period_key`.
+- Pending upload state merges by `(businessId, periodKey)`, preserving other periods while replacing only the selected period and keeping local fallback uploads.
+- Added `frontend/src/utils/pendingEvidenceUploads.ts` tests to prevent cross-period ticket leakage in Intake/Vault refreshes.
 - Evidence financial-classification guardrail slice completed.
 - Intake upload tickets and manual/CSV evidence metadata now require `restricted_financial` classification for `GUARANTEE` and `INVOICE`.
 - Frontend `createEvidenceUploadTicket` and Data Intake controls normalize finance evidence uploads to `restricted_financial`; backend rejects lower classifications with `INVALID_EVIDENCE_CLASSIFICATION`.
@@ -184,9 +188,10 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 132 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 48 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
+  - `npm.cmd exec vitest -- run src\utils\pendingEvidenceUploads.test.ts src\api\client.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\utils\evidenceClassification.test.ts src\api\client.test.ts --cache=false` passed, 15 tests.
   - `npm.cmd exec tsc -- --noEmit` passed.
   - `npm.cmd exec vitest -- run src\utils\workspaceDataLoading.test.ts src\utils\invoiceSelection.test.ts --cache=false` passed, 8 tests.
@@ -196,7 +201,7 @@
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 48 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
   - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
   - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.

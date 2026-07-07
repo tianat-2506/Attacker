@@ -71,6 +71,7 @@ import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges,
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
+import { mergePendingEvidenceUploadsForPeriod } from "./utils/pendingEvidenceUploads";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import {
   canLoadAuditWorkspaceForView,
@@ -691,26 +692,14 @@ export default function App() {
       setPendingEvidenceUploads((current) => current.filter((item) => item.businessId !== selectedId));
       return () => { mounted = false; };
     }
-    getPendingEvidenceUploads(selectedId)
+    getPendingEvidenceUploads(selectedId, selectedPeriod)
       .then((tickets) => {
         if (!mounted) return;
-        setPendingEvidenceUploads((current) => {
-          const localOnly = current.filter((item) => item.businessId === selectedId && item.status === "local_pending");
-          const otherBusiness = current.filter((item) => item.businessId !== selectedId);
-          const seen = new Set<string>();
-          return [
-            ...otherBusiness,
-            ...[...tickets, ...localOnly].filter((item) => {
-              if (seen.has(item.id)) return false;
-              seen.add(item.id);
-              return true;
-            })
-          ];
-        });
+        setPendingEvidenceUploads((current) => mergePendingEvidenceUploadsForPeriod(current, tickets, selectedId, selectedPeriod));
       })
       .catch(() => undefined);
     return () => { mounted = false; };
-  }, [activeView, selectedId, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
+  }, [activeView, selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
 
   useEffect(() => {
     let mounted = true;
@@ -1102,14 +1091,11 @@ export default function App() {
       }
       const [vaultData, pendingTickets] = await Promise.all([
         getEvidence(selectedId, selectedPeriod).catch(() => evidence),
-        getPendingEvidenceUploads(selectedId).catch(() => null)
+        getPendingEvidenceUploads(selectedId, selectedPeriod).catch(() => null)
       ]);
       setEvidence(vaultData);
       if (pendingTickets) {
-        setPendingEvidenceUploads((current) => {
-          const otherBusiness = current.filter((item) => item.businessId !== selectedId);
-          return [...otherBusiness, ...pendingTickets];
-        });
+        setPendingEvidenceUploads((current) => mergePendingEvidenceUploadsForPeriod(current, pendingTickets, selectedId, selectedPeriod));
       }
     } catch {
       setPendingEvidenceUploads((current) => [
@@ -1152,10 +1138,7 @@ export default function App() {
       ]);
       setEvidence(vaultData);
       if (pendingTickets) {
-        setPendingEvidenceUploads((current) => {
-          const outsideSelection = current.filter((item) => item.businessId !== selectedId || item.periodKey !== selectedPeriod);
-          return [...outsideSelection, ...pendingTickets];
-        });
+        setPendingEvidenceUploads((current) => mergePendingEvidenceUploadsForPeriod(current, pendingTickets, selectedId, selectedPeriod));
       }
       await refreshPeriodContext(intakeSubmission ?? undefined).catch(() => undefined);
       await refreshReviewQueue().catch(() => undefined);
