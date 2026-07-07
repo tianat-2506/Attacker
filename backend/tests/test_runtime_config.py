@@ -1476,6 +1476,53 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertEqual(validate_call[1][11], "ready")
         self.assertEqual(connector.connection.commits, 1)
 
+    def test_postgres_pilot_validate_submission_rejects_low_classification_financial_evidence(self) -> None:
+        connector = _FakePostgresConnector(
+            [
+                {
+                    "sections": [
+                        {
+                            "section_name": "evidence",
+                            "payload": [
+                                {
+                                    "document_type": "GUARANTEE",
+                                    "title": "Performance guarantee",
+                                    "document_hash": "sha256:6a0b4e33f78d9a18",
+                                    "classification": "confidential",
+                                    "malware_scan_status": "clean",
+                                }
+                            ],
+                        }
+                    ]
+                }
+            ]
+        )
+        service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
+        context = RequestContext(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="user-oidc-1",
+            actor_role="sme_submitter",
+            purpose="periodic_intake",
+            scopes=frozenset({"finance:write"}),
+            roles=frozenset({"sme_submitter"}),
+            memberships=(Membership("BIZ-009", "sme_submitter"),),
+            request_id="req-pilot-validate-evidence-classification",
+            auth_assurance="oidc-jwks",
+            app_mode="pilot",
+        )
+
+        submission = service.intake.validate_submission("5f6fd6e2-6a25-46e1-8197-f117487e4001", context)
+
+        validate_call = next(call for call in connector.connection.calls if "DATA_SUBMISSION_VALIDATED" in call[0])
+        issues = json.loads(validate_call[1][8])
+        self.assertEqual(submission["status"], "draft")
+        self.assertEqual(submission["validation_summary"]["errors"], 1)
+        self.assertEqual(issues[0]["code"], "RESTRICTED_FINANCIAL_CLASSIFICATION_REQUIRED")
+        self.assertEqual(validate_call[1][9], "has_errors")
+        self.assertEqual(validate_call[1][10], "quarantined")
+        self.assertEqual(validate_call[1][11], "draft")
+
     def test_postgres_pilot_submit_submission_validates_and_creates_review_task(self) -> None:
         connector = _FakePostgresConnector([])
         service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
