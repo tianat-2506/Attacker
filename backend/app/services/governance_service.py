@@ -1104,7 +1104,14 @@ class GovernanceService:
             connection.commit()
             updated = dict(
                 connection.execute(
-                    "SELECT * FROM evidence_versions WHERE evidence_version_id = ?",
+                    """
+                    SELECT
+                      version.*,
+                      COALESCE(document.retention_status, version.retention_status, 'active') AS effective_retention_status
+                    FROM evidence_versions version
+                    LEFT JOIN evidence_documents document ON document.evidence_document_id = version.evidence_document_id
+                    WHERE version.evidence_version_id = ?
+                    """,
                     (evidence_version_id,),
                 ).fetchone()
             )
@@ -1122,6 +1129,7 @@ class GovernanceService:
                 "details": details,
             },
         )
+        retention_status = str(updated.get("effective_retention_status") or updated["retention_status"])
         return {
             "evidence_version_id": evidence_version_id,
             "evidence_document_id": updated["evidence_document_id"],
@@ -1130,8 +1138,8 @@ class GovernanceService:
             "object_version": updated["object_version"],
             "document_hash": updated["document_hash"],
             "malware_scan_status": malware_scan_status,
-            "retention_status": "retention_locked" if malware_scan_status in {"infected", "failed"} else updated["retention_status"],
-            "usable": malware_scan_status == "clean",
+            "retention_status": retention_status,
+            "usable": malware_scan_status == "clean" and retention_status not in {"scheduled_delete", "deleted"},
             "policy_decision_id": decision.decision_id,
             "audit_event_id": event_id,
             "advisory_notice": "Malware scan results control evidence usability; infected or failed scans stay out of approval workflows.",

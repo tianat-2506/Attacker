@@ -4451,6 +4451,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                         'supersedes_version_id', version.supersedes_version_id::text,
                         'created_at', version.created_at::text,
                         'usable', version.malware_scan_status = 'clean'
+                          AND document.retention_status NOT IN ('scheduled_delete', 'deleted')
                       )
                       ORDER BY version.created_at DESC, version.evidence_version_id DESC
                     ) FILTER (WHERE version.evidence_version_id IS NOT NULL),
@@ -5006,6 +5007,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                       'document_hash', version.document_hash,
                       'malware_scan_status', version.malware_scan_status,
                       'usable', version.malware_scan_status = 'clean'
+                        AND document.retention_status NOT IN ('scheduled_delete', 'deleted')
                     ),
                     %s, %s
                   FROM document_row document, actor_row actor, version, policy
@@ -6931,6 +6933,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
 
     def _evidence_version_payload(self, row: dict[str, Any]) -> dict[str, Any]:
         malware_scan_status = str(row["malware_scan_status"])
+        retention_status = str(row.get("retention_status") or "active")
         return {
             "evidence_version_id": str(row["evidence_version_id"]),
             "evidence_document_id": str(row["evidence_document_id"]),
@@ -6939,7 +6942,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
             "object_version": str(row["object_version"]),
             "document_hash": str(row["document_hash"]),
             "malware_scan_status": malware_scan_status,
-            "usable": malware_scan_status == "clean",
+            "usable": malware_scan_status == "clean" and retention_status not in {"scheduled_delete", "deleted"},
             "policy_decision_id": str(row["policy_decision_id"]),
             "audit_event_id": str(row["audit_event_id"]),
             "advisory_notice": (
@@ -6949,6 +6952,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
 
     def _evidence_scan_result_payload(self, row: dict[str, Any]) -> dict[str, Any]:
         malware_scan_status = str(row["malware_scan_status"])
+        retention_status = str(row["retention_status"])
         return {
             "evidence_version_id": str(row["evidence_version_id"]),
             "evidence_document_id": str(row["evidence_document_id"]),
@@ -6957,8 +6961,8 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
             "object_version": str(row["object_version"]),
             "document_hash": str(row["document_hash"]),
             "malware_scan_status": malware_scan_status,
-            "retention_status": str(row["retention_status"]),
-            "usable": malware_scan_status == "clean",
+            "retention_status": retention_status,
+            "usable": malware_scan_status == "clean" and retention_status not in {"scheduled_delete", "deleted"},
             "policy_decision_id": str(row["policy_decision_id"]),
             "audit_event_id": str(row["audit_event_id"]),
             "advisory_notice": (

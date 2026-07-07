@@ -866,6 +866,11 @@ class _FakePostgresConnection:
             )
         if "EVIDENCE_SCAN_RESULT_RECORDED" in statement:
             status = params[9]
+            retention_status = (
+                "retention_locked"
+                if status in {"infected", "failed"}
+                else str(self.rows[0].get("evidence_scan_retention_status", "active")) if self.rows else "active"
+            )
             return _FakeCursor(
                 [
                     {
@@ -876,7 +881,7 @@ class _FakePostgresConnection:
                         "object_version": "6db69845-ed08-4324-92f5-47b0577e2002",
                         "document_hash": "sha256:6a0b4e33f78d9a18",
                         "malware_scan_status": status,
-                        "retention_status": "retention_locked" if status in {"infected", "failed"} else "active",
+                        "retention_status": retention_status,
                         "policy_decision_id": "43151c93-7528-4655-9b9f-4ec1ad2a2003",
                         "audit_event_id": "3e337c27-3226-4d87-883d-273bce302003",
                     }
@@ -2193,6 +2198,40 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertFalse(infected["usable"])
         self.assertEqual(infected["retention_status"], "retention_locked")
 
+    def test_postgres_pilot_clean_scan_result_does_not_make_retired_evidence_usable(self) -> None:
+        connector = _FakePostgresConnector([{"evidence_scan_retention_status": "scheduled_delete"}])
+        service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
+        scanner_context = RequestContext(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="scanner-oidc-1",
+            actor_role="evidence_scanner",
+            purpose="malware_scan",
+            scopes=frozenset({"evidence:scan"}),
+            roles=frozenset({"evidence_scanner"}),
+            memberships=(Membership("BIZ-009", "evidence_scanner"),),
+            request_id="req-pilot-evidence-scan-retired",
+            auth_assurance="oidc-jwks",
+            app_mode="pilot",
+        )
+
+        result = service.governance.record_evidence_scan_result(
+            evidence_version_id="77bb9f91-e46e-4d4b-9bf2-5c4d857e2002",
+            organization_id="BIZ-009",
+            malware_scan_status="clean",
+            scanner_name="local-clamav",
+            scanner_version="1.4.3",
+            scanned_at="2026-09-01T00:32:00Z",
+            details="Clean result after retention scheduling.",
+            context=scanner_context,
+        )
+
+        sql_text = "\n".join(statement for statement, _ in connector.connection.calls)
+        self.assertEqual(result["malware_scan_status"], "clean")
+        self.assertEqual(result["retention_status"], "scheduled_delete")
+        self.assertFalse(result["usable"])
+        self.assertIn("updated_document.retention_status", sql_text)
+
     def test_postgres_pilot_evidence_read_uses_policy_audit_and_grant_aware_query(self) -> None:
         connector = _FakePostgresConnector([])
         service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
@@ -2229,6 +2268,7 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertIn("EVIDENCE_DOCUMENT_READ", sql_text)
         self.assertIn("FROM evidence_access_grants grant_row", sql_text)
         self.assertIn("grant_row.purpose = %s", sql_text)
+        self.assertIn("document.retention_status NOT IN ('scheduled_delete', 'deleted')", sql_text)
         self.assertIn("INSERT INTO policy_decisions", sql_text)
         self.assertIn("INSERT INTO audit_logs", sql_text)
         self.assertIn("Evidence reads are metadata-only", document["advisory_notice"])
