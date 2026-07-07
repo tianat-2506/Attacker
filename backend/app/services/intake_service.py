@@ -665,7 +665,9 @@ class PeriodicIntakeService:
                     policy_decision=decision_record,
                     payload={"evidence_review": evidence_review},
                 )
-                raise ValueError("Approval blocked until submitted or uploaded evidence for this period has clean malware scan status.")
+                raise ValueError(
+                    "Approval blocked until submitted or uploaded evidence for this period has clean malware scan status and active retention."
+                )
             status = {"approve": "approved", "reject": "rejected", "request_changes": "changes_requested"}[decision]
             connection.execute(
                 """
@@ -767,7 +769,9 @@ class PeriodicIntakeService:
                     ORDER BY ev.created_at DESC, ev.evidence_version_id DESC
                     LIMIT 1
                   )
-                WHERE document.organization_id = ? AND document.reporting_period_id = ?
+                WHERE document.organization_id = ?
+                  AND document.reporting_period_id = ?
+                  AND LOWER(COALESCE(document.retention_status, 'active')) NOT IN ('scheduled_delete', 'deleted')
                 ORDER BY document.created_at DESC
                 """,
                 (organization_id, period["reporting_period_id"]),
@@ -975,7 +979,8 @@ class PeriodicIntakeService:
 
         for index, item in enumerate(self._list_payload(sections.get("evidence")), start=1):
             malware_scan_status = str(item.get("malware_scan_status") or "pending_scan")
-            if malware_scan_status != "clean":
+            retention_status = str(item.get("retention_status") or "active")
+            if self._evidence_gate_status(malware_scan_status, retention_status) != "clean":
                 continue
             item_source_record_id = self._source_record_id(raw_lineage, "evidence", index, f"{source_record_id}-EVIDENCE-{index}")
             title = str(item.get("title") or item.get("file_name") or f"Evidence {index}")
@@ -1016,6 +1021,7 @@ class PeriodicIntakeService:
               AND organization_id = ?
               AND reporting_period_id = ?
               AND LOWER(COALESCE(malware_scan_status, '')) = 'clean'
+              AND LOWER(COALESCE(retention_status, 'active')) NOT IN ('scheduled_delete', 'deleted')
             ORDER BY created_at, evidence_document_id
             """,
             (submission["tenant_id"], submission["organization_id"], submission["reporting_period_id"]),
@@ -1518,7 +1524,7 @@ class PeriodicIntakeService:
         if section is not None:
             payload = _load_json(section["payload_json"], [])
             for item in self._list_payload(payload):
-                status = str(item.get("malware_scan_status") or "pending_scan")
+                status = self._evidence_gate_status(item.get("malware_scan_status"), item.get("retention_status"))
                 document_type = self._normalize_document_type(item.get("document_type") or item.get("type"))
                 statuses.append(status)
                 statuses_by_type[document_type].append(status)
@@ -1529,7 +1535,7 @@ class PeriodicIntakeService:
         ).fetchone()
         for row in connection.execute(
             """
-            SELECT document_type, malware_scan_status
+            SELECT document_type, malware_scan_status, retention_status
             FROM evidence_documents
             WHERE tenant_id = ?
               AND organization_id = ?
@@ -1537,14 +1543,14 @@ class PeriodicIntakeService:
             """,
             (submission["tenant_id"], submission["organization_id"], submission["reporting_period_id"]),
         ).fetchall():
-            status = str(row["malware_scan_status"] or "pending_scan")
+            status = self._evidence_gate_status(row["malware_scan_status"], row["retention_status"])
             document_type = self._normalize_document_type(row["document_type"])
             statuses.append(status)
             statuses_by_type[document_type].append(status)
         if period is not None:
             for row in connection.execute(
                 """
-                SELECT document_type, malware_scan_status
+                SELECT document_type, malware_scan_status, retention_status
                 FROM evidence_versions
                 WHERE tenant_id = ?
                   AND organization_id = ?
@@ -1553,7 +1559,7 @@ class PeriodicIntakeService:
                 """,
                 (submission["tenant_id"], submission["organization_id"], period["period_key"]),
             ).fetchall():
-                status = str(row["malware_scan_status"] or "pending_scan")
+                status = self._evidence_gate_status(row["malware_scan_status"], row["retention_status"])
                 document_type = self._normalize_document_type(row["document_type"])
                 statuses.append(status)
                 statuses_by_type[document_type].append(status)
@@ -1566,8 +1572,9 @@ class PeriodicIntakeService:
     ) -> dict[str, Any]:
         normalized = [(status or "pending_scan").strip().lower() for status in statuses]
         clean = sum(1 for status in normalized if status == "clean")
-        rejected = sum(1 for status in normalized if status in {"infected", "failed"})
-        pending = sum(1 for status in normalized if status not in {"clean", "infected", "failed"})
+        rejected_statuses = {"infected", "failed", "retired", "scheduled_delete", "deleted"}
+        rejected = sum(1 for status in normalized if status in rejected_statuses)
+        pending = sum(1 for status in normalized if status not in {"clean", *rejected_statuses})
         total = len(normalized)
         approval_blocked = total > 0 and (pending > 0 or rejected > 0)
         return {
@@ -1578,7 +1585,7 @@ class PeriodicIntakeService:
             "required": total > 0,
             "approval_blocked": approval_blocked,
             "advisory": (
-                "Approval blocked until submitted/uploaded evidence has clean malware scan status."
+                "Approval blocked until submitted/uploaded evidence has clean malware scan status and active retention."
                 if approval_blocked
                 else "Evidence gate passed or no evidence was submitted for this period."
             ),
@@ -1593,6 +1600,12 @@ class PeriodicIntakeService:
             "SUPPORTING_DOC": "SUPPORTING_DOCUMENT",
         }
         return aliases.get(document_type, document_type)
+
+    def _evidence_gate_status(self, malware_scan_status: Any, retention_status: Any = "active") -> str:
+        retention = str(retention_status or "active").strip().lower()
+        if retention in {"scheduled_delete", "deleted"}:
+            return "retired"
+        return str(malware_scan_status or "pending_scan").strip().lower()
 
     def _evidence_requirement_payload(self, statuses_by_type: dict[str, list[str]]) -> list[dict[str, Any]]:
         requirements: list[dict[str, Any]] = []
@@ -1617,8 +1630,9 @@ class PeriodicIntakeService:
     def _status_counts(self, statuses: list[str]) -> dict[str, Any]:
         normalized = [(status or "pending_scan").strip().lower() for status in statuses]
         clean = sum(1 for status in normalized if status == "clean")
-        rejected = sum(1 for status in normalized if status in {"infected", "failed"})
-        pending = sum(1 for status in normalized if status not in {"clean", "infected", "failed"})
+        rejected_statuses = {"infected", "failed", "retired", "scheduled_delete", "deleted"}
+        rejected = sum(1 for status in normalized if status in rejected_statuses)
+        pending = sum(1 for status in normalized if status not in {"clean", *rejected_statuses})
         total = len(normalized)
         if clean > 0:
             status = "verified"

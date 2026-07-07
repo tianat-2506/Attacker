@@ -193,6 +193,70 @@ class PeriodicIntakeTests(unittest.TestCase):
         self.assertEqual(guarantee["classification"], "restricted_financial")
         self.assertEqual(guarantee["malware_scan_status"], "clean")
 
+    def test_retired_uploaded_clean_evidence_blocks_approval_and_snapshot_materialization(self) -> None:
+        upload = self.service.governance.create_evidence_upload_url(
+            organization_id="BIZ-009",
+            file_name="retired-guarantee-2026-11.pdf",
+            document_type="GUARANTEE",
+            period_key="2026-11",
+            content_type="application/pdf",
+            byte_size=4096,
+            classification="restricted_financial",
+            purpose="evidence_intake",
+            context=self.context,
+        )
+        completed = self.service.governance.complete_evidence_upload_ticket(
+            evidence_version_id=upload["evidence_version_id"],
+            organization_id="BIZ-009",
+            document_hash="e" * 64,
+            malware_scan_status="pending_scan",
+            title="Retired guarantee November",
+            context=self.context,
+        )
+        self.service.governance.record_evidence_scan_result(
+            evidence_version_id=upload["evidence_version_id"],
+            organization_id="BIZ-009",
+            malware_scan_status="clean",
+            scanner_name="demo-scanner",
+            scanner_version="0.1",
+            scanned_at=None,
+            details="Synthetic clean result before retention scheduling.",
+            context=self.context,
+        )
+        self.service.governance.update_evidence_retention(
+            evidence_document_id=completed["evidence_document_id"],
+            organization_id="BIZ-009",
+            retention_status="scheduled_delete",
+            legal_hold=False,
+            reason="Retention window elapsed before review.",
+            context=self.context,
+        )
+        submission = self.service.intake.create_submission(
+            organization_id="BIZ-009",
+            period_key="2026-11",
+            source_type="manual",
+            sections={"financials": {"revenue": 11_000, "cash_in": 11_500, "cash_out": 8_000}},
+            context=self.context,
+        )
+        submitted = self.service.intake.submit_submission(submission["id"], self.context)
+        queue = self.service.intake.list_review_tasks(self.context)
+        item = next(row for row in queue["review_tasks"] if row["submission_id"] == submission["id"])
+        requirements = {requirement["document_type"]: requirement for requirement in item["evidence_review"]["requirements"]}
+
+        self.assertEqual(item["evidence_review"]["total"], 1)
+        self.assertEqual(item["evidence_review"]["clean"], 0)
+        self.assertEqual(item["evidence_review"]["rejected"], 1)
+        self.assertTrue(item["evidence_review"]["approval_blocked"])
+        self.assertEqual(requirements["GUARANTEE"]["status"], "rejected")
+        self.assertFalse(requirements["GUARANTEE"]["satisfied"])
+        with self.assertRaises(ValueError):
+            self.service.intake.review_decision(submitted["review_task"]["id"], "approve", "Retired evidence cannot pass.", self.context)
+        snapshot = self.service.intake.period_snapshot("BIZ-009", "2026-11")
+
+        self.assertIsNone(snapshot["approved_version"])
+        self.assertEqual(snapshot["latest_submission_status"], "in_review")
+        self.assertEqual(snapshot["evidence"], [])
+
     def test_reviewer_queue_lists_open_submissions_and_closes_after_decision(self) -> None:
         submission = self.service.intake.create_submission(
             organization_id="BIZ-009",

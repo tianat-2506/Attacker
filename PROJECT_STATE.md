@@ -35,15 +35,15 @@
 
 ## Latest Slice
 
-- Evidence usability retention-gate slice completed.
-- Evidence `usable` now requires both clean malware scan and non-retired retention status in SQLite demo scan-result payloads and PostgreSQL pilot evidence/version payloads.
-- Clean scan results after `scheduled_delete` stay `usable=false`; Postgres evidence document read aggregates also include the retention gate.
-- Previous download-ticket/vault retired-evidence block remains in place.
+- SQLite intake evidence review/materialization retention-gate slice completed.
+- Review approval now requires uploaded/submitted evidence to have clean malware scan and active retention; `scheduled_delete`/`deleted` evidence is counted as rejected.
+- Period snapshot materialization and snapshot evidence reads filter retired evidence out of approved evidence counts/lists.
+- Previous download-ticket/vault/usable retired-evidence blocks remain in place.
 
 ## Verification
 
-- Latest targeted backend: retired evidence usable/vault/download tests and Postgres pilot scan/read tests passed, 5 tests.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 145 tests, 2 skipped.
+- Latest targeted backend: retired evidence intake approval/materialization, clean upload snapshot, pending scan, trust foundation, and runtime config tests passed, 78 tests.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
