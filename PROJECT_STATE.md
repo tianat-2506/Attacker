@@ -35,14 +35,14 @@
 
 ## Latest Slice
 
-- SQLite intake evidence review/materialization retention-gate slice completed.
-- Review approval now requires uploaded/submitted evidence to have clean malware scan and active retention; `scheduled_delete`/`deleted` evidence is counted as rejected.
-- Period snapshot materialization and snapshot evidence reads filter retired evidence out of approved evidence counts/lists.
+- PostgreSQL pilot intake evidence retention parity slice completed.
+- Postgres review queues and approval checks now treat `scheduled_delete`/`deleted` evidence as `retired`/rejected, matching SQLite demo behavior.
+- Postgres materialization and period snapshot reads filter retired evidence out of approved evidence rows/source ids.
 - Previous download-ticket/vault/usable retired-evidence blocks remain in place.
 
 ## Verification
 
-- Latest targeted backend: retired evidence intake approval/materialization, clean upload snapshot, pending scan, trust foundation, and runtime config tests passed, 78 tests.
+- Latest targeted backend: Postgres runtime config and periodic intake suites passed, 51 tests.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.

@@ -1587,7 +1587,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                         CASE
                           WHEN COALESCE(evidence_counts.total, 0) > 0
                             AND (COALESCE(evidence_counts.pending, 0) > 0 OR COALESCE(evidence_counts.rejected, 0) > 0)
-                          THEN 'Approval blocked until submitted/uploaded evidence has clean malware scan status.'
+                          THEN 'Approval blocked until submitted/uploaded evidence has clean malware scan status and active retention.'
                           ELSE 'Evidence gate passed or no evidence was submitted for this period.'
                         END
                     ) AS evidence_summary,
@@ -1613,10 +1613,14 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                     SELECT
                       COUNT(*)::int AS total,
                       COUNT(*) FILTER (WHERE status_row.scan_status = 'clean')::int AS clean,
-                      COUNT(*) FILTER (WHERE status_row.scan_status IN ('infected', 'failed'))::int AS rejected,
-                      COUNT(*) FILTER (WHERE status_row.scan_status NOT IN ('clean', 'infected', 'failed'))::int AS pending
+                      COUNT(*) FILTER (WHERE status_row.scan_status IN ('infected', 'failed', 'retired'))::int AS rejected,
+                      COUNT(*) FILTER (WHERE status_row.scan_status NOT IN ('clean', 'infected', 'failed', 'retired'))::int AS pending
                     FROM (
-                      SELECT COALESCE(item.value->>'malware_scan_status', 'pending_scan') AS scan_status
+                      SELECT
+                        CASE
+                          WHEN LOWER(COALESCE(item.value->>'retention_status', 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                          ELSE COALESCE(item.value->>'malware_scan_status', 'pending_scan')
+                        END AS scan_status
                       FROM submission_sections section
                       CROSS JOIN LATERAL jsonb_array_elements(
                         CASE
@@ -1628,13 +1632,21 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                       WHERE section.submission_id = ds.submission_id
                         AND section.section_name = 'evidence'
                       UNION ALL
-                      SELECT COALESCE(document.malware_scan_status, 'pending_scan') AS scan_status
+                      SELECT
+                        CASE
+                          WHEN LOWER(COALESCE(document.retention_status, 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                          ELSE COALESCE(document.malware_scan_status, 'pending_scan')
+                        END AS scan_status
                       FROM evidence_documents document
                       WHERE document.tenant_id = ds.tenant_id
                         AND document.organization_id = ds.organization_id
                         AND document.reporting_period_id = ds.reporting_period_id
                       UNION ALL
-                      SELECT COALESCE(version.malware_scan_status, 'pending_scan') AS scan_status
+                      SELECT
+                        CASE
+                          WHEN LOWER(COALESCE(version.retention_status, 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                          ELSE COALESCE(version.malware_scan_status, 'pending_scan')
+                        END AS scan_status
                       FROM evidence_versions version
                       WHERE version.tenant_id = ds.tenant_id
                         AND version.organization_id = ds.organization_id
@@ -1977,7 +1989,9 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                 raise AccessDeniedError("POLICY_DENIED", "Review task is assigned to a different reviewer.", status_code=403)
             evidence_review = self._submission_evidence_review_summary(connection, str(existing["submission_id"]))
             if decision == "approve" and evidence_review["approval_blocked"]:
-                raise ValueError("Approval blocked until submitted or uploaded evidence for this period has clean malware scan status.")
+                raise ValueError(
+                    "Approval blocked until submitted or uploaded evidence for this period has clean malware scan status and active retention."
+                )
             row = connection.execute(
                 """
                 WITH actor_row AS (
@@ -2116,6 +2130,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                   FROM evidence_items evidence, submission_before submission
                   WHERE %s = 'approve'
                     AND evidence.payload->>'malware_scan_status' = 'clean'
+                    AND LOWER(COALESCE(evidence.payload->>'retention_status', 'active')) NOT IN ('scheduled_delete', 'deleted')
                     AND COALESCE(NULLIF(evidence.payload->>'document_hash', ''), '') <> ''
                 ),
                 evidence_document_insert AS (
@@ -2840,6 +2855,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                   ) version ON true
                   WHERE EXISTS (SELECT 1 FROM approved_submission)
                     AND version.malware_scan_status = 'clean'
+                    AND LOWER(COALESCE(document.retention_status, 'active')) NOT IN ('scheduled_delete', 'deleted')
                 ),
                 source_ids AS (
                   SELECT COALESCE(jsonb_agg(DISTINCT source_id), '[]'::jsonb) AS data
@@ -2859,6 +2875,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                     JOIN period_row period ON period.reporting_period_id = document.reporting_period_id
                     WHERE EXISTS (SELECT 1 FROM approved_submission)
                       AND document.source_submission_id IS NOT NULL
+                      AND LOWER(COALESCE(document.retention_status, 'active')) NOT IN ('scheduled_delete', 'deleted')
                     UNION
                     SELECT approved.submission_id::text AS source_id
                     FROM approved_submission approved
@@ -2993,7 +3010,11 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
               LIMIT 1
             ),
             status_rows AS (
-              SELECT COALESCE(item.value->>'malware_scan_status', 'pending_scan') AS scan_status
+              SELECT
+                CASE
+                  WHEN LOWER(COALESCE(item.value->>'retention_status', 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                  ELSE COALESCE(item.value->>'malware_scan_status', 'pending_scan')
+                END AS scan_status
               FROM submission_sections section
               JOIN submission_row submission ON submission.submission_id = section.submission_id
               CROSS JOIN LATERAL jsonb_array_elements(
@@ -3005,14 +3026,22 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
               ) item(value)
               WHERE section.section_name = 'evidence'
               UNION ALL
-              SELECT COALESCE(document.malware_scan_status, 'pending_scan') AS scan_status
+              SELECT
+                CASE
+                  WHEN LOWER(COALESCE(document.retention_status, 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                  ELSE COALESCE(document.malware_scan_status, 'pending_scan')
+                END AS scan_status
               FROM evidence_documents document
               JOIN submission_row submission
                 ON submission.tenant_id = document.tenant_id
                AND submission.organization_id = document.organization_id
                AND submission.reporting_period_id = document.reporting_period_id
               UNION ALL
-              SELECT COALESCE(version.malware_scan_status, 'pending_scan') AS scan_status
+              SELECT
+                CASE
+                  WHEN LOWER(COALESCE(version.retention_status, 'active')) IN ('scheduled_delete', 'deleted') THEN 'retired'
+                  ELSE COALESCE(version.malware_scan_status, 'pending_scan')
+                END AS scan_status
               FROM evidence_versions version
               JOIN submission_row submission
                 ON submission.tenant_id = version.tenant_id
@@ -3023,8 +3052,8 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             SELECT
               COUNT(*)::int AS total,
               COUNT(*) FILTER (WHERE scan_status = 'clean')::int AS clean,
-              COUNT(*) FILTER (WHERE scan_status IN ('infected', 'failed'))::int AS rejected,
-              COUNT(*) FILTER (WHERE scan_status NOT IN ('clean', 'infected', 'failed'))::int AS pending
+              COUNT(*) FILTER (WHERE scan_status IN ('infected', 'failed', 'retired'))::int AS rejected,
+              COUNT(*) FILTER (WHERE scan_status NOT IN ('clean', 'infected', 'failed', 'retired'))::int AS pending
             FROM status_rows
             """,
             (submission_id,),
@@ -3522,7 +3551,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             "advisory": str(
                 row.get("advisory")
                 or (
-                    "Approval blocked until submitted/uploaded evidence has clean malware scan status."
+                    "Approval blocked until submitted/uploaded evidence has clean malware scan status and active retention."
                     if approval_blocked
                     else "Evidence gate passed or no evidence was submitted for this period."
                 )
