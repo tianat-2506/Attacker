@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Audit/admin-ops lazy-load guardrail slice completed.
+- Audit trail and admin operational checks no longer load during app bootstrap or selected-business changes unless Audit is the active workspace and the account can read ops/audit.
+- Direct action refreshes for audit/adminOps are also gated by the active Audit workspace.
 - Matching/onboarding background-read guardrail slice completed.
 - Supplier recommendations now load only while Matching is the active workspace.
 - Connection request lists now load only while Onboarding is the active workspace; direct user actions still refresh their own results.

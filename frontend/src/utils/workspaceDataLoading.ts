@@ -31,3 +31,7 @@ export function canLoadRecommendationsForView(activeView: AppView, canReadRecomm
 export function canLoadConnectionRequestsForView(activeView: AppView, canReadConnectionRequests: boolean) {
   return activeView === "onboarding" && canReadConnectionRequests;
 }
+
+export function canLoadAuditWorkspaceForView(activeView: AppView, canReadOps: boolean) {
+  return activeView === "audit" && canReadOps;
+}

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  canLoadAuditWorkspaceForView,
   canLoadBusinessDetailForView,
   canLoadConnectionRequestsForView,
   canLoadEvidenceVaultForView,
@@ -32,6 +33,9 @@ describe("workspace data loading guardrails", () => {
 
     expect(canLoadConnectionRequestsForView("onboarding", true)).toBe(true);
     expect(canLoadConnectionRequestsForView("matching", true)).toBe(false);
+
+    expect(canLoadAuditWorkspaceForView("audit", true)).toBe(true);
+    expect(canLoadAuditWorkspaceForView("overview", true)).toBe(false);
   });
 
   it("keeps all loaders closed when role or subject scope is denied", () => {
@@ -42,5 +46,6 @@ describe("workspace data loading guardrails", () => {
     expect(canLoadIntakePeriodContextForView("intake", true, false)).toBe(false);
     expect(canLoadRecommendationsForView("matching", false)).toBe(false);
     expect(canLoadConnectionRequestsForView("onboarding", false)).toBe(false);
+    expect(canLoadAuditWorkspaceForView("audit", false)).toBe(false);
   });
 });

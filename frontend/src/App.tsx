@@ -73,6 +73,7 @@ import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceS
 import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import {
+  canLoadAuditWorkspaceForView,
   canLoadBusinessDetailForView,
   canLoadConnectionRequestsForView,
   canLoadEvidenceVaultForView,
@@ -573,26 +574,21 @@ export default function App() {
     let mounted = true;
     setApiMode("loading");
     async function loadApplication() {
-      const [graph, scenarioData, dashboardData, auditData] = await Promise.all([
+      const [graph, scenarioData, dashboardData] = await Promise.all([
         dataPermissions.canReadGraph ? getGraph() : Promise.resolve({ nodes: fallbackBusinesses, edges: fallbackEdges, fallback: false }),
         getScenario(),
-        getDashboard(),
-        canReadOps ? getAudit() : Promise.resolve(null)
+        getDashboard()
       ]);
       if (!mounted) return;
       setAllNodes(graph.nodes);
       setAllEdges(graph.edges);
       setScenario(scenarioData);
       setDashboard(dashboardData);
-      setAudit(auditData);
-      const opsData = canReadOps ? await getAdminOps("BIZ-009").catch(() => null) : null;
-      if (!mounted) return;
-      setAdminOps(opsData);
       setApiMode(graph.fallback ? "fallback" : "database");
     }
     loadApplication();
     return () => { mounted = false; };
-  }, [activeAccount.id, canReadOps, dataPermissions.canReadGraph]);
+  }, [activeAccount.id, dataPermissions.canReadGraph]);
 
   useEffect(() => {
     let mounted = true;
@@ -738,19 +734,19 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
-    if (!canReadOps) {
+    if (!canLoadAuditWorkspaceForView(activeView, canReadOps)) {
+      setAudit(null);
       setAdminOps(null);
       return () => { mounted = false; };
     }
-    getAdminOps(selectedId)
-      .then((data) => {
-        if (mounted) setAdminOps(data);
-      })
-      .catch(() => {
-        if (mounted) setAdminOps(null);
+    Promise.all([getAudit().catch(() => null), getAdminOps(selectedId).catch(() => null)])
+      .then(([auditData, opsData]) => {
+        if (!mounted) return;
+        setAudit(auditData);
+        setAdminOps(opsData);
       });
     return () => { mounted = false; };
-  }, [selectedId, activeAccount.id, canReadOps]);
+  }, [activeView, selectedId, activeAccount.id, canReadOps]);
 
   const selected = useMemo(() => allNodes.find((node) => node.id === selectedId) ?? scenario?.nodes.find((node) => node.id === selectedId), [allNodes, scenario, selectedId]);
   const matchingBuyer = useMemo(() => allNodes.find((node) => node.id === activeAccount.defaultBusinessId) ?? scenario?.nodes.find((node) => node.id === activeAccount.defaultBusinessId), [activeAccount.defaultBusinessId, allNodes, scenario]);
@@ -787,7 +783,7 @@ export default function App() {
       });
       setConnectionRequest(request);
       setConnectionRequests((current) => [request, ...current.filter((item) => item.requestId !== request.requestId)]);
-      if (canReadOps) setAudit(await getAudit());
+      if (canLoadAuditWorkspaceForView(activeView, canReadOps)) setAudit(await getAudit());
     } catch (error) {
       if (frontendAppMode !== "demo") throw error;
       const localRequest: ConnectionRequest = { requestId: "REQ-OFFLINE", buyerId: activeAccount.defaultBusinessId, targetSupplierId: supplierId, disruptedSupplierId: selectedId !== supplierId ? selectedId : undefined, status: "pending", consentStatus: "awaiting_supplier_consent", requestedAt: new Date().toISOString(), nextStep: "Queued locally; start the backend to persist the audit event." };
@@ -808,7 +804,7 @@ export default function App() {
     });
     setConnectionRequest((current) => current?.requestId === requestId ? decided : current);
     setConnectionRequests((current) => current.map((item) => item.requestId === requestId ? decided : item));
-    if (canReadOps) setAudit(await getAudit());
+    if (canLoadAuditWorkspaceForView(activeView, canReadOps)) setAudit(await getAudit());
     const refreshedConnectionRequests = dataPermissions.canReadConnectionRequests ? await getConnectionRequests().catch(() => null) : null;
     if (refreshedConnectionRequests) setConnectionRequests(refreshedConnectionRequests);
     if (decision === "activate_relationship" && dataPermissions.canReadGraph) {
@@ -1029,7 +1025,7 @@ export default function App() {
       setIntakeErrorReport(null);
       await refreshPeriodContext(submission);
       await refreshReviewQueue().catch(() => undefined);
-      setAdminOps(canReadOps ? await getAdminOps(selectedId).catch(() => null) : null);
+      setAdminOps(canLoadAuditWorkspaceForView(activeView, canReadOps) ? await getAdminOps(selectedId).catch(() => null) : null);
     } finally {
       setIntakeBusy(false);
     }
@@ -1156,7 +1152,7 @@ export default function App() {
       }
       await refreshPeriodContext(intakeSubmission ?? undefined).catch(() => undefined);
       await refreshReviewQueue().catch(() => undefined);
-      setAdminOps(canReadOps ? await getAdminOps(selectedId).catch(() => null) : null);
+      setAdminOps(canLoadAuditWorkspaceForView(activeView, canReadOps) ? await getAdminOps(selectedId).catch(() => null) : null);
     } finally {
       setIntakeBusy(false);
     }
