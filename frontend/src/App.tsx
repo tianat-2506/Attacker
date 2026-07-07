@@ -72,6 +72,13 @@ import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, 
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
+import {
+  canLoadBusinessDetailForView,
+  canLoadEvidenceVaultForView,
+  canLoadFinanceForView,
+  canLoadIntakePeriodContextForView,
+  canLoadRiskSignalForView
+} from "./utils/workspaceDataLoading";
 import type {
   AppView,
   AdminOpsData,
@@ -637,16 +644,16 @@ export default function App() {
     setRiskAccessNotice(null);
     setFinance(null);
     setFinanceAccessNotice(null);
-    const shouldLoadBusiness = dataPermissions.canReadBusiness && canReadSelectedBusiness;
-    const shouldLoadEvidence = dataPermissions.canReadEvidence && canReadSelectedBusiness;
-    const shouldLoadRisk = dataPermissions.canReadRiskRun && canReadSelectedRisk;
-    const shouldLoadFinance = dataPermissions.canReadFinance && canReadSelectedBusiness;
+    const shouldLoadBusiness = canLoadBusinessDetailForView(activeView, dataPermissions.canReadBusiness, canReadSelectedBusiness);
+    const shouldLoadEvidence = canLoadEvidenceVaultForView(activeView, dataPermissions.canReadEvidence, canReadSelectedBusiness);
+    const shouldLoadRisk = canLoadRiskSignalForView(activeView, dataPermissions.canReadRiskRun, canReadSelectedRisk);
+    const shouldLoadFinance = canLoadFinanceForView(activeView, dataPermissions.canReadFinance, canReadSelectedBusiness);
     let riskNotice: string | null = null;
     let financeNotice: string | null = null;
-    if (dataPermissions.canReadRiskRun && !canReadSelectedRisk) {
+    if (activeView === "risk" && dataPermissions.canReadRiskRun && !canReadSelectedRisk) {
       riskNotice = "Risk signal is restricted to own organization, a visible high-level risk scope, or active relationship/consent.";
     }
-    if (dataPermissions.canReadFinance && !canReadSelectedBusiness) {
+    if (activeView === "finance" && dataPermissions.canReadFinance && !canReadSelectedBusiness) {
       financeNotice = "Financial data is restricted to own organization or active financial-summary consent.";
     }
     Promise.all([
@@ -671,11 +678,11 @@ export default function App() {
         setFinanceAccessNotice(financeNotice);
       });
     return () => { mounted = false; };
-  }, [selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, canReadSelectedRisk, dataPermissions]);
+  }, [activeView, selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, canReadSelectedRisk, dataPermissions]);
 
   useEffect(() => {
     let mounted = true;
-    if (!dataPermissions.canReadEvidence || !canReadSelectedBusiness) {
+    if (!canLoadEvidenceVaultForView(activeView, dataPermissions.canReadEvidence, canReadSelectedBusiness)) {
       setPendingEvidenceUploads((current) => current.filter((item) => item.businessId !== selectedId));
       return () => { mounted = false; };
     }
@@ -698,7 +705,7 @@ export default function App() {
       })
       .catch(() => undefined);
     return () => { mounted = false; };
-  }, [selectedId, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
+  }, [activeView, selectedId, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
 
   useEffect(() => {
     let mounted = true;
@@ -706,7 +713,7 @@ export default function App() {
     setImportBatch(null);
     setIntakeErrorReport(null);
     async function loadPeriodContext() {
-      if (!dataPermissions.canReadFinance || !canReadSelectedBusiness) {
+      if (!canLoadIntakePeriodContextForView(activeView, dataPermissions.canReadFinance, canReadSelectedBusiness)) {
         if (!mounted) return;
         setPeriods([]);
         setPeriodSnapshot(null);
@@ -725,7 +732,7 @@ export default function App() {
     }
     loadPeriodContext();
     return () => { mounted = false; };
-  }, [selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
+  }, [activeView, selectedId, selectedPeriod, activeAccount.id, canReadSelectedBusiness, dataPermissions]);
 
   useEffect(() => {
     let mounted = true;
