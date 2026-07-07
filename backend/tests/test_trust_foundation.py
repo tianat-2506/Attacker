@@ -685,6 +685,77 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertTrue(ticket["object_access_id"])
         self.assertNotIn("object_key", ticket)
 
+    def test_retired_clean_evidence_is_not_downloadable_or_verified_in_vault(self) -> None:
+        owner_context = context_from_headers(
+            authorization=f"Bearer {issue_dev_jwt(subject='supplier-admin-005', organization_id='BIZ-005', roles=['supplier_admin'])}",
+            app_mode="demo",
+        )
+        scanner_context = context_from_headers(
+            authorization=f"Bearer {issue_dev_jwt(subject='scanner-001', organization_id='BIZ-005', roles=['evidence_scanner'])}",
+            app_mode="demo",
+        )
+        created = self.service.governance.create_evidence_upload_url(
+            organization_id="BIZ-005",
+            file_name="retired-clean-certificate.pdf",
+            document_type="CERTIFICATION",
+            period_key="2026-07",
+            content_type="application/pdf",
+            byte_size=4096,
+            classification="confidential",
+            purpose="evidence_intake",
+            context=owner_context,
+        )
+        completed = self.service.governance.complete_evidence_upload_ticket(
+            evidence_version_id=created["evidence_version_id"],
+            organization_id="BIZ-005",
+            document_hash="c" * 64,
+            malware_scan_status="pending_scan",
+            title="Retired clean certificate",
+            context=owner_context,
+        )
+        self.service.governance.record_evidence_scan_result(
+            evidence_version_id=created["evidence_version_id"],
+            organization_id="BIZ-005",
+            malware_scan_status="clean",
+            scanner_name="demo-scanner",
+            scanner_version="0.1",
+            scanned_at=None,
+            details="Synthetic clean result for retention test.",
+            context=scanner_context,
+        )
+        self.service.governance.update_evidence_retention(
+            evidence_document_id=completed["evidence_document_id"],
+            organization_id="BIZ-005",
+            retention_status="scheduled_delete",
+            legal_hold=False,
+            reason="Retention window elapsed.",
+            context=owner_context,
+        )
+
+        vault = self.service.evidence_payload("BIZ-005", context=owner_context)
+        retired_document = next(item for item in vault["documents"] if item["id"] == completed["evidence_document_id"])
+        self.assertEqual(retired_document["status"], "SCHEDULED_DELETE")
+        self.assertEqual(retired_document["verification_status"], "REJECTED")
+        self.assertFalse(retired_document["downloadable"])
+        self.assertIn("Retention scheduled_delete", retired_document["facts"])
+        with self.assertRaises(AccessDeniedError) as denied:
+            self.service.governance.create_evidence_download_url(created["evidence_version_id"], context=owner_context)
+        self.assertEqual(denied.exception.code, "EVIDENCE_VERSION_RETIRED")
+
+        with closing(self.database.connect()) as connection:
+            denial = connection.execute(
+                """
+                SELECT reason
+                FROM evidence_object_access_logs
+                WHERE evidence_version_id = ?
+                  AND access_type = 'download_denied'
+                ORDER BY created_at DESC
+                LIMIT 1
+                """,
+                (created["evidence_version_id"],),
+            ).fetchone()
+        self.assertEqual(denial["reason"], "retention_status_scheduled_delete_not_downloadable")
+
     def test_evidence_upload_content_is_persisted_and_forced_to_pending_scan(self) -> None:
         owner_context = context_from_headers(
             authorization=f"Bearer {issue_dev_jwt(subject='supplier-admin-005', organization_id='BIZ-005', roles=['supplier_admin'])}",

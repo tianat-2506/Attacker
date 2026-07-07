@@ -4599,6 +4599,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                   version.content_type,
                   version.byte_size,
                   version.malware_scan_status,
+                  COALESCE(document.retention_status, version.retention_status, 'active') AS retention_status,
                   document.classification
                 FROM evidence_versions version
                 JOIN evidence_documents document ON document.evidence_document_id = version.evidence_document_id
@@ -4640,6 +4641,28 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                 raise AccessDeniedError(
                     "EVIDENCE_VERSION_NOT_CLEAN",
                     "Evidence version is not downloadable until malware scan status is clean.",
+                    status_code=409,
+                )
+            retention_status = str(row["retention_status"])
+            if retention_status in {"scheduled_delete", "deleted"}:
+                self._audit_denied_evidence_access(
+                    connection,
+                    resource_id=evidence_version_id,
+                    resource_type="evidence_version",
+                    event_type="EVIDENCE_DOWNLOAD_URL_DENIED",
+                    action=decision.action,
+                    context=context,
+                    reason=f"retention_status_{retention_status}_not_downloadable",
+                    evidence_document_id=str(row["evidence_document_id"]),
+                    evidence_version_id=evidence_version_id,
+                    organization_id=str(row["organization_uuid"]),
+                    object_key=str(row["object_key"]),
+                    object_storage_status="not_issued",
+                )
+                connection.commit()
+                raise AccessDeniedError(
+                    "EVIDENCE_VERSION_RETIRED",
+                    "Evidence version is not downloadable while retention status is scheduled_delete or deleted.",
                     status_code=409,
                 )
 

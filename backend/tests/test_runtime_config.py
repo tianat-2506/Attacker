@@ -745,6 +745,7 @@ class _FakePostgresConnection:
             and "policy_decisions" not in statement
         ):
             status = str(self.rows[0].get("evidence_download_status", "clean")) if self.rows else "clean"
+            retention_status = str(self.rows[0].get("evidence_download_retention_status", "active")) if self.rows else "active"
             return _FakeCursor(
                 [
                     {
@@ -759,6 +760,7 @@ class _FakePostgresConnection:
                         "content_type": "application/pdf",
                         "byte_size": 4096,
                         "malware_scan_status": status,
+                        "retention_status": retention_status,
                         "classification": "confidential",
                     }
                 ]
@@ -2316,6 +2318,39 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertIn("INSERT INTO evidence_object_access_logs", sql_text)
         self.assertIn("download_denied", params_text)
         self.assertIn("'deny'", sql_text)
+        self.assertEqual(connector.connection.commits, 1)
+
+    def test_postgres_pilot_evidence_download_denies_retired_clean_evidence_and_audits(self) -> None:
+        connector = _FakePostgresConnector(
+            [{"evidence_download_status": "clean", "evidence_download_retention_status": "deleted"}]
+        )
+        service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
+        context = RequestContext(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-062",
+            actor_id="lender-oidc-1",
+            actor_role="lender",
+            purpose="lender_review",
+            scopes=frozenset({"evidence:read"}),
+            roles=frozenset({"lender"}),
+            memberships=(Membership("BIZ-062", "lender"),),
+            request_id="req-pilot-evidence-download-retired",
+            auth_assurance="oidc-jwks",
+            app_mode="pilot",
+        )
+
+        with self.assertRaisesRegex(AccessDeniedError, "retention status"):
+            service.governance.create_evidence_download_url(
+                "77bb9f91-e46e-4d4b-9bf2-5c4d857e2002",
+                context=context,
+            )
+
+        sql_text = "\n".join(statement for statement, _ in connector.connection.calls)
+        params_text = "\n".join(str(params) for _, params in connector.connection.calls)
+        self.assertIn("COALESCE(document.retention_status", sql_text)
+        self.assertIn("EVIDENCE_DOWNLOAD_URL_DENIED", params_text)
+        self.assertIn("retention_status_deleted_not_downloadable", params_text)
+        self.assertIn("INSERT INTO evidence_object_access_logs", sql_text)
         self.assertEqual(connector.connection.commits, 1)
 
     def test_postgres_pilot_evidence_access_grant_and_revoke_use_policy_audit_and_scope(self) -> None:

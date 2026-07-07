@@ -651,7 +651,11 @@ class VietSupplyRadarService:
             )
         for row in groups["evidence_documents"]:
             scan_status = row["malware_scan_status"]
-            if scan_status == "clean":
+            retention_status = str(row.get("retention_status") or "active")
+            retired = retention_status in {"scheduled_delete", "deleted"}
+            if retired:
+                verification_status = "REJECTED"
+            elif scan_status == "clean":
                 verification_status = "VERIFIED"
             elif scan_status in {"infected", "failed"}:
                 verification_status = "REJECTED"
@@ -670,10 +674,11 @@ class VietSupplyRadarService:
                     "source": "Evidence intake upload ticket",
                     "hash": row["document_hash"],
                     "evidence_version_id": row.get("latest_evidence_version_id"),
-                    "downloadable": scan_status == "clean" and bool(row.get("latest_evidence_version_id")),
+                    "downloadable": scan_status == "clean" and not retired and bool(row.get("latest_evidence_version_id")),
                     "facts": [
                         f"Classification {row['classification']}",
                         f"Malware scan {scan_status}",
+                        f"Retention {retention_status}",
                         f"Content type {row['content_type']}",
                     ],
                 }

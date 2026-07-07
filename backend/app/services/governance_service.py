@@ -831,7 +831,10 @@ class GovernanceService:
         with closing(self.database.connect()) as connection:
             row = connection.execute(
                 """
-                SELECT version.*, COALESCE(document.classification, version.classification, 'confidential') AS policy_classification
+                SELECT
+                  version.*,
+                  COALESCE(document.classification, version.classification, 'confidential') AS policy_classification,
+                  COALESCE(document.retention_status, version.retention_status, 'active') AS policy_retention_status
                 FROM evidence_versions version
                 LEFT JOIN evidence_documents document ON document.evidence_document_id = version.evidence_document_id
                 WHERE version.evidence_version_id = ?
@@ -868,6 +871,27 @@ class GovernanceService:
             raise AccessDeniedError(
                 "EVIDENCE_VERSION_NOT_CLEAN",
                 "Evidence version is not downloadable until malware scan status is clean.",
+                status_code=409,
+            )
+        retention_status = str(item.get("policy_retention_status") or item.get("retention_status") or "active")
+        if retention_status in {"scheduled_delete", "deleted"}:
+            self._record_denied_evidence_access(
+                resource_id=evidence_version_id,
+                resource_type="evidence_version",
+                event_type="EVIDENCE_DOWNLOAD_URL_DENIED",
+                action="read_evidence",
+                context=context,
+                reason=f"retention_status_{retention_status}_not_downloadable",
+                evidence_document_id=item.get("evidence_document_id"),
+                evidence_version_id=evidence_version_id,
+                organization_id=item.get("organization_id"),
+                object_key=item.get("object_key"),
+                object_storage_status="not_issued",
+                data_classification=item.get("policy_classification") or "confidential",
+            )
+            raise AccessDeniedError(
+                "EVIDENCE_VERSION_RETIRED",
+                "Evidence version is not downloadable while retention status is scheduled_delete or deleted.",
                 status_code=409,
             )
 

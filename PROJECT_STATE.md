@@ -35,15 +35,15 @@
 
 ## Latest Slice
 
-- Evidence lifecycle object-delete slice completed.
-- `run_evidence_workers.py --mode lifecycle --execute --s3-minio-delete` now deletes scheduled evidence objects through configured S3/MinIO before metadata can move to `deleted`.
-- Lifecycle worker delete callbacks can return audit reasons; failed S3/MinIO DELETE keeps metadata at `scheduled_delete` and logs the storage failure reason.
-- Run docs mention the explicit lifecycle delete step; deletion remains opt-in and separate from retention metadata updates.
+- Evidence retention download-gate slice completed.
+- Clean evidence with `retention_status` `scheduled_delete` or `deleted` no longer receives download tickets in SQLite demo or PostgreSQL pilot adapter.
+- Vault payload no longer marks retired clean evidence as verified/downloadable; audit logs denial reasons such as `retention_status_deleted_not_downloadable`.
+- This closes the loop after lifecycle object deletion: storage cleanup and metadata retirement both block file access.
 
 ## Verification
 
-- Latest targeted backend: `backend.tests.test_evidence_worker_cli backend.tests.test_evidence_workers` passed, 14 tests.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 141 tests, 2 skipped.
+- Latest targeted backend: retired evidence vault/download tests and Postgres pilot download denial tests passed, 5 tests.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 143 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
