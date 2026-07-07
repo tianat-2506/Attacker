@@ -69,7 +69,7 @@ import {
 } from "./components/WorkspaceViews";
 import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges, recommendations as fallbackRecommendations } from "./utils/demoData";
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
-import { invoiceIdForWorkspace } from "./utils/invoiceSelection";
+import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import type {
@@ -382,7 +382,7 @@ export default function App() {
     };
   }, [activeAccount, verifiedCapabilities]);
   const selectedInvoiceId = useMemo(() => invoiceIdForWorkspace(activeAccount, selectedId), [activeAccount, selectedId]);
-  const canRequestInvoiceWorkspace = dataPermissions.canReadInvoice && allowedViewIds.includes("invoice");
+  const canRequestInvoiceWorkspace = canLoadInvoiceWorkspace(activeView, allowedViewIds, dataPermissions.canReadInvoice);
   const scopedCompanyNodes = useMemo(() => scopedBusinessNodesForAccount(activeAccount, allNodes), [activeAccount, allNodes]);
   const canReadSelectedBusiness = useMemo(() => accountCanReadOwnBusiness(activeAccount, selectedId), [activeAccount, selectedId]);
   const accessByBusinessId = useMemo(() => Object.fromEntries(allNodes.map((node) => [node.id, demoAccessDecisionFor(activeAccount, node.id, connectionRequest)])), [activeAccount, allNodes, connectionRequest]);

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { demoAccounts } from "./demoAccounts";
 import { demoInvoiceCandidates, demoInvoiceRecords } from "./demoInvoices";
-import { invoiceIdForWorkspace } from "./invoiceSelection";
+import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./invoiceSelection";
 
 describe("invoiceIdForWorkspace", () => {
   it("uses the same demo invoice records for selection and fallback", () => {
@@ -31,5 +31,12 @@ describe("invoiceIdForWorkspace", () => {
     const lender = demoAccounts.find((account) => account.id === "lender")!;
 
     expect(invoiceIdForWorkspace(lender, "BIZ-007")).toBeNull();
+  });
+
+  it("loads invoice data only while the invoice workspace is active and authorized", () => {
+    expect(canLoadInvoiceWorkspace("invoice", ["finance", "invoice"], true)).toBe(true);
+    expect(canLoadInvoiceWorkspace("finance", ["finance", "invoice"], true)).toBe(false);
+    expect(canLoadInvoiceWorkspace("invoice", ["finance"], true)).toBe(false);
+    expect(canLoadInvoiceWorkspace("invoice", ["finance", "invoice"], false)).toBe(false);
   });
 });

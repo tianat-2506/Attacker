@@ -23,3 +23,7 @@ export function invoiceIdForWorkspace(
   if (ownOutgoing) return ownOutgoing.invoiceId;
   return ownMatches[0]?.invoiceId ?? null;
 }
+
+export function canLoadInvoiceWorkspace(activeView: string, allowedViewIds: readonly string[], canReadInvoice: boolean): boolean {
+  return activeView === "invoice" && canReadInvoice && allowedViewIds.includes("invoice");
+}

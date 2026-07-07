@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Invoice lazy-load guardrail slice completed.
+- Frontend now requests invoice register data only when the active view is `invoice`, the account can read invoices and the Invoice view is allowed.
+- Added helper coverage so Finance/Overview access no longer triggers invoice reads just because `invoice` is an allowed view.
 - Demo invoice fixture consolidation slice completed.
 - Frontend invoice selection and API fallback now share `frontend/src/utils/demoInvoices.ts` as the single demo invoice source.
 - Added test coverage to keep invoice selection candidates aligned with fallback invoice records.
@@ -159,16 +162,17 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 43 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 44 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
+  - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts --cache=false` passed, 6 tests.
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\api\client.test.ts --cache=false` passed, 18 tests.
   - `npm.cmd exec vitest -- run src\api\client.test.ts src\utils\invoiceSelection.test.ts --cache=false` passed, 17 tests.
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 43 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 44 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
   - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
   - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.
