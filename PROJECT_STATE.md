@@ -35,15 +35,15 @@
 
 ## Latest Slice
 
-- Evidence object-storage smoke cleanup slice completed.
-- `ObjectStorageSettings` can presign DELETE for temporary evidence objects.
-- Live S3/MinIO evidence smoke now proves PUT, GET verify, and DELETE cleanup; readiness gate/docs expect PUT/GET/DELETE proof.
-- Smoke regression covers cleanup success and cleanup failure without exposing secret keys.
+- Evidence lifecycle object-delete slice completed.
+- `run_evidence_workers.py --mode lifecycle --execute --s3-minio-delete` now deletes scheduled evidence objects through configured S3/MinIO before metadata can move to `deleted`.
+- Lifecycle worker delete callbacks can return audit reasons; failed S3/MinIO DELETE keeps metadata at `scheduled_delete` and logs the storage failure reason.
+- Run docs mention the explicit lifecycle delete step; deletion remains opt-in and separate from retention metadata updates.
 
 ## Verification
 
-- Latest targeted backend: evidence object-storage smoke, readiness-gate live proof, smoke artifact, and runtime-config S3 presign tests passed.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 139 tests, 2 skipped.
+- Latest targeted backend: `backend.tests.test_evidence_worker_cli backend.tests.test_evidence_workers` passed, 14 tests.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 141 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.

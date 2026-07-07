@@ -150,6 +150,12 @@ Neu muon chay kem readiness gate voi hai evidence live flags, nhung van cho phep
 powershell -ExecutionPolicy Bypass -File scripts/run_evidence_live_smoke_docker.ps1 -RunReadinessGate
 ```
 
+Evidence retention metadata khong tu xoa object storage. Khi da cau hinh S3/MinIO bang `EVIDENCE_OBJECT_STORE_ENDPOINT`, `EVIDENCE_OBJECT_STORE_BUCKET`, `EVIDENCE_OBJECT_STORE_ACCESS_KEY_ID` va `EVIDENCE_OBJECT_STORE_SECRET_ACCESS_KEY`, chay lifecycle delete rieng:
+
+```powershell
+python scripts/run_evidence_workers.py --mode lifecycle --execute --s3-minio-delete
+```
+
 Lenh nay co the pass local gate nhung van tra `pilot_ready=false` neu thieu bang chung live.
 
 Kiem tra rieng OIDC verifier bang local synthetic JWKS. Day chi chung minh co che verifier, khong phai pilot proof:

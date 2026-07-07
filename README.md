@@ -132,6 +132,12 @@ To also feed the evidence live-smoke flags into the readiness gate while still a
 powershell -ExecutionPolicy Bypass -File scripts/run_evidence_live_smoke_docker.ps1 -RunReadinessGate
 ```
 
+Evidence retention metadata does not delete object storage by itself. After setting `EVIDENCE_OBJECT_STORE_ENDPOINT`, `EVIDENCE_OBJECT_STORE_BUCKET`, `EVIDENCE_OBJECT_STORE_ACCESS_KEY_ID` and `EVIDENCE_OBJECT_STORE_SECRET_ACCESS_KEY`, run lifecycle deletes explicitly:
+
+```powershell
+python scripts/run_evidence_workers.py --mode lifecycle --execute --s3-minio-delete
+```
+
 Or, if Docker Desktop is available, start a disposable PostGIS container and run the same smoke test:
 
 ```powershell

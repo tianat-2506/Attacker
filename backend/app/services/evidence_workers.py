@@ -17,7 +17,8 @@ from backend.app.services.repositories import AccessPolicyRepository, AuditRepos
 
 
 ScanDecision = Callable[[dict[str, Any]], tuple[str, str]]
-DeleteObject = Callable[[dict[str, Any]], bool]
+DeleteObjectResult = bool | tuple[bool, str]
+DeleteObject = Callable[[dict[str, Any]], DeleteObjectResult]
 SocketFactory = Callable[[tuple[str, int], float], Any]
 DEMO_THREAT_MARKERS = (
     b"EICAR-STANDARD-ANTIVIRUS-TEST-FILE",
@@ -151,7 +152,8 @@ class EvidenceWorkerService:
                     )
                     skipped += 1
                     continue
-                if delete_object is None or not delete_object(dict(row)):
+                deleted, delete_reason = self._delete_decision(delete_object, row)
+                if not deleted:
                     self._record_worker_access(
                         tenant_id=row["tenant_id"],
                         evidence_document_id=row["evidence_document_id"],
@@ -163,7 +165,7 @@ class EvidenceWorkerService:
                         purpose=context.purpose,
                         request_id=context.request_id,
                         object_key=row["object_key"],
-                        reason="object_delete_not_configured",
+                        reason=delete_reason,
                     )
                     skipped += 1
                     continue
@@ -188,13 +190,22 @@ class EvidenceWorkerService:
                     purpose=context.purpose,
                     request_id=context.request_id,
                     object_key=row["object_key"],
-                    reason="object_deleted",
+                    reason=delete_reason,
                 )
                 processed += 1
             except Exception as exc:
                 errors.append(f"{row['evidence_document_id']}:{exc}")
                 skipped += 1
         return WorkerSummary("apply_retention_lifecycle", False, len(rows), processed, skipped, errors).as_dict()
+
+    def _delete_decision(self, delete_object: DeleteObject | None, row: dict[str, Any]) -> tuple[bool, str]:
+        if delete_object is None:
+            return False, "object_delete_not_configured"
+        result = delete_object(dict(row))
+        if isinstance(result, tuple):
+            deleted, reason = result
+            return bool(deleted), reason or ("object_deleted" if deleted else "object_delete_failed")
+        return bool(result), "object_deleted" if result else "object_delete_failed"
 
     def local_demo_scanner(self, row: dict[str, Any]) -> tuple[str, str]:
         """Deterministic local-demo scanner; not a production antivirus integration."""

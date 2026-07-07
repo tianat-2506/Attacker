@@ -8,11 +8,27 @@ import unittest
 from contextlib import closing
 from pathlib import Path
 from tempfile import TemporaryDirectory
+from unittest.mock import patch
+from urllib.request import Request
 
 from backend.app.services.database import Database
+from backend.app.services.evidence_workers import EvidenceWorkerService
+from backend.app.services.postgres_pilot_service import ObjectStorageSettings
+from scripts import run_evidence_workers as worker_cli
 
 
 ROOT = Path(__file__).resolve().parents[2]
+
+
+class _FakeResponse:
+    def __init__(self, status: int) -> None:
+        self.status = status
+
+    def __enter__(self) -> "_FakeResponse":
+        return self
+
+    def __exit__(self, *args: object) -> None:
+        return None
 
 
 class EvidenceWorkerCliTests(unittest.TestCase):
@@ -111,6 +127,87 @@ class EvidenceWorkerCliTests(unittest.TestCase):
             self.assertEqual(document["retention_status"], "scheduled_delete")
             self.assertEqual(log["access_status"], "skipped")
             self.assertEqual(log["reason"], "object_delete_not_configured")
+
+    def test_lifecycle_s3_minio_delete_marks_metadata_deleted_after_http_success(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            database = Database(Path(temp_dir) / "worker-cli-s3-delete.db")
+            _seed_pending_evidence(database, retention_status="scheduled_delete")
+            worker = EvidenceWorkerService(database)
+            settings = ObjectStorageSettings(
+                endpoint_url="https://minio.example",
+                bucket="demo",
+                access_key_id="access-key",
+                secret_access_key="secret-key",
+                region="ap-southeast-1",
+            )
+            calls: list[Request] = []
+
+            def fake_urlopen(request: Request, timeout: float = 0) -> _FakeResponse:
+                calls.append(request)
+                return _FakeResponse(204)
+
+            with patch.object(worker_cli, "urlopen", side_effect=fake_urlopen):
+                delete_object = worker_cli._build_s3_minio_delete_object(settings=settings, timeout_seconds=0.1)
+                result = worker.apply_retention_lifecycle(dry_run=False, delete_object=delete_object)
+
+            with closing(database.connect()) as connection:
+                document = connection.execute(
+                    "SELECT retention_status FROM evidence_documents WHERE evidence_document_id = ?",
+                    ("EVD-CLI-001",),
+                ).fetchone()
+                log = connection.execute(
+                    """
+                    SELECT access_status, reason
+                    FROM evidence_object_access_logs
+                    WHERE evidence_document_id = ? AND access_type = 'lifecycle_worker'
+                    """,
+                    ("EVD-CLI-001",),
+                ).fetchone()
+
+            self.assertEqual(result["processed"], 1)
+            self.assertEqual(document["retention_status"], "deleted")
+            self.assertEqual(log["access_status"], "executed")
+            self.assertEqual(log["reason"], "s3_minio_object_deleted")
+            self.assertEqual([request.get_method() for request in calls], ["DELETE"])
+            self.assertNotIn("secret-key", calls[0].full_url)
+
+    def test_lifecycle_s3_minio_delete_keeps_metadata_when_storage_delete_fails(self) -> None:
+        with TemporaryDirectory() as temp_dir:
+            database = Database(Path(temp_dir) / "worker-cli-s3-delete-fail.db")
+            _seed_pending_evidence(database, retention_status="scheduled_delete")
+            worker = EvidenceWorkerService(database)
+            settings = ObjectStorageSettings(
+                endpoint_url="https://minio.example",
+                bucket="demo",
+                access_key_id="access-key",
+                secret_access_key="secret-key",
+            )
+
+            def fake_urlopen(request: Request, timeout: float = 0) -> _FakeResponse:
+                return _FakeResponse(403)
+
+            with patch.object(worker_cli, "urlopen", side_effect=fake_urlopen):
+                delete_object = worker_cli._build_s3_minio_delete_object(settings=settings, timeout_seconds=0.1)
+                result = worker.apply_retention_lifecycle(dry_run=False, delete_object=delete_object)
+
+            with closing(database.connect()) as connection:
+                document = connection.execute(
+                    "SELECT retention_status FROM evidence_documents WHERE evidence_document_id = ?",
+                    ("EVD-CLI-001",),
+                ).fetchone()
+                log = connection.execute(
+                    """
+                    SELECT access_status, reason
+                    FROM evidence_object_access_logs
+                    WHERE evidence_document_id = ? AND access_type = 'lifecycle_worker'
+                    """,
+                    ("EVD-CLI-001",),
+                ).fetchone()
+
+            self.assertEqual(result["skipped"], 1)
+            self.assertEqual(document["retention_status"], "scheduled_delete")
+            self.assertEqual(log["access_status"], "skipped")
+            self.assertEqual(log["reason"], "s3_minio_delete_http_403")
 
 
 def _run_worker_cli(db_path: Path, *args: str) -> dict[str, object]:
