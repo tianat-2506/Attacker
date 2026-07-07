@@ -432,15 +432,6 @@ class GovernanceService:
         context: RequestContext,
         content_base64: str | None = None,
     ) -> dict[str, Any]:
-        decision = self._require_and_audit(
-            "create_evidence_version",
-            context,
-            resource_type="evidence_upload_ticket",
-            resource_id=evidence_version_id,
-            resource_organization_id=organization_id,
-            data_classification="confidential",
-            denied_event_type="EVIDENCE_UPLOAD_COMPLETE_DENIED",
-        )
         now = _now()
         with closing(self.database.connect()) as connection:
             row = connection.execute(
@@ -451,32 +442,42 @@ class GovernanceService:
                 """,
                 (evidence_version_id, organization_id),
             ).fetchone()
-            if row is None:
-                self.audit.record_context(
-                    "EVIDENCE_UPLOAD_TICKET_NOT_FOUND",
-                    context,
-                    evidence_version_id,
-                    policy_decision=decision,
-                    payload={"organization_id": organization_id, "reason": "not_found_or_not_authorized"},
-                )
-                raise IntakeNotFoundError(evidence_version_id)
-            ticket = dict(row)
-            if ticket.get("evidence_document_id"):
-                raise ValueError("Evidence upload ticket is already linked to a document.")
-            normalized_hash, object_storage_status = self._verify_and_store_demo_upload_content(
-                ticket=ticket,
-                expected_document_hash=document_hash,
-                content_base64=content_base64,
-                decision=decision,
-                context=context,
+        ticket = dict(row) if row is not None else None
+        decision = self._require_and_audit(
+            "create_evidence_version",
+            context,
+            resource_type="evidence_upload_ticket",
+            resource_id=evidence_version_id,
+            resource_organization_id=organization_id,
+            data_classification=(ticket.get("classification") if ticket else None) or "confidential",
+            denied_event_type="EVIDENCE_UPLOAD_COMPLETE_DENIED",
+        )
+        if ticket is None:
+            self.audit.record_context(
+                "EVIDENCE_UPLOAD_TICKET_NOT_FOUND",
+                context,
+                evidence_version_id,
+                policy_decision=decision,
+                payload={"organization_id": organization_id, "reason": "not_found_or_not_authorized"},
             )
-            period_key = ticket.get("period_key") or now[:7]
+            raise IntakeNotFoundError(evidence_version_id)
+        if ticket.get("evidence_document_id"):
+            raise ValueError("Evidence upload ticket is already linked to a document.")
+        normalized_hash, object_storage_status = self._verify_and_store_demo_upload_content(
+            ticket=ticket,
+            expected_document_hash=document_hash,
+            content_base64=content_base64,
+            decision=decision,
+            context=context,
+        )
+        period_key = ticket.get("period_key") or now[:7]
+        document_id = _id("EVD")
+        document_title = title or ticket.get("file_name") or f"Evidence upload {evidence_version_id}"
+        document_type = ticket.get("document_type") or "SUPPORTING_DOCUMENT"
+        classification = ticket.get("classification") or "confidential"
+        final_malware_scan_status = "pending_scan"
+        with closing(self.database.connect()) as connection:
             period_id, period_start, period_end = self._ensure_upload_period(connection, context.tenant_id, organization_id, period_key)
-            document_id = _id("EVD")
-            document_title = title or ticket.get("file_name") or f"Evidence upload {evidence_version_id}"
-            document_type = ticket.get("document_type") or "SUPPORTING_DOCUMENT"
-            classification = ticket.get("classification") or "confidential"
-            final_malware_scan_status = "pending_scan"
             connection.execute(
                 """
                 INSERT INTO evidence_documents (

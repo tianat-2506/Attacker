@@ -723,6 +723,12 @@ class TrustFoundationTests(unittest.TestCase):
         object_files = [path for path in (self.database.path.parent / "evidence_objects").rglob("*") if path.is_file()]
         self.assertEqual(len(object_files), 1)
         self.assertEqual(object_files[0].read_bytes(), content)
+        with closing(self.database.connect()) as connection:
+            completion_policy = connection.execute(
+                "SELECT data_classification FROM policy_decisions WHERE decision_id = ?",
+                (completed["policy_decision_id"],),
+            ).fetchone()
+        self.assertEqual(completion_policy["data_classification"], "restricted_financial")
 
     def test_evidence_upload_hash_mismatch_rejects_without_materializing_document(self) -> None:
         owner_context = context_from_headers(

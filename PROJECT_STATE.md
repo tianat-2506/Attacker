@@ -19,6 +19,10 @@
 
 ## Latest Slice
 
+- SQLite demo evidence upload-complete policy classification slice completed.
+- `complete_evidence_upload_ticket` now reads the pending ticket first and records the completion policy decision using the ticket's stored classification instead of defaulting to `confidential`.
+- Guarantee upload completion now preserves `restricted_financial` in `policy_decisions`, matching Postgres pilot upload-complete classification behavior.
+- Added trust-foundation coverage for restricted-financial completion policy plus denied/not-found/hash-mismatch regression paths.
 - Postgres pilot intake evidence validation parity slice completed.
 - Postgres pilot `validate_submission` now flags `GUARANTEE` and `INVOICE` evidence metadata using lower classifications with `RESTRICTED_FINANCIAL_CLASSIFICATION_REQUIRED`.
 - Invalid financial evidence metadata keeps pilot submissions in `draft`, sets section status `has_errors`, and quarantines related import batches instead of becoming `ready`.
@@ -219,6 +223,7 @@
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
 - Latest targeted backend proof:
+  - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_content_is_persisted_and_forced_to_pending_scan backend.tests.test_trust_foundation.TrustFoundationTests.test_cross_org_cannot_list_or_complete_evidence_upload_ticket backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_hash_mismatch_rejects_without_materializing_document` passed.
   - `python -B -m unittest backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_validate_submission_records_issues_and_ready_status backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_validate_submission_rejects_low_classification_financial_evidence` passed.
   - `python -B -m unittest backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_evidence_upload_reserves_document_version_policy_and_audit backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_financial_evidence_upload_requires_restricted_classification backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_evidence_upload_ticket_list_and_complete_are_audited` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_pending_evidence_upload_tickets_are_persisted_and_listed_without_object_key backend.tests.test_trust_foundation.TrustFoundationTests.test_financial_evidence_upload_requires_restricted_financial_classification backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_content_is_persisted_and_forced_to_pending_scan backend.tests.test_periodic_intake.PeriodicIntakeTests.test_financial_evidence_metadata_requires_restricted_financial_classification` passed.
