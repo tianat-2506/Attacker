@@ -158,7 +158,7 @@ Kiem tra rieng OIDC verifier bang local synthetic JWKS. Day chi chung minh co ch
 python scripts/run_oidc_jwks_smoke.py --synthetic --json
 ```
 
-Khi da cau hinh issuer/JWKS that, dung mot token test co chu ky tu issuer do de chay live proof. Buoc nay chi chung minh lat cat OIDC; full readiness gate van can PostgreSQL RLS, S3/MinIO va ClamAV live proof:
+Khi da cau hinh issuer/JWKS that, dung mot token test co chu ky tu issuer do de chay live proof. Buoc nay chi chung minh lat cat OIDC; full readiness gate van can PostgreSQL RLS, S3/MinIO PUT/GET/DELETE cleanup va ClamAV live proof:
 
 ```powershell
 $env:APP_MODE="pilot"

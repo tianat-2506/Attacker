@@ -75,6 +75,18 @@ def run_smoke(
     except (HTTPError, URLError, OSError, PilotFeatureUnavailableError) as exc:
         checks.append(SmokeCheck("object_storage_get_verify", "fail", f"GET smoke failed: {_safe_error(exc)}."))
 
+    try:
+        delete_url = settings.presign_delete_url(object_key)
+        request = Request(delete_url, method="DELETE")
+        with urlopen(request, timeout=timeout_seconds) as response:
+            status = getattr(response, "status", 0)
+        if status not in {200, 202, 204}:
+            checks.append(SmokeCheck("object_storage_delete", "fail", f"DELETE returned unexpected HTTP {status}."))
+        else:
+            checks.append(SmokeCheck("object_storage_delete", "pass", "DELETE smoke removed the temporary evidence object."))
+    except (HTTPError, URLError, OSError, PilotFeatureUnavailableError) as exc:
+        checks.append(SmokeCheck("object_storage_delete", "fail", f"DELETE smoke failed: {_safe_error(exc)}."))
+
     return _report(checks, settings=settings, object_key=object_key)
 
 
@@ -97,7 +109,7 @@ def _report(checks: list[SmokeCheck], *, settings: ObjectStorageSettings, object
         "object_key": object_key,
         "checks": [asdict(check) for check in checks],
         "failed_checks": [check.name for check in failed],
-        "notice": "Live object storage proof performs a real PUT and GET against the configured S3/MinIO bucket.",
+        "notice": "Live object storage proof performs a real PUT, GET and DELETE cleanup against the configured S3/MinIO bucket.",
     }
 
 
@@ -110,7 +122,7 @@ def _safe_error(exc: BaseException) -> str:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Run live S3/MinIO PUT/GET smoke for evidence object storage.")
+    parser = argparse.ArgumentParser(description="Run live S3/MinIO PUT/GET/DELETE smoke for evidence object storage.")
     parser.add_argument("--timeout", type=float, default=20.0, help="HTTP timeout in seconds.")
     parser.add_argument("--json", action="store_true", help="Print only the JSON report.")
     args = parser.parse_args()

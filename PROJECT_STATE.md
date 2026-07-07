@@ -35,16 +35,16 @@
 
 ## Latest Slice
 
-- Period snapshot review-history slice completed.
-- SQLite and Postgres pilot period snapshots now expose `review_history` for all review tasks in the selected period.
-- Frontend `PeriodSnapshot` maps `reviewHistory`; Data Intake renders a small Review history section under Period history.
-- No-approved snapshots can still show rejected/request-changes history; snapshots with no period/review return an empty list.
+- Evidence object-storage smoke cleanup slice completed.
+- `ObjectStorageSettings` can presign DELETE for temporary evidence objects.
+- Live S3/MinIO evidence smoke now proves PUT, GET verify, and DELETE cleanup; readiness gate/docs expect PUT/GET/DELETE proof.
+- Smoke regression covers cleanup success and cleanup failure without exposing secret keys.
 
 ## Verification
 
-- Latest targeted backend: SQLite approve/reject period snapshot tests and Postgres pilot period snapshot tests passed.
+- Latest targeted backend: evidence object-storage smoke, readiness-gate live proof, smoke artifact, and runtime-config S3 presign tests passed.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 139 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 137 tests, 2 skipped.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 

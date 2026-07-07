@@ -109,7 +109,7 @@ For local development without live PostgreSQL/OIDC/object storage, use the expli
 python scripts/run_trust_readiness_gate.py --allow-missing-live
 ```
 
-This can pass local checks while still reporting `pilot_ready=false` until live RLS, real OIDC/JWKS signed-token proof, S3/MinIO evidence storage proof, and malware-scanner proof exist.
+This can pass local checks while still reporting `pilot_ready=false` until live RLS, real OIDC/JWKS signed-token proof, S3/MinIO evidence storage PUT/GET/DELETE proof, and malware-scanner proof exist.
 
 Run the local operational smoke gate for the SQLite demo adapter:
 

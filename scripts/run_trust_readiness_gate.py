@@ -233,7 +233,7 @@ def _check_object_storage_config(env: dict[str, str], *, require_live: bool) -> 
             "evidence_object_storage_config",
             "config",
             True,
-            "S3/MinIO-compatible object storage variables are present. Live upload/download must still be proven.",
+            "S3/MinIO-compatible object storage variables are present. Live upload/download/delete cleanup must still be proven.",
         )
     message = (
         "Evidence object storage is not configured. Set EVIDENCE_OBJECT_STORE_ENDPOINT, "
@@ -277,7 +277,7 @@ def _check_object_storage_live(env: dict[str, str], *, require_live: bool) -> Ga
     command = "python scripts/run_evidence_object_storage_smoke.py --json"
     if not _env_enabled(env, "EVIDENCE_OBJECT_STORAGE_LIVE_SMOKE"):
         message = (
-            "Live S3/MinIO PUT/GET smoke was not run. Set EVIDENCE_OBJECT_STORAGE_LIVE_SMOKE=1 "
+            "Live S3/MinIO PUT/GET/DELETE smoke was not run. Set EVIDENCE_OBJECT_STORAGE_LIVE_SMOKE=1 "
             "after pointing object-storage variables at a disposable pilot bucket."
         )
         return (
@@ -300,7 +300,7 @@ def _check_object_storage_live(env: dict[str, str], *, require_live: bool) -> Ga
             "evidence_object_storage_live",
             "live",
             True,
-            _redact_sensitive(_tail(completed.stdout) or "S3/MinIO PUT/GET smoke passed.", env),
+            _redact_sensitive(_tail(completed.stdout) or "S3/MinIO PUT/GET/DELETE smoke passed.", env),
             command,
         )
     return _fail(
@@ -308,7 +308,7 @@ def _check_object_storage_live(env: dict[str, str], *, require_live: bool) -> Ga
         "live",
         True,
         _redact_sensitive(
-            f"S3/MinIO PUT/GET smoke failed with exit {completed.returncode}: "
+            f"S3/MinIO PUT/GET/DELETE smoke failed with exit {completed.returncode}: "
             f"{_tail(completed.stdout)} {_tail(completed.stderr)}",
             env,
         ).strip(),

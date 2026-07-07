@@ -97,6 +97,9 @@ class ObjectStorageSettings:
     def presign_get_url(self, object_key: str, request_time: datetime | None = None) -> str:
         return self._presign_url("GET", object_key, self.download_ttl_seconds, request_time=request_time)
 
+    def presign_delete_url(self, object_key: str, request_time: datetime | None = None) -> str:
+        return self._presign_url("DELETE", object_key, self.download_ttl_seconds, request_time=request_time)
+
     def _presign_url(
         self,
         method: str,
