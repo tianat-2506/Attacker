@@ -1843,6 +1843,38 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertIn("INSERT INTO audit_logs", sql_text)
         self.assertEqual(connector.connection.commits, 1)
 
+    def test_postgres_pilot_financial_evidence_upload_requires_restricted_classification(self) -> None:
+        connector = _FakePostgresConnector([])
+        service = PostgresPilotService("postgresql://user:pass@localhost/db", "pilot", connector=connector)
+        context = RequestContext(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="user-oidc-1",
+            actor_role="org_admin",
+            purpose="evidence_intake",
+            scopes=frozenset({"evidence:write"}),
+            roles=frozenset({"org_admin"}),
+            memberships=(Membership("BIZ-009", "org_admin"),),
+            request_id="req-pilot-evidence-finance-classification",
+            auth_assurance="oidc-jwks",
+            app_mode="pilot",
+        )
+
+        with self.assertRaisesRegex(ValueError, "restricted_financial"):
+            service.governance.create_evidence_upload_url(
+                organization_id="BIZ-009",
+                file_name="guarantee.pdf",
+                content_type="application/pdf",
+                byte_size=2048,
+                classification="confidential",
+                purpose="evidence_intake",
+                context=context,
+                document_type="GUARANTEE",
+            )
+
+        self.assertEqual(connector.connection.calls, [])
+        self.assertEqual(connector.connection.commits, 0)
+
     def test_postgres_pilot_evidence_upload_uses_s3_minio_presigned_url_when_configured(self) -> None:
         connector = _FakePostgresConnector([])
         service = PostgresPilotService(
@@ -1945,6 +1977,7 @@ class RuntimeConfigTests(unittest.TestCase):
         self.assertIn("EVIDENCE_UPLOAD_COMPLETED", sql_text)
         self.assertIn("UPDATE evidence_documents", sql_text)
         self.assertIn("UPDATE evidence_versions", sql_text)
+        self.assertIn("ticket.evidence_version_id::text, ticket.classification", sql_text)
         self.assertIn("object_key_hash", sql_text)
         self.assertEqual(connector.connection.commits, 2)
 

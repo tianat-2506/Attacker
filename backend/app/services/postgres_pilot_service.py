@@ -14,7 +14,12 @@ from urllib.parse import quote, urlsplit
 from uuid import uuid4
 
 from backend.app.services.access_control import AccessDeniedError, PolicyService, RequestContext
-from backend.app.services.governance_service import INVOICE_STATES, INVOICE_TRANSITIONS, invoice_identity_hash
+from backend.app.services.governance_service import (
+    INVOICE_STATES,
+    INVOICE_TRANSITIONS,
+    invoice_identity_hash,
+    require_evidence_upload_classification,
+)
 from backend.app.services.intake_service import EVIDENCE_REQUIREMENTS, IntakeNotFoundError
 from backend.app.services.postgres_migrations import PostgresMigrationRunner, normalize_postgres_url, set_rls_session
 
@@ -3785,6 +3790,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
         document_type: str = "CERTIFICATION",
         period_key: str | None = None,
     ) -> dict[str, Any]:
+        require_evidence_upload_classification(document_type, classification)
         decision = PolicyService.require(
             "create_evidence_upload",
             context,
@@ -4210,7 +4216,7 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                     effect, reason, purpose, request_id
                   )
                   SELECT
-                    ticket.tenant_id, ar.user_id, %s, 'evidence_upload_ticket', ticket.evidence_version_id::text, %s,
+                    ticket.tenant_id, ar.user_id, %s, 'evidence_upload_ticket', ticket.evidence_version_id::text, ticket.classification,
                     'allow', %s, %s, %s
                   FROM ticket, actor_row ar
                   RETURNING decision_id
@@ -4271,7 +4277,6 @@ class PostgresPilotGovernanceService(_UnsupportedPilotComponent):
                     title,
                     normalized_hash,
                     decision.action,
-                    decision.data_classification,
                     decision.reason,
                     context.purpose,
                     context.request_id,

@@ -19,6 +19,10 @@
 
 ## Latest Slice
 
+- Postgres pilot evidence-classification parity slice completed.
+- Shared backend guardrail now rejects `GUARANTEE` and `INVOICE` evidence uploads unless classification is `restricted_financial` in both SQLite demo and Postgres pilot adapters.
+- Postgres pilot upload-complete policy decision now records `ticket.classification` from the reserved evidence document instead of downgrading completion audit to `confidential`.
+- Added runtime-config coverage for Postgres pilot rejection before DB access and completion policy SQL using ticket classification.
 - Pending evidence upload period-scope slice completed.
 - Frontend evidence upload refreshes now request `GET /api/v1/evidence/upload-tickets` with the selected monthly `period_key`.
 - Pending upload state merges by `(businessId, periodKey)`, preserving other periods while replacing only the selected period and keeping local fallback uploads.
@@ -186,7 +190,7 @@
 
 ## Verification
 
-- Backend full: `python -B -m unittest discover -s backend\tests` passed, 132 tests, 2 skipped.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed, 133 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
 - Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
@@ -211,9 +215,10 @@
   - `canRequestRiskSignal` test confirms masked high-level risk can be requested without enabling sensitive company/vault visibility.
   - Dashboard alert mapper test confirms `recent_alerts[].business_id` becomes `recentAlerts[].businessId`.
 - Latest targeted backend proof:
+  - `python -B -m unittest backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_evidence_upload_reserves_document_version_policy_and_audit backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_financial_evidence_upload_requires_restricted_classification backend.tests.test_runtime_config.RuntimeConfigTests.test_postgres_pilot_evidence_upload_ticket_list_and_complete_are_audited` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_pending_evidence_upload_tickets_are_persisted_and_listed_without_object_key backend.tests.test_trust_foundation.TrustFoundationTests.test_financial_evidence_upload_requires_restricted_financial_classification backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_content_is_persisted_and_forced_to_pending_scan backend.tests.test_periodic_intake.PeriodicIntakeTests.test_financial_evidence_metadata_requires_restricted_financial_classification` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_risk_signal_can_be_high_level_without_evidence_access` passed.
-  - `python -B -m unittest discover -s backend\tests` passed, 132 tests, 2 skipped.
+  - `python -B -m unittest discover -s backend\tests` passed, 133 tests, 2 skipped.
   - `python -B -m unittest backend.tests.test_database_service.DatabaseServiceTests.test_recommendations_are_shortlist_not_disrupted_supplier` passed.
   - `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_selected_period_context_does_not_silently_fallback_for_finance_or_evidence` passed.
 - Live connection inbox smoke request `REQ-6BF5994C8C52`:

@@ -69,7 +69,7 @@ def invoice_identity_hash(seller_id: str, buyer_id: str, invoice_hash: str, amou
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _require_evidence_upload_classification(document_type: str, classification: str) -> None:
+def require_evidence_upload_classification(document_type: str, classification: str) -> None:
     if document_type.upper() in RESTRICTED_FINANCIAL_EVIDENCE_TYPES and classification != "restricted_financial":
         raise ValueError(f"{document_type} uploads must use restricted_financial classification.")
 
@@ -297,7 +297,7 @@ class GovernanceService:
         document_type: str = "CERTIFICATION",
         period_key: str | None = None,
     ) -> dict[str, Any]:
-        _require_evidence_upload_classification(document_type, classification)
+        require_evidence_upload_classification(document_type, classification)
         decision = PolicyService.require(
             "create_evidence_upload",
             context,
