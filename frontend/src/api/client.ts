@@ -716,12 +716,24 @@ function apiIntakeErrorReport(item: any): IntakeErrorReport {
 }
 
 function apiPeriodSnapshot(item: any): PeriodSnapshot {
+  const reviewDecision = item.review_decision
+    ? {
+        reviewTaskId: item.review_decision.review_task_id,
+        assignedTo: item.review_decision.assigned_to ?? null,
+        assignmentReason: item.review_decision.assignment_reason ?? null,
+        decidedBy: item.review_decision.decided_by ?? null,
+        decision: item.review_decision.decision ?? null,
+        decisionNote: item.review_decision.decision_note ?? null,
+        decidedAt: item.review_decision.decided_at ?? null
+      }
+    : null;
   return {
     businessId: item.business_id,
     organizationId: item.organization_id,
     period: item.period ? apiPeriod({ id: item.period.id ?? "", ...item.period }) : {},
     approvedVersion: item.approved_version,
     approvedAt: item.approved_at,
+    reviewDecision,
     latestSubmissionStatus: item.latest_submission_status,
     sections: item.sections ?? {},
     financials: item.financials ?? [],

@@ -753,12 +753,14 @@ class PeriodicIntakeService:
                 """,
                 (organization_id, period["reporting_period_id"]),
             ).fetchall()
+            review_decision = self._snapshot_review_decision(connection, snapshot["approved_submission_id"])
         return {
             "business_id": organization_id,
             "organization_id": organization_id,
             "period": self._period_payload(dict(period)),
             "approved_version": snapshot["approved_version"],
             "approved_at": snapshot["approved_at"],
+            "review_decision": review_decision,
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": _load_json(snapshot["summary_json"], {}),
             "financials": [dict(row) for row in financials],
@@ -772,6 +774,29 @@ class PeriodicIntakeService:
     def _public_evidence_row(self, row: dict[str, Any]) -> dict[str, Any]:
         row.pop("object_key", None)
         return row
+
+    def _snapshot_review_decision(self, connection: Any, submission_id: str) -> dict[str, Any] | None:
+        row = connection.execute(
+            """
+            SELECT review_task_id, assigned_to, assignment_reason, decided_by, decision, decision_note, decided_at
+            FROM review_tasks
+            WHERE submission_id = ? AND status = 'closed'
+            ORDER BY decided_at DESC, created_at DESC
+            LIMIT 1
+            """,
+            (submission_id,),
+        ).fetchone()
+        if row is None:
+            return None
+        return {
+            "review_task_id": row["review_task_id"],
+            "assigned_to": row["assigned_to"],
+            "assignment_reason": row["assignment_reason"],
+            "decided_by": row["decided_by"],
+            "decision": row["decision"],
+            "decision_note": row["decision_note"],
+            "decided_at": row["decided_at"],
+        }
 
     def _materialize(self, connection: Any, submission: dict[str, Any], now: str) -> None:
         sections = {
@@ -1611,6 +1636,7 @@ class PeriodicIntakeService:
             "period": {"period_key": period_key, "status": "not_created"},
             "approved_version": None,
             "approved_at": None,
+            "review_decision": None,
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": {},
             "financials": [],

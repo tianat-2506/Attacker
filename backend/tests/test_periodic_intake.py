@@ -89,6 +89,12 @@ class PeriodicIntakeTests(unittest.TestCase):
         snapshot = self.service.intake.period_snapshot("BIZ-009", "2026-07")
         self.assertEqual(snapshot["approved_version"], 1)
         self.assertEqual(snapshot["latest_submission_status"], "approved")
+        self.assertEqual(snapshot["review_decision"]["review_task_id"], submitted["review_task"]["id"])
+        self.assertEqual(snapshot["review_decision"]["assigned_to"], "reviewer-001")
+        self.assertEqual(snapshot["review_decision"]["decided_by"], self.context.actor_id)
+        self.assertEqual(snapshot["review_decision"]["decision"], "approve")
+        self.assertEqual(snapshot["review_decision"]["decision_note"], "Accepted for July demo period.")
+        self.assertTrue(snapshot["review_decision"]["decided_at"])
         self.assertEqual(snapshot["financials"][0]["revenue"], 790_000_000)
         self.assertEqual(snapshot["products"][0]["sku"], "SME-BEV-330")
         self.assertEqual(snapshot["evidence"][0]["document_hash"], "hash-july-haccp")
@@ -420,6 +426,7 @@ class PeriodicIntakeTests(unittest.TestCase):
         self.assertEqual(rejected["status"], "rejected")
         snapshot = self.service.intake.period_snapshot("BIZ-009", "2026-09")
         self.assertIsNone(snapshot["approved_version"])
+        self.assertIsNone(snapshot["review_decision"])
         self.assertEqual(snapshot["latest_submission_status"], "rejected")
 
     def test_pending_scan_evidence_blocks_approval(self) -> None:

@@ -1203,6 +1203,7 @@ export function DataIntakeWorkspace({
           <div className="snapshot-summary">
             <h3>Approved snapshot</h3>
             <p>{snapshot?.approvedVersion ? `Version ${snapshot.approvedVersion} approved ${snapshot.approvedAt}` : "No approved snapshot for this period."}</p>
+            {snapshot?.reviewDecision ? <small>Review: {snapshot.reviewDecision.decision ?? "recorded"} by {snapshot.reviewDecision.decidedBy ?? "reviewer"}{snapshot.reviewDecision.decidedAt ? ` at ${snapshot.reviewDecision.decidedAt}` : ""}{snapshot.reviewDecision.decisionNote ? ` / ${snapshot.reviewDecision.decisionNote}` : ""}</small> : null}
             <span>{snapshot?.financials?.length ?? 0} financial · {snapshot?.products?.length ?? 0} products · {snapshot?.evidence?.length ?? 0} evidence</span>
           </div>
           <div className="snapshot-summary evidence-gate-summary">

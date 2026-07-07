@@ -35,17 +35,18 @@
 
 ## Latest Slice
 
-- CSV raw-record lineage slice completed.
-- Approved canonical financial/product rows now use CSV `raw_records.raw_record_id` as `source_record_id` when materialized from CSV import batches.
-- Manual form fallback still uses the existing section-derived source ids.
-- Regression coverage proves approved CSV financials and products link back to the exact raw rows used for ingestion.
+- Period snapshot reviewer-history slice completed.
+- SQLite and Postgres pilot period snapshots now expose `review_decision` metadata for approved submissions.
+- Frontend `PeriodSnapshot` maps `reviewDecision` and Data Intake shows the reviewer decision/note in the approved snapshot panel.
+- Empty/no-approved snapshots return `review_decision=null`.
 
 ## Verification
 
-- Latest backend targeted: `python -B -m unittest backend.tests.test_periodic_intake.PeriodicIntakeTests.test_csv_raw_records_link_to_approved_canonical_rows backend.tests.test_periodic_intake.PeriodicIntakeTests.test_csv_import_replay_is_idempotent backend.tests.test_periodic_intake.PeriodicIntakeTests.test_draft_validate_submit_approve_materializes_period_snapshot` passed.
+- Latest targeted backend: periodic intake approve/reject snapshot tests and Postgres pilot period snapshot tests passed.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 137 tests, 2 skipped.
-- Frontend baseline from prior slices: `npm.cmd exec tsc -- --noEmit`, `npm.cmd exec vitest -- run --cache=false` 51 tests, and `npm.cmd exec vite -- build --outDir .vite-check-dist` passed.
-- Latest slice did not require frontend rerun.
+- Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 
 ## Hard Boundaries
 
@@ -58,7 +59,7 @@
 - Continue functional completion over UI polish:
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Continue tightening Intake/Vault provenance for evidence object versions and reviewer history.
+- Continue tightening Intake/Vault provenance for evidence object versions and reviewer history UI/history drawer.
 - Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
 - Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
 

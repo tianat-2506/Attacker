@@ -1708,6 +1708,15 @@ class RuntimeConfigTests(unittest.TestCase):
                     "latest_submission_status": "approved",
                     "approved_version": 2,
                     "approved_at": "2026-07-31T10:00:00+00:00",
+                    "review_decision": {
+                        "review_task_id": "rev-2026-07",
+                        "assigned_to": "reviewer-001",
+                        "assignment_reason": "auto_assigned_primary_org_reviewer",
+                        "decided_by": "reviewer-001",
+                        "decision": "approve",
+                        "decision_note": "Approved for pilot snapshot.",
+                        "decided_at": "2026-07-31T10:00:00+00:00",
+                    },
                     "financials": [{"version": 2, "revenue": 790_000_000, "source_submission_id": "sub-2026-07"}],
                     "evidence": [{"title": "HACCP July certificate", "malware_scan_status": "clean"}],
                     "source_submission_ids": ["sub-2026-07"],
@@ -1736,6 +1745,8 @@ class RuntimeConfigTests(unittest.TestCase):
         snapshot_query = next(call for call in connector.connection.calls if "PERIOD_SNAPSHOT_READ" in call[0])
         self.assertEqual(snapshot["period"]["period_key"], "2026-07")
         self.assertEqual(snapshot["approved_version"], 2)
+        self.assertEqual(snapshot["review_decision"]["review_task_id"], "rev-2026-07")
+        self.assertEqual(snapshot["review_decision"]["decision_note"], "Approved for pilot snapshot.")
         self.assertEqual(snapshot["financials"][0]["revenue"], 790_000_000)
         self.assertEqual(snapshot["evidence"][0]["malware_scan_status"], "clean")
         self.assertNotIn("object_key", snapshot["evidence"][0])
@@ -1792,6 +1803,7 @@ class RuntimeConfigTests(unittest.TestCase):
         snapshot_query = next(call for call in connector.connection.calls if "PERIOD_SNAPSHOT_READ" in call[0])
         self.assertEqual(snapshot["period"]["period_key"], "2026-08")
         self.assertIsNone(snapshot["approved_version"])
+        self.assertIsNone(snapshot["review_decision"])
         self.assertEqual(snapshot["latest_submission_status"], "in_review")
         self.assertEqual(snapshot["financials"], [])
         self.assertEqual(snapshot["products"], [])

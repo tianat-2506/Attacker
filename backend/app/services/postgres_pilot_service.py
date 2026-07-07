@@ -2678,6 +2678,26 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                   ORDER BY ds.version DESC, ds.updated_at DESC
                   LIMIT 1
                 ),
+                review_decision AS (
+                  SELECT (
+                    SELECT jsonb_strip_nulls(
+                      jsonb_build_object(
+                        'review_task_id', review.review_task_id::text,
+                        'assigned_to', review.assigned_to::text,
+                        'assignment_reason', review.assignment_reason,
+                        'decided_by', review.decided_by::text,
+                        'decision', review.decision,
+                        'decision_note', review.decision_note,
+                        'decided_at', review.decided_at::text
+                      )
+                    )
+                    FROM review_tasks review
+                    JOIN approved_submission approved ON approved.submission_id = review.submission_id
+                    WHERE review.status = 'closed'
+                    ORDER BY review.decided_at DESC NULLS LAST, review.created_at DESC, review.review_task_id DESC
+                    LIMIT 1
+                  ) AS data
+                ),
                 policy AS (
                   INSERT INTO policy_decisions (
                     tenant_id, actor_id, action, resource_type, resource_id, data_classification,
@@ -2858,6 +2878,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                   products.data AS products,
                   evidence.data AS evidence,
                   source_ids.data AS source_submission_ids,
+                  review_decision.data AS review_decision,
                   policy.decision_id::text AS policy_decision_id,
                   audit.event_id::text AS audit_event_id
                 FROM period_row period
@@ -2869,6 +2890,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                 CROSS JOIN products
                 CROSS JOIN evidence
                 CROSS JOIN source_ids
+                CROSS JOIN review_decision
                 """,
                 (
                     context.actor_id,
@@ -2911,6 +2933,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             "period": self._period_payload(row),
             "approved_version": int(row["approved_version"]),
             "approved_at": row.get("approved_at"),
+            "review_decision": self._json_object(row.get("review_decision")),
             "latest_submission_status": row.get("latest_submission_status"),
             "sections": {},
             "financials": self._json_list(row.get("financials")),
@@ -2995,6 +3018,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             "period": {"period_key": period_key, "status": "not_created"},
             "approved_version": None,
             "approved_at": None,
+            "review_decision": None,
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": {},
             "financials": [],
@@ -3013,6 +3037,16 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             loaded = json.loads(value)
             return loaded if isinstance(loaded, list) else []
         return []
+
+    def _json_object(self, value: Any) -> dict[str, Any] | None:
+        if value is None:
+            return None
+        if isinstance(value, dict):
+            return value
+        if isinstance(value, str):
+            loaded = json.loads(value)
+            return loaded if isinstance(loaded, dict) else None
+        return None
 
     def _list_payload(self, payload: Any) -> list[dict[str, Any]]:
         if payload is None:

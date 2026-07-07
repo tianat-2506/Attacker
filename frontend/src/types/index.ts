@@ -494,6 +494,15 @@ export interface PeriodSnapshot {
   period: Partial<PeriodKey> & { periodKey?: string };
   approvedVersion?: number | null;
   approvedAt?: string | null;
+  reviewDecision?: {
+    reviewTaskId: string;
+    assignedTo?: string | null;
+    assignmentReason?: string | null;
+    decidedBy?: string | null;
+    decision?: string | null;
+    decisionNote?: string | null;
+    decidedAt?: string | null;
+  } | null;
   latestSubmissionStatus?: string | null;
   sections: Record<string, unknown>;
   financials: Array<Record<string, number | string | null>>;
