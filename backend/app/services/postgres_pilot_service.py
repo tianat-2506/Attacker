@@ -2698,6 +2698,36 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                     LIMIT 1
                   ) AS data
                 ),
+                review_history AS (
+                  SELECT COALESCE(
+                    jsonb_agg(
+                      jsonb_strip_nulls(
+                        jsonb_build_object(
+                          'review_task_id', review.review_task_id::text,
+                          'submission_id', submission.submission_id::text,
+                          'review_status', review.status,
+                          'assigned_to', review.assigned_to::text,
+                          'assignment_reason', review.assignment_reason,
+                          'assigned_at', review.assigned_at::text,
+                          'decided_by', review.decided_by::text,
+                          'decision', review.decision,
+                          'decision_note', review.decision_note,
+                          'decided_at', review.decided_at::text,
+                          'created_at', review.created_at::text,
+                          'submission_status', submission.status,
+                          'source', submission.source_type,
+                          'version', submission.version,
+                          'submitted_at', submission.submitted_at::text
+                        )
+                      )
+                      ORDER BY COALESCE(review.decided_at, review.created_at) DESC, review.review_task_id DESC
+                    ),
+                    '[]'::jsonb
+                  ) AS data
+                  FROM review_tasks review
+                  JOIN data_submissions submission ON submission.submission_id = review.submission_id
+                  JOIN period_row period ON period.reporting_period_id = submission.reporting_period_id
+                ),
                 policy AS (
                   INSERT INTO policy_decisions (
                     tenant_id, actor_id, action, resource_type, resource_id, data_classification,
@@ -2879,6 +2909,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                   evidence.data AS evidence,
                   source_ids.data AS source_submission_ids,
                   review_decision.data AS review_decision,
+                  review_history.data AS review_history,
                   policy.decision_id::text AS policy_decision_id,
                   audit.event_id::text AS audit_event_id
                 FROM period_row period
@@ -2891,6 +2922,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
                 CROSS JOIN evidence
                 CROSS JOIN source_ids
                 CROSS JOIN review_decision
+                CROSS JOIN review_history
                 """,
                 (
                     context.actor_id,
@@ -2934,6 +2966,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             "approved_version": int(row["approved_version"]),
             "approved_at": row.get("approved_at"),
             "review_decision": self._json_object(row.get("review_decision")),
+            "review_history": self._json_list(row.get("review_history")),
             "latest_submission_status": row.get("latest_submission_status"),
             "sections": {},
             "financials": self._json_list(row.get("financials")),
@@ -3019,6 +3052,7 @@ class PostgresPilotIntakeService(_UnsupportedPilotComponent):
             "approved_version": None,
             "approved_at": None,
             "review_decision": None,
+            "review_history": [],
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": {},
             "financials": [],

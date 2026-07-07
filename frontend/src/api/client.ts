@@ -727,6 +727,23 @@ function apiPeriodSnapshot(item: any): PeriodSnapshot {
         decidedAt: item.review_decision.decided_at ?? null
       }
     : null;
+  const reviewHistory = (item.review_history ?? []).map((row: any) => ({
+    reviewTaskId: row.review_task_id,
+    submissionId: row.submission_id,
+    reviewStatus: row.review_status ?? null,
+    assignedTo: row.assigned_to ?? null,
+    assignmentReason: row.assignment_reason ?? null,
+    assignedAt: row.assigned_at ?? null,
+    decidedBy: row.decided_by ?? null,
+    decision: row.decision ?? null,
+    decisionNote: row.decision_note ?? null,
+    decidedAt: row.decided_at ?? null,
+    createdAt: row.created_at ?? null,
+    submissionStatus: row.submission_status ?? null,
+    source: row.source ?? null,
+    version: row.version == null ? null : Number(row.version),
+    submittedAt: row.submitted_at ?? null
+  }));
   return {
     businessId: item.business_id,
     organizationId: item.organization_id,
@@ -734,6 +751,7 @@ function apiPeriodSnapshot(item: any): PeriodSnapshot {
     approvedVersion: item.approved_version,
     approvedAt: item.approved_at,
     reviewDecision,
+    reviewHistory,
     latestSubmissionStatus: item.latest_submission_status,
     sections: item.sections ?? {},
     financials: item.financials ?? [],

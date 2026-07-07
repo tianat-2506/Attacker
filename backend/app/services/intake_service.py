@@ -727,8 +727,11 @@ class PeriodicIntakeService:
                 """,
                 (organization_id, period["reporting_period_id"]),
             ).fetchone()
+            review_history = self._period_review_history(connection, organization_id, period["reporting_period_id"])
             if snapshot is None:
-                return self._empty_snapshot(organization_id, period_key, dict(latest_submission) if latest_submission else None)
+                empty = self._empty_snapshot(organization_id, period_key, dict(latest_submission) if latest_submission else None)
+                empty["review_history"] = review_history
+                return empty
             financials = connection.execute(
                 """
                 SELECT * FROM period_financial_snapshots
@@ -777,6 +780,7 @@ class PeriodicIntakeService:
             "approved_version": snapshot["approved_version"],
             "approved_at": snapshot["approved_at"],
             "review_decision": review_decision,
+            "review_history": review_history,
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": _load_json(snapshot["summary_json"], {}),
             "financials": [dict(row) for row in financials],
@@ -807,6 +811,55 @@ class PeriodicIntakeService:
         if latest_malware_scan_status is not None:
             row["malware_scan_status"] = latest_malware_scan_status
         return row
+
+    def _period_review_history(self, connection: Any, organization_id: str, reporting_period_id: str) -> list[dict[str, Any]]:
+        rows = connection.execute(
+            """
+            SELECT
+              review.review_task_id,
+              review.submission_id,
+              review.status AS review_status,
+              review.assigned_to,
+              review.assignment_reason,
+              review.assigned_at,
+              review.decided_by,
+              review.decision,
+              review.decision_note,
+              review.decided_at,
+              review.created_at,
+              submission.status AS submission_status,
+              submission.source_type,
+              submission.version,
+              submission.submitted_at
+            FROM review_tasks review
+            JOIN data_submissions submission ON submission.submission_id = review.submission_id
+            WHERE submission.organization_id = ?
+              AND submission.reporting_period_id = ?
+            ORDER BY COALESCE(review.decided_at, review.created_at) DESC, review.review_task_id DESC
+            LIMIT 20
+            """,
+            (organization_id, reporting_period_id),
+        ).fetchall()
+        return [
+            {
+                "review_task_id": row["review_task_id"],
+                "submission_id": row["submission_id"],
+                "review_status": row["review_status"],
+                "assigned_to": row["assigned_to"],
+                "assignment_reason": row["assignment_reason"],
+                "assigned_at": row["assigned_at"],
+                "decided_by": row["decided_by"],
+                "decision": row["decision"],
+                "decision_note": row["decision_note"],
+                "decided_at": row["decided_at"],
+                "created_at": row["created_at"],
+                "submission_status": row["submission_status"],
+                "source": row["source_type"],
+                "version": int(row["version"]),
+                "submitted_at": row["submitted_at"],
+            }
+            for row in rows
+        ]
 
     def _snapshot_review_decision(self, connection: Any, submission_id: str) -> dict[str, Any] | None:
         row = connection.execute(
@@ -1670,6 +1723,7 @@ class PeriodicIntakeService:
             "approved_version": None,
             "approved_at": None,
             "review_decision": None,
+            "review_history": [],
             "latest_submission_status": latest_submission["status"] if latest_submission else None,
             "sections": {},
             "financials": [],

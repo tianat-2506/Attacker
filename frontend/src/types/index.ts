@@ -503,6 +503,23 @@ export interface PeriodSnapshot {
     decisionNote?: string | null;
     decidedAt?: string | null;
   } | null;
+  reviewHistory?: Array<{
+    reviewTaskId: string;
+    submissionId: string;
+    reviewStatus?: string | null;
+    assignedTo?: string | null;
+    assignmentReason?: string | null;
+    assignedAt?: string | null;
+    decidedBy?: string | null;
+    decision?: string | null;
+    decisionNote?: string | null;
+    decidedAt?: string | null;
+    createdAt?: string | null;
+    submissionStatus?: string | null;
+    source?: string | null;
+    version?: number | null;
+    submittedAt?: string | null;
+  }>;
   latestSubmissionStatus?: string | null;
   sections: Record<string, unknown>;
   financials: Array<Record<string, number | string | null>>;

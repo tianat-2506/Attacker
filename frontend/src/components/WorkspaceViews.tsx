@@ -1227,6 +1227,20 @@ export function DataIntakeWorkspace({
         <div className="panel-heading"><span>Period history</span><Clock3 size={16} /></div>
         <div className="period-list">{periods.slice(0, 10).map((period) => <button key={period.id} type="button" onClick={() => onPeriodChange(period.periodKey)} className={period.periodKey === selectedPeriod ? "is-active" : ""}><strong>{period.periodKey}</strong><span>{period.status}</span><small>{period.latestSubmissionStatus ?? "no submission"}</small></button>)}</div>
       </section>
+      {snapshot?.reviewHistory?.length ? (
+        <section className="tool-panel period-history">
+          <div className="panel-heading"><span>Review history</span><Clock3 size={16} /></div>
+          <div className="period-list">
+            {snapshot.reviewHistory.slice(0, 6).map((item) => (
+              <button key={item.reviewTaskId} type="button" disabled>
+                <strong>{item.decision ?? item.reviewStatus ?? "open"}</strong>
+                <span>v{item.version ?? "-"} / {item.submissionStatus ?? "submission"}</span>
+                <small>{item.decidedBy ?? item.assignedTo ?? "reviewer"}{item.decisionNote ? ` / ${item.decisionNote}` : ""}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <DataNotice>{submission?.advisoryNotice ?? snapshot?.advisoryNotice ?? "Data intake is decision-support only and requires human review before use."}</DataNotice>
     </div>
   );

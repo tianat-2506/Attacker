@@ -35,16 +35,18 @@
 
 ## Latest Slice
 
-- SQLite period snapshot evidence-version provenance slice completed.
-- Approved snapshot evidence rows now include latest `evidence_version_id`, `object_version`, hash/content metadata and scan status when a Vault upload/version exists.
-- Snapshot evidence still strips `object_key`; form/CSV evidence without an object version keeps existing document-level fallback metadata.
-- Regression coverage proves uploaded clean `GUARANTEE` evidence exposes version metadata without leaking object storage keys.
+- Period snapshot review-history slice completed.
+- SQLite and Postgres pilot period snapshots now expose `review_history` for all review tasks in the selected period.
+- Frontend `PeriodSnapshot` maps `reviewHistory`; Data Intake renders a small Review history section under Period history.
+- No-approved snapshots can still show rejected/request-changes history; snapshots with no period/review return an empty list.
 
 ## Verification
 
-- Latest targeted backend: uploaded-evidence snapshot and manual snapshot tests passed.
+- Latest targeted backend: SQLite approve/reject period snapshot tests and Postgres pilot period snapshot tests passed.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 137 tests, 2 skipped.
-- Latest frontend baseline from prior slice: `npm.cmd exec tsc -- --noEmit` and `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
+- Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
 
 ## Hard Boundaries
 
@@ -57,7 +59,7 @@
 - Continue functional completion over UI polish:
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Continue tightening reviewer history UI/history drawer and Postgres live-readiness proof.
+- Continue tightening Postgres live-readiness proof and evidence object-store/malware-scan integration.
 - Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
 - Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
 
