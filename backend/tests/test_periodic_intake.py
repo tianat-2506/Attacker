@@ -125,6 +125,57 @@ class PeriodicIntakeTests(unittest.TestCase):
         self.assertEqual(ruleset_registry["rulesets"][0]["artifact_type"], "risk")
         self.assertEqual(recompute_jobs["jobs"][0]["idempotency_key"], f"analytics:{submission['id']}")
 
+    def test_uploaded_clean_evidence_is_counted_and_sourced_in_approved_snapshot(self) -> None:
+        upload = self.service.governance.create_evidence_upload_url(
+            organization_id="BIZ-009",
+            file_name="performance-guarantee-2026-12.pdf",
+            document_type="GUARANTEE",
+            period_key="2026-12",
+            content_type="application/pdf",
+            byte_size=4096,
+            classification="restricted_financial",
+            purpose="evidence_intake",
+            context=self.context,
+        )
+        completed = self.service.governance.complete_evidence_upload_ticket(
+            evidence_version_id=upload["evidence_version_id"],
+            organization_id="BIZ-009",
+            document_hash="f" * 64,
+            malware_scan_status="pending_scan",
+            title="Performance guarantee December",
+            context=self.context,
+        )
+        self.service.governance.record_evidence_scan_result(
+            evidence_version_id=upload["evidence_version_id"],
+            organization_id="BIZ-009",
+            malware_scan_status="clean",
+            scanner_name="demo-scanner",
+            scanner_version="0.1",
+            scanned_at=None,
+            details="Synthetic clean result for intake snapshot provenance.",
+            context=self.context,
+        )
+        submission = self.service.intake.create_submission(
+            organization_id="BIZ-009",
+            period_key="2026-12",
+            source_type="manual",
+            sections={"financials": {"revenue": 12_000, "cash_in": 12_500, "cash_out": 9_000}},
+            context=self.context,
+        )
+        submitted = self.service.intake.submit_submission(submission["id"], self.context)
+
+        self.service.intake.review_decision(submitted["review_task"]["id"], "approve", "Clean uploaded guarantee present.", self.context)
+        snapshot = self.service.intake.period_snapshot("BIZ-009", "2026-12")
+        guarantee = next(item for item in snapshot["evidence"] if item["evidence_document_id"] == completed["evidence_document_id"])
+
+        self.assertEqual(snapshot["sections"]["evidence"]["count"], 1)
+        self.assertIn(submission["id"], snapshot["source_submission_ids"])
+        self.assertIn(f"UPLOAD-{upload['evidence_version_id']}", snapshot["source_submission_ids"])
+        self.assertEqual(guarantee["source_submission_id"], f"UPLOAD-{upload['evidence_version_id']}")
+        self.assertEqual(guarantee["source_record_id"], upload["evidence_version_id"])
+        self.assertEqual(guarantee["classification"], "restricted_financial")
+        self.assertEqual(guarantee["malware_scan_status"], "clean")
+
     def test_reviewer_queue_lists_open_submissions_and_closes_after_decision(self) -> None:
         submission = self.service.intake.create_submission(
             organization_id="BIZ-009",

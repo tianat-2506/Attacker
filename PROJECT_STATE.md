@@ -35,15 +35,15 @@
 
 ## Latest Slice
 
-- SQLite Evidence Vault governance classification aligned for restricted financial evidence.
-- `add_evidence_version`, `record_evidence_scan_result`, `create_evidence_access_grant`, `revoke_evidence_access_grant`, `update_evidence_retention`, and download-denied policy logging now use the document/version classification instead of defaulting to `confidential`.
-- Manual evidence versions now inherit document classification, document type, and period metadata.
-- Added regression coverage proving `GUARANTEE` evidence remains `restricted_financial` across upload completion, denied download, scan result, add-version, access grant/revoke, and retention update.
+- Intake approved snapshot provenance slice completed.
+- Clean evidence uploaded through Vault tickets for the selected period is counted in approved period snapshot evidence summary, even when not repeated in the form/CSV evidence section.
+- `period_snapshots.source_submission_ids_json` now includes upload provenance IDs such as `UPLOAD-{evidence_version_id}` alongside the approved data submission id.
+- Regression coverage proves a clean uploaded `GUARANTEE` remains `restricted_financial` and carries `source_submission_id`/`source_record_id` into the approved snapshot.
 
 ## Verification
 
-- Latest backend targeted: `python -B -m unittest backend.tests.test_trust_foundation.TrustFoundationTests.test_restricted_evidence_governance_actions_preserve_classification backend.tests.test_trust_foundation.TrustFoundationTests.test_evidence_upload_content_is_persisted_and_forced_to_pending_scan backend.tests.test_trust_foundation.TrustFoundationTests.test_completed_evidence_upload_ticket_appears_in_vault_as_pending_review` passed.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 135 tests, 2 skipped.
+- Latest backend targeted: `python -B -m unittest backend.tests.test_periodic_intake.PeriodicIntakeTests.test_uploaded_clean_evidence_is_counted_and_sourced_in_approved_snapshot backend.tests.test_periodic_intake.PeriodicIntakeTests.test_draft_validate_submit_approve_materializes_period_snapshot backend.tests.test_periodic_intake.PeriodicIntakeTests.test_pending_scan_evidence_blocks_approval` passed.
+- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 136 tests, 2 skipped.
 - Frontend baseline from prior slices: `npm.cmd exec tsc -- --noEmit`, `npm.cmd exec vitest -- run --cache=false` 51 tests, and `npm.cmd exec vite -- build --outDir .vite-check-dist` passed.
 - Latest slice did not require frontend rerun.
 
@@ -58,7 +58,7 @@
 - Continue functional completion over UI polish:
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Intake should upload supporting guarantee/evidence documents and preserve provenance into approved snapshots.
+- Continue tightening Intake/Vault provenance for CSV raw records, object versions, and reviewer history.
 - Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
 - Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
 

@@ -864,7 +864,6 @@ class PeriodicIntakeService:
             malware_scan_status = str(item.get("malware_scan_status") or "pending_scan")
             if malware_scan_status != "clean":
                 continue
-            approved_evidence_count += 1
             title = str(item.get("title") or item.get("file_name") or f"Evidence {index}")
             digest = str(item.get("document_hash") or hashlib.sha256(title.encode("utf-8")).hexdigest())
             connection.execute(
@@ -895,6 +894,25 @@ class PeriodicIntakeService:
                 ),
             )
 
+        approved_evidence_rows = connection.execute(
+            """
+            SELECT evidence_document_id, source_submission_id
+            FROM evidence_documents
+            WHERE tenant_id = ?
+              AND organization_id = ?
+              AND reporting_period_id = ?
+              AND LOWER(COALESCE(malware_scan_status, '')) = 'clean'
+            ORDER BY created_at, evidence_document_id
+            """,
+            (submission["tenant_id"], submission["organization_id"], submission["reporting_period_id"]),
+        ).fetchall()
+        approved_evidence_count = len(approved_evidence_rows)
+        source_submission_ids = [submission["submission_id"]]
+        for evidence_row in approved_evidence_rows:
+            source_submission_id = evidence_row["source_submission_id"]
+            if source_submission_id and source_submission_id not in source_submission_ids:
+                source_submission_ids.append(source_submission_id)
+
         summary = {
             "profile": {"status": "approved" if sections.get("profile") else "not_submitted"},
             "financials": {"status": "approved" if financials else "not_submitted", "revenue": _int(financials.get("revenue")) if financials else 0},
@@ -918,7 +936,7 @@ class PeriodicIntakeService:
                 submission["version"],
                 now,
                 _json(summary),
-                _json([submission["submission_id"]]),
+                _json(source_submission_ids),
             ),
         )
         connection.execute(
