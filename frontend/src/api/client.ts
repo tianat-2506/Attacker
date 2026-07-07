@@ -514,6 +514,47 @@ function fallbackRecommendationsForRequest(buyerId: string, disruptedSupplierId:
     }));
 }
 
+const fallbackInvoiceVerifications: Record<string, InvoiceVerificationData> = {
+  "INV-0241": {
+    invoiceId: "INV-0241",
+    sellerId: "BIZ-002",
+    buyerId: "BIZ-005",
+    amount: 240_000_000,
+    issueDate: "2026-06-05",
+    dueDate: "2026-07-05",
+    storedHash: "0f9323ce77ce8c5f3f3d807a59f5ab48",
+    computedHash: "0f9323ce77ce8c5f3f3d807a59f5ab48",
+    fundingStatus: "funded",
+    confirmedBy: ["buyer", "seller"],
+    doubleFinancingAlert: false,
+    accessScope: "synthetic_fallback",
+    dataScope: "restricted_financial",
+    advisoryNotice: "Synthetic invoice registry signal; lender/human review remains required."
+  },
+  "INV-0242": {
+    invoiceId: "INV-0242",
+    sellerId: "BIZ-005",
+    buyerId: "BIZ-009",
+    amount: 68_000_000,
+    issueDate: "2026-06-08",
+    dueDate: "2026-07-08",
+    storedHash: "7b42ef8490a3d869c0ca0e8ec8d95c87",
+    computedHash: "7b42ef8490a3d869c0ca0e8ec8d95c87",
+    fundingStatus: "unfunded",
+    confirmedBy: ["buyer", "seller"],
+    doubleFinancingAlert: false,
+    accessScope: "synthetic_fallback",
+    dataScope: "restricted_financial",
+    advisoryNotice: "Synthetic invoice registry signal; lender/human review remains required."
+  }
+};
+
+function fallbackInvoiceVerification(invoiceId: string): InvoiceVerificationData {
+  const record = fallbackInvoiceVerifications[invoiceId];
+  if (!record) throw new Error(`No synthetic invoice fallback is mapped for ${invoiceId}.`);
+  return record;
+}
+
 export async function getRecommendations(buyerId = "BIZ-009", periodKey?: string | null, disruptedSupplierId = "BIZ-005"): Promise<Recommendation[]> {
   try {
     const payload = await requestJson("/api/v1/recommendations/suppliers", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ buyer_id: buyerId, disrupted_supplier_id: disruptedSupplierId, period_key: periodKey, product_category: "beverage", product_specification: "UHT, 1L, khong duong", required_monthly_volume: 12000, preferred_payment_term_days: 30, top_k: 3 }) });
@@ -523,13 +564,13 @@ export async function getRecommendations(buyerId = "BIZ-009", periodKey?: string
   }
 }
 
-export async function getInvoiceVerification(invoiceId = "INV-0242"): Promise<InvoiceVerificationData> {
+export async function getInvoiceVerification(invoiceId: string): Promise<InvoiceVerificationData> {
   try {
     const payload = await requestJson(`/api/v1/invoices/${invoiceId}/verification`);
     const data = payload.data;
     return { invoiceId: data.invoice_id, sellerId: data.seller_id, buyerId: data.buyer_id, amount: Number(data.amount), issueDate: data.issue_date, dueDate: data.due_date, storedHash: data.invoice_hash, computedHash: data.computed_hash, fundingStatus: data.funding_status, confirmedBy: String(data.confirmed_by).split(";"), doubleFinancingAlert: Boolean(data.double_financing_alert), accessScope: data.access_scope, dataScope: data.data_scope, policyDecisionId: data.policy_decision_id, advisoryNotice: data.advisory_notice };
   } catch (error) {
-    return demoFallback(error, () => ({ invoiceId, sellerId: "BIZ-005", buyerId: "BIZ-009", amount: 68_000_000, issueDate: "2026-06-08", dueDate: "2026-07-08", storedHash: "7b42ef8490a3d869c0ca0e8ec8d95c87", computedHash: "7b42ef8490a3d869c0ca0e8ec8d95c87", fundingStatus: "unfunded", confirmedBy: ["buyer", "seller"], doubleFinancingAlert: false, accessScope: "synthetic_fallback", dataScope: "restricted_financial", advisoryNotice: "Hash match is a signal; partner review remains required." }));
+    return demoFallback(error, () => fallbackInvoiceVerification(invoiceId));
   }
 }
 

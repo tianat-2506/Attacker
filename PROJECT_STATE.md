@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Invoice fallback scope slice completed.
+- Frontend API client now requires an explicit invoice id for `getInvoiceVerification`.
+- Offline demo invoice fallback is keyed by requested invoice id; `INV-0241` no longer falls back to `INV-0242` parties/amount, and unmapped invoice ids fail instead of silently using another record.
 - Invoice selection scope slice completed.
 - App no longer boots by always reading `INV-0242`; invoice review now resolves a demo invoice candidate from active account plus selected business and requests it only when the Invoice view is allowed.
 - Added `frontend/src/utils/invoiceSelection.ts` and tests for selected org, own org fallback and no-mapped-invoice lockout.
@@ -153,14 +156,15 @@
 
 - Backend full: `python -B -m unittest discover -s backend\tests` passed, 130 tests, 2 skipped.
 - Frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 41 tests.
+- Frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 42 tests.
 - Build: `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
 - Latest targeted frontend proof:
   - `npm.cmd exec tsc -- --noEmit` passed.
+  - `npm.cmd exec vitest -- run src\api\client.test.ts src\utils\invoiceSelection.test.ts --cache=false` passed, 17 tests.
   - `npm.cmd exec vitest -- run src\utils\invoiceSelection.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts --cache=false` passed, 16 tests.
   - `npm.cmd exec vitest -- run src\components\WorkspaceViews.test.ts src\api\client.test.ts --cache=false` passed, 27 tests.
-  - `npm.cmd exec vitest -- run --cache=false` passed, 41 tests.
+  - `npm.cmd exec vitest -- run --cache=false` passed, 42 tests.
   - `npm.cmd exec vite -- build --outDir .vite-check-dist` passed; temp output removed.
   - Client fallback test confirms fallback recommendations exclude selected disrupted supplier.
   - Recommendation helper test confirms masked cards hide sensitive reason chips and count restricted reasons.

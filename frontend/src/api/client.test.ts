@@ -126,6 +126,21 @@ describe("api client trust headers", () => {
     await expect(getInvoiceVerification("INV-0242")).rejects.toThrow("/api/v1/invoices/INV-0242/verification returned 403");
   });
 
+  it("keeps offline invoice fallback tied to the requested invoice id", async () => {
+    const fetchMock = vi.fn(async () => {
+      throw new TypeError("offline");
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const invoice = await getInvoiceVerification("INV-0241");
+    expect(invoice.invoiceId).toBe("INV-0241");
+    expect(invoice.sellerId).toBe("BIZ-002");
+    expect(invoice.buyerId).toBe("BIZ-005");
+    expect(invoice.amount).toBe(240_000_000);
+    expect(invoice.fundingStatus).toBe("funded");
+    await expect(getInvoiceVerification("INV-999")).rejects.toThrow("No synthetic invoice fallback is mapped for INV-999");
+  });
+
   it("does not send demo headers or silently fallback outside demo mode", async () => {
     vi.resetModules();
     vi.stubEnv("VITE_APP_MODE", "pilot");
