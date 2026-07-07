@@ -7,7 +7,8 @@ import {
   canLoadFinanceForView,
   canLoadIntakePeriodContextForView,
   canLoadRecommendationsForView,
-  canLoadRiskSignalForView
+  canLoadRiskSignalForView,
+  canLoadSupplyMapRegistrationsForView
 } from "./workspaceDataLoading";
 
 describe("workspace data loading guardrails", () => {
@@ -34,6 +35,10 @@ describe("workspace data loading guardrails", () => {
     expect(canLoadConnectionRequestsForView("onboarding", true)).toBe(true);
     expect(canLoadConnectionRequestsForView("matching", true)).toBe(false);
 
+    expect(canLoadSupplyMapRegistrationsForView("onboarding", true, false)).toBe(true);
+    expect(canLoadSupplyMapRegistrationsForView("onboarding", false, true)).toBe(true);
+    expect(canLoadSupplyMapRegistrationsForView("overview", true, true)).toBe(false);
+
     expect(canLoadAuditWorkspaceForView("audit", true)).toBe(true);
     expect(canLoadAuditWorkspaceForView("overview", true)).toBe(false);
   });
@@ -46,6 +51,7 @@ describe("workspace data loading guardrails", () => {
     expect(canLoadIntakePeriodContextForView("intake", true, false)).toBe(false);
     expect(canLoadRecommendationsForView("matching", false)).toBe(false);
     expect(canLoadConnectionRequestsForView("onboarding", false)).toBe(false);
+    expect(canLoadSupplyMapRegistrationsForView("onboarding", false, false)).toBe(false);
     expect(canLoadAuditWorkspaceForView("audit", false)).toBe(false);
   });
 });

@@ -32,6 +32,10 @@ export function canLoadConnectionRequestsForView(activeView: AppView, canReadCon
   return activeView === "onboarding" && canReadConnectionRequests;
 }
 
+export function canLoadSupplyMapRegistrationsForView(activeView: AppView, canCreateOnboarding: boolean, canReviewOnboarding: boolean) {
+  return activeView === "onboarding" && (canCreateOnboarding || canReviewOnboarding);
+}
+
 export function canLoadAuditWorkspaceForView(activeView: AppView, canReadOps: boolean) {
   return activeView === "audit" && canReadOps;
 }

@@ -80,7 +80,8 @@ import {
   canLoadFinanceForView,
   canLoadIntakePeriodContextForView,
   canLoadRecommendationsForView,
-  canLoadRiskSignalForView
+  canLoadRiskSignalForView,
+  canLoadSupplyMapRegistrationsForView
 } from "./utils/workspaceDataLoading";
 import type {
   AppView,
@@ -492,6 +493,10 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
+    if (!canLoadSupplyMapRegistrationsForView(activeView, canCreateOnboarding, canReviewOnboarding)) {
+      setSupplyMapRegistrations([]);
+      return () => { mounted = false; };
+    }
     getSupplyMapRegistrations()
       .then((registrations) => {
         if (mounted) setSupplyMapRegistrations(registrations);
@@ -500,7 +505,7 @@ export default function App() {
         if (mounted && frontendAppMode === "demo") setSupplyMapRegistrations(initialSupplyMapRegistrations);
       });
     return () => { mounted = false; };
-  }, [activeAccount.id]);
+  }, [activeAccount.id, activeView, canCreateOnboarding, canReviewOnboarding]);
 
   useEffect(() => {
     if (!allowedViewIds.includes(activeView)) {

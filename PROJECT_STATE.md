@@ -19,6 +19,9 @@
 
 ## Latest Slice
 
+- Supply-map registration lazy-load guardrail slice completed.
+- Supply-map registration list now loads only while Onboarding is active and the account can create or review onboarding records.
+- Leaving Onboarding clears the registration list from frontend state; direct create/review actions still update their own results.
 - Audit/admin-ops lazy-load guardrail slice completed.
 - Audit trail and admin operational checks no longer load during app bootstrap or selected-business changes unless Audit is the active workspace and the account can read ops/audit.
 - Direct action refreshes for audit/adminOps are also gated by the active Audit workspace.
