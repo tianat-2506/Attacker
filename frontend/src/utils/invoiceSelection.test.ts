@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { demoAccounts } from "./demoAccounts";
+import { demoInvoiceCandidates, demoInvoiceRecords } from "./demoInvoices";
 import { invoiceIdForWorkspace } from "./invoiceSelection";
 
 describe("invoiceIdForWorkspace", () => {
+  it("uses the same demo invoice records for selection and fallback", () => {
+    expect(demoInvoiceCandidates.map((item) => item.invoiceId).sort()).toEqual(demoInvoiceRecords.map((item) => item.invoiceId).sort());
+  });
+
   it("uses the selected organization invoice instead of a fixed invoice id", () => {
     const demoOperator = demoAccounts.find((account) => account.id === "demo-operator")!;
 

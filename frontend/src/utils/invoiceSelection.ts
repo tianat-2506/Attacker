@@ -1,15 +1,5 @@
 import type { DemoAccount } from "../types";
-
-export interface DemoInvoiceCandidate {
-  invoiceId: string;
-  sellerId: string;
-  buyerId: string;
-}
-
-export const demoInvoiceCandidates: DemoInvoiceCandidate[] = [
-  { invoiceId: "INV-0242", sellerId: "BIZ-005", buyerId: "BIZ-009" },
-  { invoiceId: "INV-0241", sellerId: "BIZ-002", buyerId: "BIZ-005" }
-];
+import { demoInvoiceCandidates, type DemoInvoiceCandidate } from "./demoInvoices";
 
 function isInvoiceParty(candidate: DemoInvoiceCandidate, organizationId: string) {
   return candidate.sellerId === organizationId || candidate.buyerId === organizationId;
