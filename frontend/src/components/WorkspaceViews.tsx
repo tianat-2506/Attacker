@@ -87,6 +87,7 @@ import {
 import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassification";
 import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
+import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../utils/demoStory";
 import { MapView } from "./MapView";
 
 const moneyCompact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
@@ -182,18 +183,26 @@ export function OverviewWorkspace({
   onSelect,
   onSimulate,
   onReset,
+  canOpenIntake,
+  onOpenIntake,
   canOpenRisk,
   onOpenRisk,
   canOpenMatching,
-  onOpenMatching
+  onOpenMatching,
+  canOpenAudit,
+  onOpenAudit
 }: NetworkProps & {
   dashboard: DashboardData;
   onSimulate: () => void;
   onReset: () => void;
+  canOpenIntake: boolean;
+  onOpenIntake: () => void;
   canOpenRisk: boolean;
   onOpenRisk: (businessId?: string | null) => void;
   canOpenMatching: boolean;
   onOpenMatching: () => void;
+  canOpenAudit: boolean;
+  onOpenAudit: () => void;
 }) {
   const nodes = focused ? scenario.nodes : allNodes;
   const edges = focused ? scenario.edges : allEdges;
@@ -202,6 +211,24 @@ export function OverviewWorkspace({
   const shockTarget = allNodes.find((node) => node.id === shock.shockNodeId)
     ?? scenario.nodes.find((node) => node.id === shock.shockNodeId);
   const shockTargetName = shockTarget?.name ?? "Selected supplier";
+  const storySteps = demoStorySteps({ shock, canOpenIntake, canOpenRisk, canOpenMatching, canOpenAudit });
+  const readyStepCount = demoStoryReadyCount(storySteps);
+
+  function storyStepIcon(id: DemoStoryStepId) {
+    if (id === "intake") return <FileCheck2 size={15} />;
+    if (id === "map_risk") return <MapPinned size={15} />;
+    if (id === "shock") return <AlertTriangle size={15} />;
+    if (id === "matching") return <Handshake size={15} />;
+    return <Fingerprint size={15} />;
+  }
+
+  function storyStepAction(id: DemoStoryStepId) {
+    if (id === "intake") return <button className="text-button" type="button" disabled={!canOpenIntake} onClick={onOpenIntake}>Open</button>;
+    if (id === "map_risk") return <button className="text-button" type="button" disabled={!canOpenRisk} onClick={() => onOpenRisk(shock.shockNodeId)}>Review</button>;
+    if (id === "shock") return <button className="text-button" type="button" disabled={shock.active} onClick={onSimulate}>{shock.active ? "Live" : "Run"}</button>;
+    if (id === "matching") return <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>Open</button>;
+    return <button className="text-button" type="button" disabled={!canOpenAudit} onClick={onOpenAudit}>Open</button>;
+  }
 
   return (
     <div className="page-stack overview-page">
@@ -209,6 +236,15 @@ export function OverviewWorkspace({
         <section className="map-panel tool-panel">
           <NetworkToolbar focused={focused} onFocusedChange={onFocusedChange} scenario={scenario} />
           <MapView nodes={nodes} edges={edges} selectedId={selectedId} shock={shock} onSelect={onSelect} />
+          {shock.active ? (
+            <div className="map-shock-banner">
+              <span><AlertTriangle size={17} /><strong>{shockTargetName} down</strong></span>
+              <span>{shock.affectedSmeCount} SMEs exposed</span>
+              <span>{numberCompact.format(shock.monthlyVolumeAtRisk)} units/month</span>
+              <span>{shock.avgStockoutDays.toFixed(1)} day stockout window</span>
+              <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>{canOpenMatching ? "Recovery shortlist ready" : "Matching unavailable"}</button>
+            </div>
+          ) : null}
           <div className="map-footbar">
             <div className="legend-row">
               <span><i className="status-dot healthy" />Low</span>
@@ -239,6 +275,29 @@ export function OverviewWorkspace({
               {shock.active ? <button className="icon-button" type="button" title="Reset scenario" onClick={onReset}><RefreshCw size={16} /></button> : null}
             </div>
           </div>
+
+          <section className="demo-run-panel">
+            <div className="panel-heading"><span>3-5 min demo run</span><strong>{readyStepCount}/5 live</strong></div>
+            <div className="demo-run-list">
+              {storySteps.map((step) => (
+                <div className={`demo-run-row ${step.status}`} key={step.id}>
+                  <span className="demo-run-icon">{storyStepIcon(step.id)}</span>
+                  <span><strong>{step.order} / {step.label}</strong><small>{step.detail}</small></span>
+                  <i>{step.status}</i>
+                  {storyStepAction(step.id)}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {shock.active ? (
+            <section className="shock-impact-panel">
+              <div><strong>{numberCompact.format(shock.monthlyVolumeAtRisk)}</strong><small>units/month exposed</small></div>
+              <div><strong>VND {moneyCompact.format(shock.revenueAtRisk)}</strong><small>revenue at risk</small></div>
+              <div><strong>{shock.avgStockoutDays.toFixed(1)} days</strong><small>stockout window</small></div>
+              <div><strong>{shock.affectedSmeCount}</strong><small>downstream SMEs</small></div>
+            </section>
+          ) : null}
 
           <section className="alerts-list" aria-label="Recent alerts">
             <div className="list-title"><h3>Recent alerts</h3><button className="text-button" type="button" disabled={!canOpenRisk} onClick={() => onOpenRisk()}>{canOpenRisk ? "Review risk" : "Risk unavailable"}</button></div>

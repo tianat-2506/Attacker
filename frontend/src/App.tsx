@@ -157,6 +157,7 @@ function initialViewId() {
 }
 
 const frontendAppMode = import.meta.env.VITE_APP_MODE ?? "demo";
+const DEMO_DISRUPTED_SUPPLIER_ID = "BIZ-005";
 
 async function evidenceUploadPayload(file: File) {
   const buffer = await file.arrayBuffer();
@@ -310,7 +311,7 @@ function demoAccessDecisionFor(account: ReturnType<typeof getDemoAccountById>, b
 }
 
 export default function App() {
-  const didHydrateInitialAccount = useRef(false);
+  const previousAccountId = useRef<string | null>(null);
   const [activeView, setActiveView] = useState<AppView>(initialViewId);
   const [activeAccountId, setActiveAccountId] = useState(initialDemoAccountId);
   const [allNodes, setAllNodes] = useState<BusinessNode[]>(fallbackBusinesses);
@@ -332,6 +333,7 @@ export default function App() {
   const [authContext, setAuthContext] = useState<AuthMe | null>(null);
   const [authContextStatus, setAuthContextStatus] = useState<"loading" | "verified" | "mismatch" | "unavailable">("loading");
   const [shock, setShock] = useState<ShockState>(defaultShock);
+  const [disruptedSupplierId, setDisruptedSupplierId] = useState(DEMO_DISRUPTED_SUPPLIER_ID);
   const [connectionRequest, setConnectionRequest] = useState<ConnectionRequest | null>(null);
   const [connectionRequests, setConnectionRequests] = useState<ConnectionRequest[]>([]);
   const [focusedNetwork, setFocusedNetwork] = useState(true);
@@ -443,13 +445,14 @@ export default function App() {
   );
 
   useEffect(() => {
-    const isInitialAccountHydration = !didHydrateInitialAccount.current;
-    didHydrateInitialAccount.current = true;
+    const accountChanged = previousAccountId.current !== null && previousAccountId.current !== activeAccount.id;
+    previousAccountId.current = activeAccount.id;
     setDemoAccountContext(activeAccount);
     window.localStorage.setItem("vietsupply.demoAccountId", activeAccount.id);
-    if (!isInitialAccountHydration) {
+    if (accountChanged) {
       setSelectedId(activeAccount.defaultBusinessId);
       setActiveView(firstAllowedView(activeAccount));
+      setDisruptedSupplierId(DEMO_DISRUPTED_SUPPLIER_ID);
     }
     setDetail(null);
     setEvidence(null);
@@ -604,7 +607,7 @@ export default function App() {
       setRecommendations([]);
       return () => { mounted = false; };
     }
-    getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, selectedId)
+    getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, disruptedSupplierId)
       .then((shortlist) => {
         if (mounted) setRecommendations(shortlist);
       })
@@ -612,7 +615,7 @@ export default function App() {
         if (mounted) setRecommendations([]);
       });
     return () => { mounted = false; };
-  }, [activeAccount.defaultBusinessId, activeAccount.id, activeView, dataPermissions.canReadRecommendations, selectedId, selectedPeriod]);
+  }, [activeAccount.defaultBusinessId, activeAccount.id, activeView, dataPermissions.canReadRecommendations, disruptedSupplierId, selectedPeriod]);
 
   useEffect(() => {
     let mounted = true;
@@ -745,16 +748,18 @@ export default function App() {
   }, [activeView, selectedId, activeAccount.id, canReadOps]);
 
   const selected = useMemo(() => allNodes.find((node) => node.id === selectedId) ?? scenario?.nodes.find((node) => node.id === selectedId), [allNodes, scenario, selectedId]);
+  const disruptedSupplier = useMemo(() => allNodes.find((node) => node.id === disruptedSupplierId) ?? scenario?.nodes.find((node) => node.id === disruptedSupplierId), [allNodes, disruptedSupplierId, scenario]);
   const matchingBuyer = useMemo(() => allNodes.find((node) => node.id === activeAccount.defaultBusinessId) ?? scenario?.nodes.find((node) => node.id === activeAccount.defaultBusinessId), [activeAccount.defaultBusinessId, allNodes, scenario]);
   const filteredNodes = useMemo(() => allNodes.filter((node) => (region === "ALL" || node.province === region) && (category === "ALL" || node.category === category)), [allNodes, region, category]);
   const filteredIds = useMemo(() => new Set(filteredNodes.map((node) => node.id)), [filteredNodes]);
   const filteredEdges = useMemo(() => allEdges.filter((edge) => filteredIds.has(edge.sourceId) && filteredIds.has(edge.targetId)), [allEdges, filteredIds]);
 
   async function handleSimulate() {
-    setSelectedId("BIZ-005");
+    setDisruptedSupplierId(DEMO_DISRUPTED_SUPPLIER_ID);
+    setSelectedId(DEMO_DISRUPTED_SUPPLIER_ID);
     const [result, shortlist] = await Promise.all([
       simulateShock(),
-      dataPermissions.canReadRecommendations ? getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, "BIZ-005") : Promise.resolve([])
+      dataPermissions.canReadRecommendations ? getRecommendations(activeAccount.defaultBusinessId, selectedPeriod, DEMO_DISRUPTED_SUPPLIER_ID) : Promise.resolve([])
     ]);
     setShock(result);
     setRecommendations(shortlist);
@@ -765,7 +770,10 @@ export default function App() {
   }
 
   function handleOpenRisk(businessId?: string | null) {
-    if (businessId) setSelectedId(businessId);
+    if (businessId) {
+      setSelectedId(businessId);
+      setDisruptedSupplierId(businessId);
+    }
     openView("risk");
   }
 
@@ -775,14 +783,14 @@ export default function App() {
       const request = await createConnectionRequest({
         buyerId: activeAccount.defaultBusinessId,
         targetSupplierId: supplierId,
-        disruptedSupplierId: selectedId !== supplierId ? selectedId : undefined
+        disruptedSupplierId: disruptedSupplierId !== supplierId ? disruptedSupplierId : undefined
       });
       setConnectionRequest(request);
       setConnectionRequests((current) => [request, ...current.filter((item) => item.requestId !== request.requestId)]);
       if (canLoadAuditWorkspaceForView(activeView, canReadOps)) setAudit(await getAudit());
     } catch (error) {
       if (frontendAppMode !== "demo") throw error;
-      const localRequest: ConnectionRequest = { requestId: "REQ-OFFLINE", buyerId: activeAccount.defaultBusinessId, targetSupplierId: supplierId, disruptedSupplierId: selectedId !== supplierId ? selectedId : undefined, status: "pending", consentStatus: "awaiting_supplier_consent", requestedAt: new Date().toISOString(), nextStep: "Queued locally; start the backend to persist the audit event." };
+      const localRequest: ConnectionRequest = { requestId: "REQ-OFFLINE", buyerId: activeAccount.defaultBusinessId, targetSupplierId: supplierId, disruptedSupplierId: disruptedSupplierId !== supplierId ? disruptedSupplierId : undefined, status: "pending", consentStatus: "awaiting_supplier_consent", requestedAt: new Date().toISOString(), nextStep: "Queued locally; start the backend to persist the audit event." };
       setConnectionRequest(localRequest);
       setConnectionRequests((current) => [localRequest, ...current.filter((item) => item.requestId !== localRequest.requestId)]);
     }
@@ -1262,13 +1270,13 @@ export default function App() {
         <div className="view-heading-mobile"><span>{accessibleNavItems.find((item) => item.id === activeView)?.label}</span><i>{activeAccount.label}</i></div>
 
         <div className="view-content">
-          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
+          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenIntake={allowedViewIds.includes("intake")} onOpenIntake={() => openView("intake")} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} canOpenAudit={allowedViewIds.includes("audit")} onOpenAudit={() => openView("audit")} /> : null}
           {activeView === "map" ? <MapWorkspace {...networkProps} selected={selected} detail={detail} accessDecision={selectedAccessDecision} /> : null}
           {activeView === "companies" ? <CompaniesWorkspace nodes={scopedCompanyNodes} selectedId={selectedId} onSelect={setSelectedId} detail={detail} evidence={evidence} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId) : []} accessDecision={selectedAccessDecision} downloadTicket={evidenceDownloadTicket} viewError={evidenceViewError} viewingEvidenceVersionId={viewingEvidenceVersionId} onViewEvidence={handleViewEvidenceDocument} onCloseDownloadTicket={() => { setEvidenceDownloadTicket(null); setEvidenceViewError(null); }} /> : null}
           {activeView === "intake" ? <DataIntakeWorkspace nodes={intakePermissions.canApproveDraft ? allNodes : scopedCompanyNodes} selectedId={selectedId} selectedPeriod={selectedPeriod} periods={periods} submission={intakeSubmission} snapshot={periodSnapshot} importBatch={importBatch} errorReport={intakeErrorReport} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId && item.periodKey === selectedPeriod) : []} vaultDocuments={dataPermissions.canReadEvidence && canReadSelectedBusiness ? evidence?.documents ?? [] : []} evidenceScanJob={evidenceScanJob} permittedBusinessIds={permittedIntakeBusinessIds} actionPermissions={intakePermissions} reviewQueue={reviewQueue} reviewQueueNotice={reviewQueueNotice} busy={intakeBusy} onSelect={setSelectedId} onPeriodChange={setSelectedPeriod} onCreateDraft={handleCreateDraft} onSaveDraft={handleSaveDraft} onValidate={handleValidateDraft} onSubmit={handleSubmitDraft} onReviewDecision={handleReviewDecision} onReviewQueueSelect={handleReviewQueueSelect} onImportCsv={handleImportCsv} onEvidenceUpload={handleEvidenceUpload} onRunEvidenceScan={handleRunEvidenceScan} onLoadErrorReport={handleLoadErrorReport} /> : null}
           {activeView === "onboarding" ? <OnboardingWorkspace account={activeAccount} registrations={visibleSupplyMapRegistrations} connectionRequests={connectionRequests} canCreate={canCreateOnboarding} canReview={canReviewOnboarding} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onCreate={handleCreateSupplyMapRegistration} onDecision={handleSupplyMapRegistrationDecision} onConnectionDecision={handleConnectionRequestDecision} /> : null}
           {activeView === "risk" ? <RiskWorkspace signal={riskSignal} subjectName={selected?.name ?? riskSignal?.businessId ?? selectedId} accessNotice={riskAccessNotice} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
-          {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={selected?.name ?? selectedId} selectedPeriod={selectedPeriod} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
+          {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={disruptedSupplier?.name ?? disruptedSupplierId} selectedPeriod={selectedPeriod} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
           {activeView === "finance" ? <FinanceWorkspace finance={finance} account={activeAccount} accessNotice={financeAccessNotice} /> : null}
           {activeView === "invoice" ? <InvoiceWorkspace invoice={invoice} account={activeAccount} accessNotice={invoiceAccessNotice} /> : null}
           {activeView === "audit" ? <AuditWorkspace audit={audit} adminOps={adminOps} accounts={demoAccounts} activeAccount={activeAccount} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onConnectionDecision={handleConnectionRequestDecision} /> : null}

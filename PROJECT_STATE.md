@@ -35,18 +35,24 @@
 
 ## Latest Slice
 
-- PostgreSQL pilot intake evidence retention parity slice completed.
-- Postgres review queues and approval checks now treat `scheduled_delete`/`deleted` evidence as `retired`/rejected, matching SQLite demo behavior.
-- Postgres materialization and period snapshot reads filter retired evidence out of approved evidence rows/source ids.
-- Previous download-ticket/vault/usable retired-evidence blocks remain in place.
+- Demo competition focus accepted: prioritize a polished 3-5 minute story over deeper production backend work unless user redirects.
+- Overview now has a live `3-5 min demo run` checklist: Data Intake -> Supply Map/Risk -> Shock Simulation -> Recovery Matching -> Consent/Audit.
+- Shock Simulation now surfaces active-story status plus impact metrics for exposed units, revenue at risk, stockout window and downstream SMEs.
+- Shock path now keeps a separate disrupted supplier context so Risk/Matching stay tied to Dai Tin/`BIZ-005` instead of drifting to the buyer selected business.
+- URL `business` state now survives initial React dev hydration; direct rehearsal links like buyer + `BIZ-005` no longer reset to buyer default on first mount.
+- QA subagent reviewed the demo path; addressed the highest-impact items for direct-link stability, buyer/disrupted-supplier mismatch, and stronger shock-to-recovery handoff.
+- Added `frontend/src/utils/demoStory.ts` with tests so future sessions do not accidentally break the locked demo flow.
 
 ## Verification
 
-- Latest targeted backend: Postgres runtime config and periodic intake suites passed, 51 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoStory.test.ts --cache=false` passed, 3 tests.
+- Latest frontend typecheck/build: `npm.cmd run build` passed.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 51 tests.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 54 tests.
+- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
+- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
 
 ## Hard Boundaries
 
@@ -56,7 +62,12 @@
 
 ## Next Best Work
 
-- Continue functional completion over UI polish:
+- Continue demo competition completion:
+- Keep demo story locked to 3-5 minutes; avoid adding steps that dilute the pitch.
+- Polish Supply Map + Risk + Matching around the Dai Tin disruption story.
+- Make Shock Simulation more impressive with clear before/after paths and recovery sequencing.
+- Make Data Intake visibly prove input lineage: form, CSV, evidence upload, scan, review, approved snapshot.
+- Keep audit/consent/privacy visible in every cross-org action.
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
 - Continue tightening Postgres live-readiness proof and evidence object-store/malware-scan integration.
