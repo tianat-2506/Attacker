@@ -88,6 +88,7 @@ import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassifi
 import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../utils/demoStory";
+import { intakeLineageSteps, type IntakeLineageStepId } from "../utils/intakeLineage";
 import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
@@ -1064,6 +1065,13 @@ export function DataIntakeWorkspace({
   const blockedRequirementCount = evidenceRequirementRows.filter((item) => item.workflowStatus === "pending" || item.workflowStatus === "rejected").length;
   const pendingScanCount = pendingEvidenceUploads.filter((item) => item.malwareScanStatus === "pending_scan").length
     + vaultDocuments.filter((item) => Boolean(item.evidenceVersionId) && evidenceVerificationBucket(item.verificationStatus) === "PENDING").length;
+  const lineageSteps = intakeLineageSteps({
+    submission,
+    importBatch,
+    pendingEvidenceUploads,
+    snapshot,
+    selectedReviewTask
+  });
 
   function updateFinancial(key: keyof typeof financials, value: string) {
     setFinancials((current) => ({ ...current, [key]: value }));
@@ -1104,6 +1112,13 @@ export function DataIntakeWorkspace({
     }));
   }
 
+  function lineageIcon(id: IntakeLineageStepId) {
+    if (id === "raw") return <FileText size={15} />;
+    if (id === "staging") return <Database size={15} />;
+    if (id === "review") return <ShieldCheck size={15} />;
+    return <CheckCircle2 size={15} />;
+  }
+
   return (
     <div className="page-stack intake-workspace">
       <header className="workspace-heading">
@@ -1116,6 +1131,19 @@ export function DataIntakeWorkspace({
         <label><span>Period</span><input type="month" value={selectedPeriod} onChange={(event) => onPeriodChange(event.target.value)} /></label>
         <label><span>Known periods</span><select value={selectedPeriod} onChange={(event) => onPeriodChange(event.target.value)}><option value={selectedPeriod}>{selectedPeriod}</option>{periods.filter((period) => period.periodKey !== selectedPeriod).slice(0, 12).map((period) => <option key={period.id} value={period.periodKey}>{period.periodKey} · {period.status}</option>)}</select></label>
         <div className="intake-state"><span>Status</span><strong>{submission?.status ?? snapshot?.latestSubmissionStatus ?? "not started"}</strong></div>
+      </section>
+
+      <section className="tool-panel intake-lineage-panel" aria-label="Data intake lineage">
+        <div className="panel-heading"><span>Input lineage</span><strong>raw / staging / review / canonical</strong></div>
+        <div className="intake-lineage-list">
+          {lineageSteps.map((step) => (
+            <div className={`intake-lineage-step ${step.status}`} key={step.id}>
+              <span className="intake-lineage-icon">{lineageIcon(step.id)}</span>
+              <span><strong>{step.label}</strong><small>{step.detail}</small></span>
+              <i>{step.metric}</i>
+            </div>
+          ))}
+        </div>
       </section>
 
       <div className="intake-grid">

@@ -18,6 +18,7 @@ Say:
 
 Point to:
 
+- Input lineage rail: raw input, staging validation, human review and approved snapshot.
 - Selected organization and reporting month.
 - Form + CSV import.
 - Evidence upload ticket and scan/review gate.
