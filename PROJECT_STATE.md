@@ -1,106 +1,68 @@
 # Project State
 
 - Workspace: `D:\attacker`.
-- Repo: `https://github.com/tianat-2506/Attacker`, branch `main`.
-- Product: VietSupply Radar; supply-chain/SME finance-ready demo converging toward a trust-first backend/data/security platform.
+- Repo: `https://github.com/tianat-2506/Attacker`; active branch `main`.
+- Product: VietSupply Radar, a competition demo converging toward a trust-first supply-chain data platform.
+- Active goal: complete the web demo/product; never claim pilot/production readiness.
 - User language: Vietnamese.
-- Active goal: keep completing the web app; do not claim pilot/production readiness.
 
-## Collaboration Rule
+## Collaboration
 
-- Every account/session must pull GitHub first, take a narrow slice, test it, update this file, commit, and push before ending.
-- Avoid overlapping edits; use task branches or separate file ownership for parallel work.
-- No force push, broad rewrites, or unrelated refactors.
-- When context/token is low: stop feature work, record current state here, commit/push.
+- Pull GitHub before work; take one narrow slice; test; update this file; commit and push.
+- Avoid overlapping ownership; use task branches for parallel work.
+- Never force-push, broadly rewrite, or revert unrelated user changes.
 
-## Source Pointers
+## Pointers
 
-- Run docs: `README.md`, `docs/17-run-project-after-restart.md`, `docs/21-competition-demo-runbook.md`.
-- Multi-account workflow: `docs/19-multi-account-collaboration-protocol.md`, `docs/20-session-handoff-and-workload-map.md`.
-- Source inputs: `Prompt_Codex_VietSupply_Radar.pdf`, `Noi_dung_hoi_thoai_du_an_VietSupply_Radar.pdf`, `deep-research-report.md`.
-- Diagrams: `docs/16-current-demo-diagrams.md`, `docs/diagrams/*.drawio`.
-- Tech assessment: `docs/18-deep-research-technical-assessment.md`.
+- Run/rehearse: `README.md`, `docs/17-run-project-after-restart.md`, `docs/21-competition-demo-runbook.md`.
+- Collaboration/handoff: `docs/19-multi-account-collaboration-protocol.md`, `docs/20-session-handoff-and-workload-map.md`.
+- Requirements/research: the two root PDFs and `deep-research-report.md`.
+- Architecture/diagrams: `docs/16-current-demo-diagrams.md`, `docs/diagrams/*.drawio`, `docs/18-deep-research-technical-assessment.md`.
 - Postgres trust boundary: `backend/migrations/versions/0001_trust_foundation_postgres.sql`, `backend/app/services/postgres_pilot_service.py`.
 
-## Current Posture
+## Current Product
 
-- FastAPI modular monolith; SQLite remains demo adapter only.
-- PostgreSQL/PostGIS/RLS migration and pilot adapter exist; live RLS smoke not proven.
-- Demo auth uses headers/JWT-dev; `/auth/me` exposes capability matrix and workspace access.
-- Demo stakeholder accounts include SME submitter, buyer admin, supplier admins, reviewer, lender, network analyst, demo operator, system admin.
-- URL-backed frontend state: account, selected business, active view, monthly period.
-- Data Intake supports draft/validate/submit/review/approve, CSV import, period snapshot, evidence upload tickets, scan job, and Vault download ticket for clean uploaded evidence.
-- Period-aware reads exist for Companies, Evidence, Risk, Finance, Matching; no silent fallback for missing selected-month finance.
-- Supply-map onboarding, connection inbox, graph, evidence, finance, invoices, matching, risk, audit/admin ops are policy/role gated in demo.
+- FastAPI modular monolith; SQLite is demo-only. Postgres/PostGIS/RLS artifacts exist, but live RLS is unproven.
+- Demo accounts cover SME submitter, buyer/supplier admin, reviewer, lender, analyst, operator, and system admin.
+- URL state carries account, view, business, and monthly period.
+- Role/policy-gated workspaces: Data Intake, Onboarding, Supply Map, Companies/Vault, Risk, Matching, Finance, Invoice Review, Audit.
+- Official 3-5 minute story: Intake proof -> Supply Map/Risk -> Shock -> Recovery Matching -> Consent/Audit.
+- Hard product details and endpoint inventory are recoverable from source and docs above.
 
 ## Latest Slice
 
-- Demo competition focus accepted: prioritize a polished 3-5 minute story over deeper production backend work unless user redirects.
-- Overview now has a live `3-5 min demo run` checklist: Data Intake -> Supply Map/Risk -> Shock Simulation -> Recovery Matching -> Consent/Audit.
-- Shock Simulation now surfaces active-story status plus impact metrics for exposed units, revenue at risk, stockout window and downstream SMEs.
-- Shock path now keeps a separate disrupted supplier context so Risk/Matching stay tied to Dai Tin/`BIZ-005` instead of drifting to the buyer selected business.
-- URL `business` state now survives initial React dev hydration; direct rehearsal links like buyer + `BIZ-005` no longer reset to buyer default on first mount.
-- QA subagent reviewed the demo path; addressed the highest-impact items for direct-link stability, buyer/disrupted-supplier mismatch, and stronger shock-to-recovery handoff.
-- Added `frontend/src/utils/demoStory.ts` with tests so future sessions do not accidentally break the locked demo flow.
-- Synced competition docs to the locked flow. `docs/21-competition-demo-runbook.md` is now the official 3-5 minute click-path: `demo-operator` -> Data Intake -> Supply Map/Risk -> Shock -> Matching -> Consent/Audit.
-- `docs/13-pitch-demo-script.md` was rewritten to match the runbook and preserve legal/finance guardrails; README now points to the official rehearsal URL.
-- `frontend/src/utils/demoStory.test.ts` now asserts `demo-operator` has all 5 demo steps live and `buyer-admin` is intentionally scoped with Intake/Audit blocked.
-- Demo boundary copy now uses `frontend/src/utils/demoBoundary.ts`: demo fallback is framed as `Competition demo mode` / `Demo dataset active`, while pilot/non-demo wording remains strict about verified authorization.
-- Added lightweight official rehearsal contract in `frontend/src/utils/demoRehearsal.ts`: official URL, buyer rehearsal URL, route state, runbook Markdown and demo step order are checked together without adding Playwright/browser dependencies.
-- Shock Simulation now has a visible Overview sequence: baseline graph -> live disruption -> recovery shortlist, backed by `frontend/src/utils/shockSequence.ts`.
-- Data Intake now has a visible input lineage rail: raw input -> staging validation -> human review -> approved snapshot, backed by `frontend/src/utils/intakeLineage.ts`.
-- Data Intake now has a visible demo proof checklist: draft package, CSV proof, evidence gate, approved snapshot, backed by `frontend/src/utils/intakeProof.ts`.
-- Data Intake proof cards now expose next-action pills for evidence/review flow: `Run demo scan`, `Submit for review`, `Approve snapshot`.
-- Data Intake upload controls now include `Use demo file`, backed by `frontend/src/utils/demoEvidenceFile.ts`, so the evidence upload-ticket/checksum/scan path can be rehearsed without selecting a local file.
+- Fixed Data Intake review synchronization: submit now reloads the reviewer queue.
+- Added fail-closed review CTA state in `frontend/src/utils/intakeReviewDecision.ts`.
+- Review decisions stay disabled until the exact queue task is hydrated; approval also obeys the evidence gate.
+- Removed self-declared inline evidence from manual submission payloads via `frontend/src/utils/intakeSubmissionSections.ts`.
+- Evidence now follows the trustworthy demo path: upload ticket -> checksum/object record -> malware scan -> Vault/snapshot provenance.
+- Browser-tested a fresh `2027-05` flow: demo upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot v1.
 
 ## Verification
 
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoStory.test.ts --cache=false` passed, 5 tests.
-- Latest frontend typecheck/build: `npm.cmd run build` passed.
-- Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
-- Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoBoundary.test.ts src\utils\demoStory.test.ts --cache=false` passed, 9 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoRehearsal.test.ts --cache=false` passed, 3 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\shockSequence.test.ts src\utils\demoRehearsal.test.ts --cache=false` passed, 6 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeLineage.test.ts src\utils\demoRehearsal.test.ts --cache=false` passed, 6 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\utils\intakeLineage.test.ts --cache=false` passed, 6 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoEvidenceFile.test.ts src\utils\evidenceClassification.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\utils\demoEvidenceFile.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 23 tests.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 77 tests.
-- Latest frontend typecheck/build: `npm.cmd run build` passed.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`; verified Shock sequence baseline, clicked scoped `Run`, then saw `impact live`, map shock banner, recovery CTA, and no horizontal overflow.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-07`; verified Input lineage rail renders 4 steps (`raw`, `staging`, `review`, `canonical`) and no horizontal overflow.
-- Browser smoke: same Data Intake URL; verified proof checklist renders 4 items, then clicked `Create draft` and `Parse CSV`; CSV proof changed to complete, import preview appeared, no console errors or horizontal overflow.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-08`; verified proof next-action pills (`Create draft`, `Parse CSV`, `Upload evidence`), clicked `Create draft` and `Parse CSV`, then saw `Validate draft`, `Preview accepted`, `Submit for review`, with no console errors or horizontal overflow.
-- Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-12`; clicked `Use demo file`, ran `Run demo scan`, verified scan processed 1/1, evidence proof reads scan-clean from Vault docs, next action is `Create draft`, no console errors or horizontal overflow.
+- Frontend full: `npm.cmd exec vitest -- run --cache=false` passed `83/83`.
+- Frontend build: `npm.cmd run build`; latest bundle `499.90 kB` minified, below the previous warning threshold.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed `146`, skipped `2`.
+- Browser: `2027-05` completed with `approved`, 1 financial, 1 product, 1 evidence; no console errors or horizontal overflow.
+- Regression tests: `intakeReviewDecision.test.ts`, `intakeSubmissionSections.test.ts`.
 
 ## Hard Boundaries
 
-- Do not claim: pilot-ready, production-ready, credit score, default probability, bank approval, verified supplier, invoice authenticity, legal breach, fraud, confirmed double financing.
-- Current strong guarantee: deterministic SQLite demo behavior over seeded fixtures plus local/static trust gates.
-- Not guaranteed: real OIDC/JWKS, S3/MinIO, ClamAV, PostgreSQL RLS live checks, WORM/tamper-proof audit, production graph confidentiality, real finance automation.
+- Do not claim: pilot/production ready, credit score/default probability, bank approval, verified supplier, invoice authenticity, legal breach/fraud, or confirmed double financing.
+- Proven: deterministic seeded demo behavior plus local/static trust gates.
+- Unproven: real OIDC/JWKS, S3/MinIO, ClamAV, live PostgreSQL RLS, tamper-proof/WORM audit, production graph confidentiality, real finance automation.
 
 ## Next Best Work
 
-- Continue demo competition completion:
-- Keep demo story locked to 3-5 minutes; avoid adding steps that dilute the pitch.
-- Add browser-level rehearsal/E2E for the official runbook if a lightweight browser dependency/tool path is accepted; current coverage is a runbook/code contract test, not a rendered browser click test.
-- Polish Supply Map + Risk + Matching around the Dai Tin disruption story.
-- Continue Shock Simulation polish with route-level before/after visuals on the map if time allows.
-- Continue Data Intake browser smoke around evidence upload -> scan -> submit -> reviewer approve if time allows.
-- Keep audit/consent/privacy visible in every cross-org action.
-- Per-account RBAC across one supply chain; each org owns separate data.
-- Vault should show scan-cleared/reviewed documents without legal authenticity claims.
-- Continue tightening Postgres live-readiness proof and evidence object-store/malware-scan integration.
-- Onboarding, map, matching, finance, invoice, audit must keep role and period gates.
-- Configure disposable real services for OIDC, object storage, malware scan, PostgreSQL/PostGIS, then run live readiness gate before any pilot claim.
+- Keep the competition story at 3-5 minutes; do not dilute it.
+- Add a lightweight rendered browser rehearsal for the official runbook.
+- Polish Supply Map/Risk/Matching around disrupted supplier `BIZ-005`.
+- Make Shock the signature moment with staged route propagation and recovery visuals.
+- Seed/show deterministic model/ruleset provenance in Audit.
+- Preserve role, period, consent, privacy, and human-review gates.
 
 ## QA/Subagents
 
-- Standing QA charter: act as real stakeholder users; penalize token waste, unsupported legal/finance claims, broken role workflows, and UI-only features without backend permission/data path.
-- Recent attempted QA subagents hit usage limits: `Descartes`, `Hume`.
-- Previous QA names to recall if useful: `Heisenberg`, `Ampere`, `Zeno`, `Peirce`, `Lovelace`, `Hegel`, `Confucius`, `Locke`, `Popper`, `Herschel`, `Raman`, `Poincare`, `Galileo`.
+- QA charter: test as real stakeholders; flag token waste, unsupported legal/finance claims, broken role flows, and UI-only features without backend policy/data paths.
+- Recent attempted agents `Descartes` and `Hume` hit usage limits.
+- Prior QA names: `Heisenberg`, `Ampere`, `Zeno`, `Peirce`, `Lovelace`, `Hegel`, `Confucius`, `Locke`, `Popper`, `Herschel`, `Raman`, `Poincare`, `Galileo`.

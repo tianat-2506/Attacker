@@ -999,6 +999,7 @@ export default function App() {
       const submission = await submitDataSubmission(intakeSubmission.id);
       setIntakeErrorReport(null);
       await refreshPeriodContext(submission);
+      await refreshReviewQueue();
     } finally {
       setIntakeBusy(false);
     }

@@ -91,6 +91,8 @@ import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../ut
 import { demoEvidenceFilePayload } from "../utils/demoEvidenceFile";
 import { intakeLineageSteps, type IntakeLineageStepId } from "../utils/intakeLineage";
 import { intakeProofChecklist, type IntakeProofItemId } from "../utils/intakeProof";
+import { intakeReviewDecisionState } from "../utils/intakeReviewDecision";
+import { intakeSubmissionSections } from "../utils/intakeSubmissionSections";
 import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
@@ -1014,12 +1016,6 @@ export function DataIntakeWorkspace({
     price_range: "mid",
     certifications: "HACCP"
   });
-  const [evidence, setEvidence] = useState({
-    document_type: "CERTIFICATION",
-    title: "HACCP monthly certificate",
-    document_hash: "hash-haccp-demo",
-    classification: "confidential"
-  });
   const [dataset, setDataset] = useState("financials");
   const [csvText, setCsvText] = useState("revenue,cash_in,cash_out,debt,accounts_receivable,accounts_payable,inventory_value,late_payment_rate,delivery_delay_rate\n620000000,640000000,590000000,140000000,80000000,70000000,120000000,0.03,0.01");
   const [uploadDocumentType, setUploadDocumentType] = useState<EvidenceDocument["type"]>("CERTIFICATION");
@@ -1029,11 +1025,7 @@ export function DataIntakeWorkspace({
   const [reviewDecision, setReviewDecision] = useState<"approve" | "reject" | "request_changes">("approve");
   const [reviewNote, setReviewNote] = useState("Reviewed from Data Intake queue; human approval required before downstream use.");
 
-  const sections = {
-    financials: Object.fromEntries(Object.entries(financials).map(([key, value]) => [key, Number(value)])),
-    products: [Object.fromEntries(Object.entries(product).map(([key, value]) => ["available_capacity", "min_order_value"].includes(key) ? [key, Number(value)] : [key, value]))],
-    evidence: [evidence]
-  };
+  const sections = intakeSubmissionSections(financials, product);
   const issues = submission?.issues ?? [];
   const reportRows = errorReport?.rows ?? [];
   const reportSummary = {
@@ -1044,7 +1036,7 @@ export function DataIntakeWorkspace({
   };
   const showErrorReport = Boolean(submission && (errorReport || importBatch?.status === "quarantined" || issues.length));
   const selectedReviewTask = submission ? reviewQueue.find((item) => item.submissionId === submission.id) : null;
-  const selectedEvidenceBlocked = Boolean(selectedReviewTask?.evidenceReview.approvalBlocked);
+  const reviewDecisionState = intakeReviewDecisionState(submission, selectedReviewTask, reviewDecision);
   const selectedQueueRequirements = selectedReviewTask?.evidenceReview.requirements ?? [];
   const evidenceRequirementRows = intakeEvidenceRequirements.map((requirement) => {
     const vaultMatches = vaultDocuments.filter((document) => document.type === requirement.documentType);
@@ -1091,10 +1083,6 @@ export function DataIntakeWorkspace({
     setProduct((current) => ({ ...current, [key]: value }));
   }
 
-  function updateEvidence(key: keyof typeof evidence, value: string) {
-    setEvidence((current) => ({ ...current, [key]: value }));
-  }
-
   async function submitEvidenceUpload() {
     if (!uploadFile || !actionPermissions.canUploadEvidence) return;
     await onEvidenceUpload(uploadFile, uploadDocumentType, normalizeEvidenceUploadClassification(uploadDocumentType, uploadClassification));
@@ -1129,12 +1117,6 @@ export function DataIntakeWorkspace({
   function applyEvidenceRequirement(requirement: (typeof intakeEvidenceRequirements)[number]) {
     setUploadDocumentType(requirement.documentType);
     setUploadClassification(requirement.classification);
-    setEvidence((current) => ({
-      ...current,
-      document_type: requirement.documentType,
-      title: requirement.title,
-      classification: requirement.classification
-    }));
   }
 
   function lineageIcon(id: IntakeLineageStepId) {
@@ -1202,10 +1184,6 @@ export function DataIntakeWorkspace({
           <div className="intake-section-title"><h3>Product capability</h3><small>One SKU for the v1 P0 flow</small></div>
           <div className="intake-field-grid">
             {Object.entries(product).map(([key, value]) => <label key={key}><span>{key.replace(/_/g, " ")}</span><input value={value} disabled={!actionPermissions.canSaveDraft} onChange={(event) => updateProduct(key as keyof typeof product, event.target.value)} /></label>)}
-          </div>
-          <div className="intake-section-title"><h3>Evidence</h3><small>Metadata only; object storage is a production target</small></div>
-          <div className="intake-field-grid">
-            {Object.entries(evidence).map(([key, value]) => <label key={key}><span>{key.replace(/_/g, " ")}</span><input value={value} disabled={!actionPermissions.canSaveDraft} onChange={(event) => updateEvidence(key as keyof typeof evidence, event.target.value)} /></label>)}
           </div>
           <div className="evidence-upload-box">
             <div className="panel-heading"><span>Create evidence upload ticket</span><Upload size={16} /></div>
@@ -1322,9 +1300,8 @@ export function DataIntakeWorkspace({
             <div className="review-decision-box">
               <label><span>Decision</span><select value={reviewDecision} onChange={(event) => setReviewDecision(event.target.value as typeof reviewDecision)}><option value="approve">Approve snapshot</option><option value="request_changes">Request changes</option><option value="reject">Reject submission</option></select></label>
               <label><span>Review note</span><textarea value={reviewNote} onChange={(event) => setReviewNote(event.target.value)} aria-label="Data intake review note" /></label>
-              <button className="primary-button" type="button" disabled={busy || !submission?.reviewTask || (reviewDecision === "approve" && selectedEvidenceBlocked)} onClick={() => onReviewDecision(reviewDecision, reviewNote)}><CheckCircle2 size={15} />Record decision</button>
-              {!submission?.reviewTask ? <small>Select an open review task before recording a decision.</small> : null}
-              {reviewDecision === "approve" && selectedEvidenceBlocked ? <small>{selectedReviewTask?.evidenceReview.advisory}</small> : null}
+              <button className="primary-button" type="button" disabled={busy || !reviewDecisionState.enabled} onClick={() => onReviewDecision(reviewDecision, reviewNote)}><CheckCircle2 size={15} />Record decision</button>
+              {reviewDecisionState.notice ? <small>{reviewDecisionState.notice}</small> : null}
             </div>
           ) : null}
           <div className="issue-list">
