@@ -513,7 +513,7 @@ button.filter-control { justify-content: center; }
 .csv-panel { display: grid; gap: 10px; }.csv-panel textarea { min-height: 190px; resize: vertical; padding: 9px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; line-height: 1.45; }
 .import-preview { display: grid; gap: 6px; padding: 10px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel-2); }.import-preview strong, .import-preview span { display: block; }.import-preview strong { font-size: 10px; }.import-preview span { color: var(--muted); font-size: 8px; }.import-preview code { min-width: 0; overflow: hidden; text-overflow: ellipsis; color: #85bcc1; font-size: 8px; }
 .evidence-upload-box { display: grid; gap: 10px; margin-top: 12px; padding: 10px; border: 1px solid rgba(45, 212, 191, 0.22); border-radius: 6px; background: rgba(45, 212, 191, 0.05); }
-.upload-control-grid { display: grid; grid-template-columns: minmax(120px, 0.85fr) minmax(130px, 0.85fr) minmax(160px, 1fr) auto; gap: 7px; align-items: end; }
+.upload-control-grid { display: grid; grid-template-columns: minmax(120px, 0.85fr) minmax(130px, 0.85fr) minmax(160px, 1fr) auto auto; gap: 7px; align-items: end; }
 .upload-control-grid input[type="file"] { padding: 7px; font-size: 9px; }
 .upload-control-grid .icon-text-button { min-height: 34px; }
 .evidence-requirement-panel { display: grid; gap: 8px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 6px; background: rgba(5, 11, 16, 0.38); }

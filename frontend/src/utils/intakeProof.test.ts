@@ -108,4 +108,24 @@ describe("intakeProofChecklist", () => {
     expect(reviewReady[3].status).toBe("active");
     expect(reviewReady[3].nextAction).toBe("Approve snapshot");
   });
+
+  it("counts scan-cleared vault documents as evidence proof after upload tickets leave the pending queue", () => {
+    const checklist = intakeProofChecklist({
+      submission: { source: "manual", status: "draft", version: 1, validationSummary: { errors: 0, warnings: 0, infos: 0 } },
+      evidenceDocuments: [{ verificationStatus: "MALWARE_SCAN_CLEAN", evidenceVersionId: "EVV-1" }]
+    });
+
+    expect(checklist[2].status).toBe("complete");
+    expect(checklist[2].metric).toBe("1 clean / 0 pending");
+    expect(checklist[2].nextAction).toBe("Submit for review");
+  });
+
+  it("guides back to draft creation when clean evidence exists before a submission", () => {
+    const checklist = intakeProofChecklist({
+      evidenceDocuments: [{ verificationStatus: "MALWARE_SCAN_CLEAN", evidenceVersionId: "EVV-1" }]
+    });
+
+    expect(checklist[2].status).toBe("complete");
+    expect(checklist[2].nextAction).toBe("Create draft");
+  });
 });

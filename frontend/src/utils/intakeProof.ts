@@ -53,12 +53,14 @@ export function intakeProofChecklist({
   submission,
   importBatch,
   pendingEvidenceUploads = [],
+  evidenceDocuments = [],
   snapshot,
   selectedReviewTask
 }: {
   submission?: IntakeProofSubmission | null;
   importBatch?: IntakeProofBatch | null;
   pendingEvidenceUploads?: Array<{ malwareScanStatus?: string | null }>;
+  evidenceDocuments?: Array<{ verificationStatus?: string | null; malwareScanStatus?: string | null; evidenceVersionId?: string | null }>;
   snapshot?: IntakeProofSnapshot | null;
   selectedReviewTask?: IntakeProofReviewTask | null;
 }): IntakeProofItem[] {
@@ -66,11 +68,14 @@ export function intakeProofChecklist({
   const rowCount = importBatch?.rowCount ?? 0;
   const csvBlocked = Boolean(importBatch) && (importBatch?.status === "quarantined" || validationErrors > 0);
   const evidenceReview = selectedReviewTask?.evidenceReview;
-  const uploadBuckets = pendingEvidenceUploads.map((item) => scanBucket(item.malwareScanStatus));
-  const cleanEvidence = evidenceReview?.clean ?? uploadBuckets.filter((status) => status === "clean").length;
-  const rejectedEvidence = evidenceReview?.rejected ?? uploadBuckets.filter((status) => status === "rejected").length;
-  const pendingEvidence = evidenceReview?.pending ?? uploadBuckets.filter((status) => status === "pending" || status === "missing").length;
-  const evidenceRequired = Boolean(evidenceReview?.required || pendingEvidenceUploads.length);
+  const evidenceBuckets = [
+    ...pendingEvidenceUploads.map((item) => scanBucket(item.malwareScanStatus)),
+    ...evidenceDocuments.map((item) => scanBucket(item.malwareScanStatus ?? item.verificationStatus))
+  ];
+  const cleanEvidence = evidenceReview?.clean ?? evidenceBuckets.filter((status) => status === "clean").length;
+  const rejectedEvidence = evidenceReview?.rejected ?? evidenceBuckets.filter((status) => status === "rejected").length;
+  const pendingEvidence = evidenceReview?.pending ?? evidenceBuckets.filter((status) => status === "pending" || status === "missing").length;
+  const evidenceRequired = Boolean(evidenceReview?.required || pendingEvidenceUploads.length || evidenceDocuments.length);
   const evidenceBlocked = Boolean(evidenceReview?.approvalBlocked || rejectedEvidence > 0 || (evidenceRequired && pendingEvidence > 0 && submission?.status === "in_review"));
   const approvedVersion = snapshot?.approvedVersion ?? null;
   const canonicalRows = (snapshot?.financials?.length ?? 0) + (snapshot?.products?.length ?? 0) + (snapshot?.evidence?.length ?? 0);
@@ -85,6 +90,8 @@ export function intakeProofChecklist({
       ? "Clear evidence gate"
       : pendingEvidence > 0
         ? "Run demo scan"
+        : cleanEvidence > 0 && !submission
+          ? "Create draft"
         : cleanEvidence > 0 && draftEditable
           ? "Submit for review"
           : cleanEvidence > 0 && inReview

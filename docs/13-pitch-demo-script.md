@@ -22,7 +22,7 @@ Point to:
 - Demo proof checklist with next-action pills: draft package, CSV proof, evidence gate and source-linked snapshot.
 - Selected organization and reporting month.
 - Form + CSV import.
-- Evidence upload ticket and scan/review gate.
+- `Use demo file`, evidence upload ticket and scan/review gate.
 - Approved snapshot section.
 
 ### 0:45-1:45 - Supply Map + Risk

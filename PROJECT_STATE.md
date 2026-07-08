@@ -51,6 +51,7 @@
 - Data Intake now has a visible input lineage rail: raw input -> staging validation -> human review -> approved snapshot, backed by `frontend/src/utils/intakeLineage.ts`.
 - Data Intake now has a visible demo proof checklist: draft package, CSV proof, evidence gate, approved snapshot, backed by `frontend/src/utils/intakeProof.ts`.
 - Data Intake proof cards now expose next-action pills for evidence/review flow: `Run demo scan`, `Submit for review`, `Approve snapshot`.
+- Data Intake upload controls now include `Use demo file`, backed by `frontend/src/utils/demoEvidenceFile.ts`, so the evidence upload-ticket/checksum/scan path can be rehearsed without selecting a local file.
 
 ## Verification
 
@@ -65,7 +66,9 @@
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeLineage.test.ts src\utils\demoRehearsal.test.ts --cache=false` passed, 6 tests.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\utils\intakeLineage.test.ts --cache=false` passed, 6 tests.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 73 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoEvidenceFile.test.ts src\utils\evidenceClassification.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\utils\demoEvidenceFile.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 23 tests.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 77 tests.
 - Latest frontend typecheck/build: `npm.cmd run build` passed.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
@@ -73,6 +76,7 @@
 - Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-07`; verified Input lineage rail renders 4 steps (`raw`, `staging`, `review`, `canonical`) and no horizontal overflow.
 - Browser smoke: same Data Intake URL; verified proof checklist renders 4 items, then clicked `Create draft` and `Parse CSV`; CSV proof changed to complete, import preview appeared, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-08`; verified proof next-action pills (`Create draft`, `Parse CSV`, `Upload evidence`), clicked `Create draft` and `Parse CSV`, then saw `Validate draft`, `Preview accepted`, `Submit for review`, with no console errors or horizontal overflow.
+- Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-12`; clicked `Use demo file`, ran `Run demo scan`, verified scan processed 1/1, evidence proof reads scan-clean from Vault docs, next action is `Create draft`, no console errors or horizontal overflow.
 
 ## Hard Boundaries
 

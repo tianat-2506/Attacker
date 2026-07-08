@@ -88,6 +88,7 @@ import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassifi
 import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../utils/demoStory";
+import { demoEvidenceFilePayload } from "../utils/demoEvidenceFile";
 import { intakeLineageSteps, type IntakeLineageStepId } from "../utils/intakeLineage";
 import { intakeProofChecklist, type IntakeProofItemId } from "../utils/intakeProof";
 import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
@@ -1077,6 +1078,7 @@ export function DataIntakeWorkspace({
     submission,
     importBatch,
     pendingEvidenceUploads,
+    evidenceDocuments: vaultDocuments,
     snapshot,
     selectedReviewTask
   });
@@ -1096,6 +1098,21 @@ export function DataIntakeWorkspace({
   async function submitEvidenceUpload() {
     if (!uploadFile || !actionPermissions.canUploadEvidence) return;
     await onEvidenceUpload(uploadFile, uploadDocumentType, normalizeEvidenceUploadClassification(uploadDocumentType, uploadClassification));
+    setUploadFile(null);
+    setUploadInputVersion((current) => current + 1);
+  }
+
+  async function submitDemoEvidenceUpload() {
+    if (!actionPermissions.canUploadEvidence || typeof File === "undefined") return;
+    const payload = demoEvidenceFilePayload({
+      businessId: selectedId,
+      periodKey: selectedPeriod,
+      documentType: uploadDocumentType,
+      classification: uploadClassification
+    });
+    const file = new File([payload.content], payload.fileName, { type: payload.contentType });
+    await onEvidenceUpload(file, payload.documentType, payload.classification);
+    setUploadClassification(payload.classification);
     setUploadFile(null);
     setUploadInputVersion((current) => current + 1);
   }
@@ -1221,6 +1238,7 @@ export function DataIntakeWorkspace({
                 <label><span>Classification</span><select value={uploadClassification} onChange={(event) => updateUploadClassification(event.target.value)}><option value="confidential">confidential</option><option value="restricted_financial">restricted financial</option><option value="partner_visible">partner visible</option><option value="public">public</option></select></label>
                 <label className="file-picker"><span>File</span><input key={uploadInputVersion} type="file" onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)} /></label>
                 <button className="icon-text-button" type="button" disabled={busy || !uploadFile} onClick={submitEvidenceUpload}><Upload size={15} />Create ticket</button>
+                <button className="icon-text-button" type="button" disabled={busy} onClick={submitDemoEvidenceUpload}><FileText size={15} />Use demo file</button>
               </div>
             ) : <div className="intake-permission-note">Reviewer view: evidence upload is disabled; approval requires malware scan-clear status from the vault.</div>}
             <div className="evidence-scan-control">
