@@ -48,6 +48,7 @@ Say:
 
 Point to:
 
+- Shock sequence: baseline, disruption and recovery.
 - Shock banner.
 - Impact metrics.
 - Affected routes/nodes.

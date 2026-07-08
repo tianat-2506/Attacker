@@ -88,6 +88,7 @@ import { normalizeEvidenceUploadClassification } from "../utils/evidenceClassifi
 import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingStateNotice } from "../utils/invoiceStatus";
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../utils/demoStory";
+import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
 const moneyCompact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
@@ -213,6 +214,7 @@ export function OverviewWorkspace({
   const shockTargetName = shockTarget?.name ?? "Selected supplier";
   const storySteps = demoStorySteps({ shock, canOpenIntake, canOpenRisk, canOpenMatching, canOpenAudit });
   const readyStepCount = demoStoryReadyCount(storySteps);
+  const shockSequence = shockSequenceSteps({ shock, canOpenMatching, shockTargetName });
 
   function storyStepIcon(id: DemoStoryStepId) {
     if (id === "intake") return <FileCheck2 size={15} />;
@@ -228,6 +230,12 @@ export function OverviewWorkspace({
     if (id === "shock") return <button className="text-button" type="button" disabled={shock.active} onClick={onSimulate}>{shock.active ? "Live" : "Run"}</button>;
     if (id === "matching") return <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>Open</button>;
     return <button className="text-button" type="button" disabled={!canOpenAudit} onClick={onOpenAudit}>Open</button>;
+  }
+
+  function shockSequenceIcon(id: ShockSequenceStepId) {
+    if (id === "baseline") return <ShieldCheck size={15} />;
+    if (id === "disruption") return <AlertTriangle size={15} />;
+    return <Route size={15} />;
   }
 
   return (
@@ -275,6 +283,22 @@ export function OverviewWorkspace({
               {shock.active ? <button className="icon-button" type="button" title="Reset scenario" onClick={onReset}><RefreshCw size={16} /></button> : null}
             </div>
           </div>
+
+          <section className="shock-sequence-panel">
+            <div className="panel-heading"><span>Shock sequence</span><strong>{shock.active ? "impact live" : "baseline"}</strong></div>
+            <div className="shock-sequence-list">
+              {shockSequence.map((step) => (
+                <div className={`shock-sequence-row ${step.status}`} key={step.id}>
+                  <span className="shock-sequence-icon">{shockSequenceIcon(step.id)}</span>
+                  <span><strong>{step.label}</strong><small>{step.detail}</small></span>
+                  <i>{step.metric}</i>
+                  {step.id === "recovery" && shock.active ? (
+                    <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>{canOpenMatching ? "Open" : "Locked"}</button>
+                  ) : null}
+                </div>
+              ))}
+            </div>
+          </section>
 
           <section className="demo-run-panel">
             <div className="panel-heading"><span>3-5 min demo run</span><strong>{readyStepCount}/5 live</strong></div>

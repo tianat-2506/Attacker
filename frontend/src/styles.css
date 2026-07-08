@@ -230,6 +230,25 @@ button.filter-control { justify-content: center; }
 .simulation-strip span strong, .simulation-strip span small { display: block; }
 .simulation-strip span strong { color: var(--text); font-size: 12px; }
 .simulation-strip span small { margin-top: 2px; color: var(--muted); font-size: 10px; }
+.shock-sequence-panel { display: grid; gap: 7px; padding: 10px; border: 1px solid rgba(245, 158, 11, 0.24); border-radius: 7px; background: rgba(245, 158, 11, 0.055); }
+.shock-sequence-panel .panel-heading { min-height: 25px; }
+.shock-sequence-panel .panel-heading strong { color: var(--amber); font-size: 10px; }
+.shock-sequence-list { display: grid; gap: 5px; }
+.shock-sequence-row { min-width: 0; min-height: 45px; display: grid; grid-template-columns: 26px minmax(0, 1fr) minmax(74px, auto) auto; gap: 7px; align-items: center; padding: 6px; border: 1px solid var(--line); border-radius: 6px; background: rgba(5, 11, 16, 0.42); }
+.shock-sequence-row.complete { border-color: rgba(34, 211, 238, 0.25); }
+.shock-sequence-row.active { border-color: rgba(251, 91, 89, 0.36); background: rgba(251, 91, 89, 0.07); }
+.shock-sequence-row.ready { border-color: rgba(132, 204, 22, 0.32); background: rgba(132, 204, 22, 0.055); }
+.shock-sequence-row.blocked { opacity: 0.72; }
+.shock-sequence-icon { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: var(--amber); background: rgba(245, 158, 11, 0.11); }
+.shock-sequence-row.complete .shock-sequence-icon { color: var(--cyan); background: rgba(34, 211, 238, 0.1); }
+.shock-sequence-row.active .shock-sequence-icon { color: var(--red); background: rgba(251, 91, 89, 0.12); }
+.shock-sequence-row.ready .shock-sequence-icon { color: var(--green); background: rgba(132, 204, 22, 0.12); }
+.shock-sequence-row > span:nth-child(2) { min-width: 0; }
+.shock-sequence-row strong, .shock-sequence-row small { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shock-sequence-row strong { color: var(--text); font-size: 10px; }
+.shock-sequence-row small { margin-top: 2px; color: var(--muted); font-size: 8px; }
+.shock-sequence-row i { min-width: 0; max-width: 118px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: #ffe8be; font-size: 9px; font-style: normal; text-align: right; }
+.shock-sequence-row.ready i { color: #e9ffd2; }
 .demo-run-panel { display: grid; gap: 7px; padding: 10px; border: 1px solid rgba(34, 211, 238, 0.22); border-radius: 7px; background: rgba(34, 211, 238, 0.055); }
 .demo-run-panel .panel-heading { min-height: 26px; }.demo-run-panel .panel-heading strong { color: var(--cyan); font-size: 10px; }
 .demo-run-list { display: grid; gap: 5px; }
@@ -571,6 +590,7 @@ button.filter-control { justify-content: center; }
   .onboarding-field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .intake-control-strip { grid-template-columns: 1fr 1fr; }
   .demo-run-row { grid-template-columns: 26px minmax(0, 1fr) auto; }.demo-run-row .text-button { grid-column: 2 / -1; justify-self: start; }
+  .shock-sequence-row { grid-template-columns: 26px minmax(0, 1fr) auto; }.shock-sequence-row .text-button { grid-column: 2 / -1; justify-self: start; }
   .shock-impact-panel { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .intake-field-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .matching-criteria { grid-template-columns: repeat(3, 1fr); }.finance-kpis { grid-template-columns: repeat(2, 1fr); }
@@ -580,6 +600,7 @@ button.filter-control { justify-content: center; }
 @media (max-width: 600px) {
   .network-toolbar { grid-template-columns: 1fr; }.segmented { width: 100%; }.segmented button { width: 100%; }.leaflet-map { min-height: 470px; }.map-footbar { align-items: flex-start; padding: 8px 10px; }.map-footbar > span:last-child { display: none; }
   .map-shock-banner { grid-template-columns: 1fr; }.map-shock-banner span:nth-child(4), .map-shock-banner .text-button { grid-column: auto; }
+  .shock-sequence-row { grid-template-columns: 26px minmax(0, 1fr); }.shock-sequence-row i, .shock-sequence-row .text-button { grid-column: 2; justify-self: start; text-align: left; }
   .kpi-grid, .analytics-grid, .profile-kpis, .finance-kpis { grid-template-columns: 1fr 1fr; }.kpi-card { min-height: 105px; }.kpi-card > strong { font-size: 19px; }
   .analytics-grid { grid-template-columns: 1fr; }.flow-layout { grid-template-columns: 120px 1fr; }.donut { width: 112px; }.donut::after { width: 66px; }
   .risk-summary-band { grid-template-columns: 1fr; }.risk-summary-band .primary-button { width: 100%; }.action-list { grid-template-columns: 1fr; }.matching-criteria { grid-template-columns: repeat(2, 1fr); }
