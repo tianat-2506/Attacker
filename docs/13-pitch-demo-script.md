@@ -19,7 +19,7 @@ Say:
 Point to:
 
 - Input lineage rail: raw input, staging validation, human review and approved snapshot.
-- Demo proof checklist: draft package, CSV proof, evidence gate and source-linked snapshot.
+- Demo proof checklist with next-action pills: draft package, CSV proof, evidence gate and source-linked snapshot.
 - Selected organization and reporting month.
 - Form + CSV import.
 - Evidence upload ticket and scan/review gate.

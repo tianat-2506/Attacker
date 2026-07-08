@@ -74,4 +74,38 @@ describe("intakeProofChecklist", () => {
     expect(checklist[3].detail).toContain("3 canonical rows");
     expect(checklist[3].detail).toContain("3 source refs");
   });
+
+  it("guides the evidence scan, submit and reviewer approval next actions", () => {
+    const pendingScan = intakeProofChecklist({
+      submission: { source: "manual", status: "draft", version: 1, validationSummary: { errors: 0, warnings: 0, infos: 0 } },
+      pendingEvidenceUploads: [{ malwareScanStatus: "pending_scan" }]
+    });
+
+    expect(pendingScan[2].status).toBe("active");
+    expect(pendingScan[2].nextAction).toBe("Run demo scan");
+
+    const scanClean = intakeProofChecklist({
+      submission: { source: "manual", status: "draft", version: 1, validationSummary: { errors: 0, warnings: 0, infos: 0 } },
+      pendingEvidenceUploads: [{ malwareScanStatus: "clean" }]
+    });
+
+    expect(scanClean[2].status).toBe("complete");
+    expect(scanClean[2].nextAction).toBe("Submit for review");
+
+    const reviewReady = intakeProofChecklist({
+      submission: { source: "manual", status: "in_review", version: 2, validationSummary: { errors: 0, warnings: 0, infos: 0 } },
+      selectedReviewTask: {
+        evidenceReview: {
+          clean: 1,
+          pending: 0,
+          rejected: 0,
+          required: true,
+          approvalBlocked: false
+        }
+      }
+    });
+
+    expect(reviewReady[3].status).toBe("active");
+    expect(reviewReady[3].nextAction).toBe("Approve snapshot");
+  });
 });

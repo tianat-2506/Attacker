@@ -1169,6 +1169,7 @@ export function DataIntakeWorkspace({
               <span className="intake-proof-icon">{proofIcon(item.id)}</span>
               <span><strong>{item.label}</strong><small>{item.detail}</small></span>
               <i>{item.metric}</i>
+              <em>{item.nextAction}</em>
             </div>
           ))}
         </div>

@@ -7,6 +7,7 @@ export interface IntakeProofItem {
   metric: string;
   detail: string;
   status: IntakeProofStatus;
+  nextAction: string;
 }
 
 interface IntakeProofSubmission {
@@ -75,7 +76,29 @@ export function intakeProofChecklist({
   const canonicalRows = (snapshot?.financials?.length ?? 0) + (snapshot?.products?.length ?? 0) + (snapshot?.evidence?.length ?? 0);
   const sourceRefs = snapshot?.sourceSubmissionIds?.length ?? 0;
   const isApproved = Boolean(approvedVersion);
-  const inReview = ["submitted", "in_review"].includes(submission?.status ?? "");
+  const submissionStatus = submission?.status ?? "";
+  const inReview = ["submitted", "in_review"].includes(submissionStatus);
+  const draftEditable = ["draft", "ready", "changes_requested"].includes(submissionStatus);
+  const evidenceNextAction = !evidenceRequired
+    ? "Upload evidence"
+    : evidenceBlocked
+      ? "Clear evidence gate"
+      : pendingEvidence > 0
+        ? "Run demo scan"
+        : cleanEvidence > 0 && draftEditable
+          ? "Submit for review"
+          : cleanEvidence > 0 && inReview
+            ? "Await reviewer"
+            : "Evidence ready";
+  const snapshotNextAction = isApproved
+    ? "Use approved snapshot"
+    : inReview && !evidenceBlocked && validationErrors === 0
+      ? "Approve snapshot"
+      : inReview
+        ? "Resolve review gate"
+        : submission
+          ? "Submit for review"
+          : "Create draft";
 
   return [
     {
@@ -85,7 +108,8 @@ export function intakeProofChecklist({
       detail: submission
         ? `Current intake status is ${submission.status ?? "draft"} with ${validationErrors} validation error${validationErrors === 1 ? "" : "s"}.`
         : "Start by creating a monthly draft for form, CSV and evidence inputs.",
-      status: isApproved ? "complete" : submission ? "active" : "active"
+      status: isApproved ? "complete" : submission ? "active" : "active",
+      nextAction: submission ? validationErrors > 0 ? "Fix validation" : "Validate draft" : "Create draft"
     },
     {
       id: "csv",
@@ -96,7 +120,8 @@ export function intakeProofChecklist({
           ? "CSV batch is quarantined until validation issues are fixed."
           : `CSV preview and checksum captured as ${importBatch.idempotentReplay ? "idempotent replay" : "new batch"}.`
         : "Manual form can proceed, but CSV import demonstrates replayable raw rows.",
-      status: importBatch ? (csvBlocked ? "blocked" : "complete") : "idle"
+      status: importBatch ? (csvBlocked ? "blocked" : "complete") : "idle",
+      nextAction: importBatch ? (csvBlocked ? "Export errors" : "Preview accepted") : "Parse CSV"
     },
     {
       id: "evidence",
@@ -107,7 +132,8 @@ export function intakeProofChecklist({
           ? "Approval waits for scan-clear evidence status; this is not document authenticity or finance approval."
           : `${cleanEvidence} evidence item${cleanEvidence === 1 ? "" : "s"} are scan-clear for review-gated use.`
         : "Upload ticket and malware scan prove supporting documents before approval.",
-      status: evidenceRequired ? (evidenceBlocked ? "blocked" : cleanEvidence > 0 && pendingEvidence === 0 ? "complete" : "active") : "idle"
+      status: evidenceRequired ? (evidenceBlocked ? "blocked" : cleanEvidence > 0 && pendingEvidence === 0 ? "complete" : "active") : "idle",
+      nextAction: evidenceNextAction
     },
     {
       id: "snapshot",
@@ -116,7 +142,8 @@ export function intakeProofChecklist({
       detail: isApproved
         ? `${canonicalRows} canonical rows linked to ${sourceRefs} source ref${sourceRefs === 1 ? "" : "s"}.`
         : "No approved snapshot for this period until a reviewer records approval.",
-      status: isApproved ? "complete" : inReview ? "active" : "blocked"
+      status: isApproved ? "complete" : inReview ? "active" : "blocked",
+      nextAction: snapshotNextAction
     }
   ];
 }

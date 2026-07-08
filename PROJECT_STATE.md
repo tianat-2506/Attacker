@@ -50,6 +50,7 @@
 - Shock Simulation now has a visible Overview sequence: baseline graph -> live disruption -> recovery shortlist, backed by `frontend/src/utils/shockSequence.ts`.
 - Data Intake now has a visible input lineage rail: raw input -> staging validation -> human review -> approved snapshot, backed by `frontend/src/utils/intakeLineage.ts`.
 - Data Intake now has a visible demo proof checklist: draft package, CSV proof, evidence gate, approved snapshot, backed by `frontend/src/utils/intakeProof.ts`.
+- Data Intake proof cards now expose next-action pills for evidence/review flow: `Run demo scan`, `Submit for review`, `Approve snapshot`.
 
 ## Verification
 
@@ -63,13 +64,15 @@
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\shockSequence.test.ts src\utils\demoRehearsal.test.ts --cache=false` passed, 6 tests.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeLineage.test.ts src\utils\demoRehearsal.test.ts --cache=false` passed, 6 tests.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\utils\intakeLineage.test.ts --cache=false` passed, 6 tests.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 72 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\intakeProof.test.ts src\components\WorkspaceViews.test.ts --cache=false` passed, 20 tests.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 73 tests.
 - Latest frontend typecheck/build: `npm.cmd run build` passed.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`; verified Shock sequence baseline, clicked scoped `Run`, then saw `impact live`, map shock banner, recovery CTA, and no horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-07`; verified Input lineage rail renders 4 steps (`raw`, `staging`, `review`, `canonical`) and no horizontal overflow.
 - Browser smoke: same Data Intake URL; verified proof checklist renders 4 items, then clicked `Create draft` and `Parse CSV`; CSV proof changed to complete, import preview appeared, no console errors or horizontal overflow.
+- Browser smoke: opened `http://127.0.0.1:5173/?view=intake&account=demo-operator&business=BIZ-005&period=2026-08`; verified proof next-action pills (`Create draft`, `Parse CSV`, `Upload evidence`), clicked `Create draft` and `Parse CSV`, then saw `Validate draft`, `Preview accepted`, `Submit for review`, with no console errors or horizontal overflow.
 
 ## Hard Boundaries
 
@@ -84,7 +87,7 @@
 - Add browser-level rehearsal/E2E for the official runbook if a lightweight browser dependency/tool path is accepted; current coverage is a runbook/code contract test, not a rendered browser click test.
 - Polish Supply Map + Risk + Matching around the Dai Tin disruption story.
 - Continue Shock Simulation polish with route-level before/after visuals on the map if time allows.
-- Continue Data Intake polish around evidence upload -> scan -> submit -> reviewer approve if time allows.
+- Continue Data Intake browser smoke around evidence upload -> scan -> submit -> reviewer approve if time allows.
 - Keep audit/consent/privacy visible in every cross-org action.
 - Per-account RBAC across one supply chain; each org owns separate data.
 - Vault should show scan-cleared/reviewed documents without legal authenticity claims.
