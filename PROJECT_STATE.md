@@ -62,6 +62,7 @@
 - Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 66 tests.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
+- Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`; verified Shock sequence baseline, clicked scoped `Run`, then saw `impact live`, map shock banner, recovery CTA, and no horizontal overflow.
 
 ## Hard Boundaries
 
