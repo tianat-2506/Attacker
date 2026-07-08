@@ -16,6 +16,7 @@ Use this file as the single source for the 3-5 minute competition demo. Keep it 
 1. `0:00` Data Intake
    - Open `Data Intake` from the overview checklist.
    - Show the input lineage rail: raw input, staging validation, human review, approved snapshot.
+   - Show the demo proof checklist: draft package, CSV proof, evidence gate, approved snapshot.
    - Show selected organization and month, form input, CSV import, evidence upload ticket, evidence gate and approved snapshot area.
    - Say: "The risk map is not magic. It starts from monthly SME input, evidence documents and a review gate before any approved snapshot is used."
 

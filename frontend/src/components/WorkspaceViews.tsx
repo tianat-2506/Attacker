@@ -89,6 +89,7 @@ import { invoiceAssuranceReviewNotice, invoiceFundingStateLabel, invoiceFundingS
 import { financePeriodState, matchingPeriodNotice, recommendationPeriodLabel } from "../utils/periodUi";
 import { demoStoryReadyCount, demoStorySteps, type DemoStoryStepId } from "../utils/demoStory";
 import { intakeLineageSteps, type IntakeLineageStepId } from "../utils/intakeLineage";
+import { intakeProofChecklist, type IntakeProofItemId } from "../utils/intakeProof";
 import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
@@ -1072,6 +1073,13 @@ export function DataIntakeWorkspace({
     snapshot,
     selectedReviewTask
   });
+  const proofItems = intakeProofChecklist({
+    submission,
+    importBatch,
+    pendingEvidenceUploads,
+    snapshot,
+    selectedReviewTask
+  });
 
   function updateFinancial(key: keyof typeof financials, value: string) {
     setFinancials((current) => ({ ...current, [key]: value }));
@@ -1119,6 +1127,13 @@ export function DataIntakeWorkspace({
     return <CheckCircle2 size={15} />;
   }
 
+  function proofIcon(id: IntakeProofItemId) {
+    if (id === "draft") return <FileCheck2 size={15} />;
+    if (id === "csv") return <Database size={15} />;
+    if (id === "evidence") return <FileKey2 size={15} />;
+    return <PackageCheck size={15} />;
+  }
+
   return (
     <div className="page-stack intake-workspace">
       <header className="workspace-heading">
@@ -1141,6 +1156,19 @@ export function DataIntakeWorkspace({
               <span className="intake-lineage-icon">{lineageIcon(step.id)}</span>
               <span><strong>{step.label}</strong><small>{step.detail}</small></span>
               <i>{step.metric}</i>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section className="tool-panel intake-proof-panel" aria-label="Data intake proof checklist">
+        <div className="panel-heading"><span>Demo proof checklist</span><strong>draft / CSV / evidence / snapshot</strong></div>
+        <div className="intake-proof-list">
+          {proofItems.map((item) => (
+            <div className={`intake-proof-item ${item.status}`} key={item.id}>
+              <span className="intake-proof-icon">{proofIcon(item.id)}</span>
+              <span><strong>{item.label}</strong><small>{item.detail}</small></span>
+              <i>{item.metric}</i>
             </div>
           ))}
         </div>

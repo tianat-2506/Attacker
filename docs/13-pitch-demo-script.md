@@ -19,6 +19,7 @@ Say:
 Point to:
 
 - Input lineage rail: raw input, staging validation, human review and approved snapshot.
+- Demo proof checklist: draft package, CSV proof, evidence gate and source-linked snapshot.
 - Selected organization and reporting month.
 - Form + CSV import.
 - Evidence upload ticket and scan/review gate.
@@ -94,7 +95,7 @@ Point to:
 
 1. Open the official URL from `docs/21-competition-demo-runbook.md`.
 2. Confirm account is `Demo operator`.
-3. Open `Data Intake`; show monthly input, CSV, evidence gate and snapshot area.
+3. Open `Data Intake`; show monthly input, lineage, proof checklist, CSV, evidence gate and snapshot area.
 4. Return to Overview; open `Supply Map + Risk` for Dai Tin Distribution.
 5. Show risk panel, policy-gated evidence and downstream dependency count.
 6. Click `Simulate Supply Shock`.
