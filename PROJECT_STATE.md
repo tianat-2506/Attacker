@@ -45,6 +45,7 @@
 - Synced competition docs to the locked flow. `docs/21-competition-demo-runbook.md` is now the official 3-5 minute click-path: `demo-operator` -> Data Intake -> Supply Map/Risk -> Shock -> Matching -> Consent/Audit.
 - `docs/13-pitch-demo-script.md` was rewritten to match the runbook and preserve legal/finance guardrails; README now points to the official rehearsal URL.
 - `frontend/src/utils/demoStory.test.ts` now asserts `demo-operator` has all 5 demo steps live and `buyer-admin` is intentionally scoped with Intake/Audit blocked.
+- Demo boundary copy now uses `frontend/src/utils/demoBoundary.ts`: demo fallback is framed as `Competition demo mode` / `Demo dataset active`, while pilot/non-demo wording remains strict about verified authorization.
 
 ## Verification
 
@@ -53,7 +54,8 @@
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 56 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoBoundary.test.ts src\utils\demoStory.test.ts --cache=false` passed, 9 tests.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 60 tests.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
 
@@ -67,7 +69,6 @@
 
 - Continue demo competition completion:
 - Keep demo story locked to 3-5 minutes; avoid adding steps that dilute the pitch.
-- Polish demo boundary/fallback copy so synthetic/local policy mode looks intentional during competition, not like a broken backend.
 - Add automated browser rehearsal/E2E for the official runbook when a lightweight tool path is chosen.
 - Polish Supply Map + Risk + Matching around the Dai Tin disruption story.
 - Make Shock Simulation more impressive with clear before/after paths and recovery sequencing.

@@ -71,6 +71,7 @@ import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges,
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
+import { apiConnectionLabel, authContextLabel, demoBoundaryBanner } from "./utils/demoBoundary";
 import { mergePendingEvidenceUploadsForPeriod } from "./utils/pendingEvidenceUploads";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
 import {
@@ -1202,28 +1203,21 @@ export default function App() {
     onFocusedChange: setFocusedNetwork,
     onSelect: setSelectedId
   };
-  const isFallbackMode = apiMode === "fallback";
-  const isLocalPermissionFallback = authContextStatus === "unavailable" || authContextMismatch;
-  const boundaryBanner = isFallbackMode
-    ? {
-        title: "Synthetic fallback dataset active",
-        message: isLocalPermissionFallback
-          ? "Backend data and actor context are unavailable or mismatched. Navigation is using local synthetic demo rules only."
-          : "Backend is offline or returned a server error. Authorization failures are not replaced with fallback data."
-      }
-    : isLocalPermissionFallback
-      ? {
-          title: "Local synthetic permissions active",
-          message: "Backend actor context is unavailable or mismatched. Role navigation is demo-only and must not be treated as verified authorization."
-        }
-      : null;
-  const authContextLabel = authContextStatus === "loading"
-    ? "Checking backend actor context"
-    : authContextStatus === "unavailable"
-      ? "Local synthetic permissions only"
-      : authContextMismatch
-        ? `Local synthetic permissions only: backend actor ${authContext?.actorId ?? "unknown"}`
-        : `${authContext?.authAssurance ?? "demo-header"} / ${authContext?.actorId ?? activeAccount.actorId}`;
+  const boundaryBanner = demoBoundaryBanner({
+    apiMode,
+    authContextStatus,
+    authContextMismatch,
+    appMode: frontendAppMode
+  });
+  const activeAuthContextLabel = authContextLabel({
+    authContextStatus,
+    authContextMismatch,
+    backendActorId: authContext?.actorId,
+    activeActorId: activeAccount.actorId,
+    authAssurance: authContext?.authAssurance,
+    appMode: frontendAppMode
+  });
+  const activeApiConnectionLabel = apiConnectionLabel(apiMode, frontendAppMode);
 
   return (
     <main className="app-shell">
@@ -1233,7 +1227,7 @@ export default function App() {
           {accessibleNavItems.map((item) => <button key={item.id} type="button" className={activeView === item.id ? "nav-item active" : "nav-item"} onClick={() => openView(item.id)}>{item.icon}<span>{item.label}</span></button>)}
         </div>
         <div className="nav-status">
-          <div><ShieldCheck size={16} /><span>Supply Health</span></div><strong>{dashboard.overview.supplyHealthScore}<small>/100</small></strong><p><i className={apiMode === "database" ? "online" : "offline"} />{apiMode === "database" ? "SQLite API connected" : apiMode === "loading" ? "Connecting API" : "Fallback data active"}</p>
+          <div><ShieldCheck size={16} /><span>Supply Health</span></div><strong>{dashboard.overview.supplyHealthScore}<small>/100</small></strong><p><i className={apiMode === "database" ? "online" : "offline"} />{activeApiConnectionLabel}</p>
         </div>
       </nav>
 
@@ -1251,7 +1245,7 @@ export default function App() {
                 {demoAccounts.map((account) => <option key={account.id} value={account.id}>{account.label}</option>)}
               </select>
               <small>{activeAccount.personName} · {activeAccount.organizationName}</small>
-              <small className={`auth-context-line ${authContextStatus}`}>{authContextLabel}</small>
+              <small className={`auth-context-line ${authContextStatus}`}>{activeAuthContextLabel}</small>
             </div>
             <ChevronDown size={15} />
           </label>
