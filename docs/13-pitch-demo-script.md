@@ -1,90 +1,129 @@
 # Pitch Demo Script
 
-## 1. One-liner
+Use `docs/21-competition-demo-runbook.md` as the operational click-path. This file keeps the spoken story short enough for a 3-5 minute pitch.
 
-VietSupply Radar la ban do chuoi cung ung B2B giup SME phat hien som rui ro dut gay, do tac dong tai chinh va lap supplier shortlist bang rule-based matching co giai thich.
+## 1. One-Liner
 
-## 2. Script 5 phut
+VietSupply Radar is a B2B supply-chain risk cockpit for Vietnamese SMEs. It turns periodic business input, evidence documents and supply relationships into an explainable disruption warning, shock simulation and human-reviewed supplier shortlist.
 
-### Phut 1 - Problem
+## 2. Five-Minute Script
 
-SME Viet Nam thuong phu thuoc vao mot vai nha cung cap co dinh. Khi mot nha phan phoi gap van de ve dong tien, giao hang hoac ton kho, cac SME downstream thuong chi biet khi hang da tre. Luc do ho vua thieu hang ban, vua khong co du thoi gian lap danh sach nha cung cap thay the, vua co the thieu von de nhap lo hang moi.
+### 0:00-0:45 - Data Intake
 
-### Phut 2 - Solution
+Open the official URL with `account=demo-operator`. From the overview checklist, open `Data Intake`.
 
-VietSupply Radar bieu dien doanh nghiep nhu node tren ban do, quan he cung ung nhu edge. He thong tinh risk signal tu dong tien, cong no, ton kho, giao hang va dependency graph. Khi phat hien rui ro, he thong giai thich bang ngon ngu de hieu va goi y supplier shortlist dua tren product fit, capacity, logistics, reliability, payment terms va financial health. Moi hanh dong ket noi/thuong mai/tai chinh van can consent va human approval.
+Say:
 
-### Phut 3 - Map and risk demo
+"The system starts from monthly SME input, not from a magic dashboard. A business can enter financials and products by form, import CSV, upload supporting evidence, then pass validation and review before an approved snapshot is used downstream."
 
-Mo dashboard mien Nam. Click `Dai Tin Distribution`.
+Point to:
 
-Noi:
+- Selected organization and reporting month.
+- Form + CSV import.
+- Evidence upload ticket and scan/review gate.
+- Approved snapshot section.
 
-"Day la mot nha phan phoi beverage tai Binh Duong. He thong danh dau do vi cash inflow giam 18% trong 3 thang, late payment rate tang len 22%, delivery delay tang len 14% va 12 SME downstream dang phu thuoc vao node nay. Day khong phai credit score, ma la early warning signal de SME chuan bi phuong an."
+### 0:45-1:45 - Supply Map + Risk
 
-### Phut 4 - Supply shock and recommendation
+Return to Overview and open the Dai Tin/Binh Duong risk case.
 
-Bam `Simulate Supply Shock`.
+Say:
 
-Noi:
+"Dai Tin Distribution is a beverage distributor in Binh Duong. The system flags an early warning signal from cash-flow trend, late payment, delivery delay and downstream dependency. This is not a credit score, default probability or legal breach finding. It is an operational warning for human review."
 
-"Khi node nay bi shock, he thong lan truyen tac dong theo directed graph. 12 SME bi anh huong, 78,000 units/month at risk va thoi gian thieu hang du kien 3-4 ngay neu khong co nguon thay the. Bay gio he thong goi y top 3 supplier dang shortlist. Diem match khong chi dua tren khoang cach, ma co product spec, capacity, lead time, reliability, payment term va financial health. Day khong phai auto switch; SME can review va request introduction."
+Point to:
 
-Click recommendation card.
+- Masked-by-default supply graph.
+- Downstream SME dependency.
+- Risk explanation and rule trace.
+- Policy-gated evidence chain.
 
-"Vi du An Phu FMCG Hub duoc xep hang cao vi dung spec UHT 1L, con capacity 28,000 units/thang, lead time 2 ngay va chap nhan net-30."
+### 1:45-2:30 - Shock Simulation
 
-### Phut 5 - Business model and roadmap
+Click `Simulate Supply Shock`.
 
-"MVP chung toi dung synthetic data de chung minh flow. Pilot se bat dau voi anchor distributor F&B, tich hop POS/accounting/e-invoice de kiem chung risk signal voi consent va audit. Business model gom SaaS cho quan tri rui ro, matching fee khi ket noi thanh cong va referral fee voi doi tac tai chinh cho working capital/invoice financing; doi tac tai chinh van tu KYB/KYC va underwriting. Blockchain chi la module phu cho hash hoa don va double-financing alert, khong duoc pitch nhu giai phap than ky."
+Say:
 
-## 3. Script 7 phut
+"When this node is disrupted, the impact propagates through the directed supply graph. The demo shows exposed units, revenue at risk, stockout window and affected downstream SMEs."
 
-Them cac diem sau vao script 5 phut:
+Point to:
 
-- 30 giay ve kẽ hở logic va cach trám: data masking, consent, multi-factor matching.
-- 45 giay ve architecture: React/Leaflet, FastAPI, CSV demo -> PostgreSQL/PostGIS/Neo4j path.
-- 45 giay ve validation: unit tests cho risk/match/shock, data validation, pilot backtesting.
-- 30 giay ve invoice verification: hash SHA-256, funded status, double financing alert.
+- Shock banner.
+- Impact metrics.
+- Affected routes/nodes.
 
-## 4. Demo click path
+### 2:30-3:30 - Recovery Matching
 
-1. Open dashboard.
-2. Zoom/point to South Vietnam cluster.
-3. Click `Dai Tin Distribution`.
-4. Show risk panel and explanation.
-5. Show downstream dependency count.
+Open `Recovery Matching`.
+
+Say:
+
+"The system now suggests a recovery shortlist. Matching is based on product fit, capacity, logistics, reliability, payment terms and financial health. It does not auto-replace a supplier. Contact and commercial action still require consent and human approval."
+
+Point to:
+
+- Top recommendation.
+- Match drivers.
+- Consent-gated introduction action.
+
+### 3:30-5:00 - Consent, Audit And Business Model
+
+Open `Audit Trail`.
+
+Say:
+
+"Every sensitive action needs role, purpose, consent or review, and an audit record. The MVP uses synthetic data to prove the workflow. A real pilot would connect anchor distributor, POS/accounting/e-invoice and logistics data under consent and audit. Business model: SaaS for risk operations, success fee for qualified matching, and referral workflow with finance partners, while lenders still do their own KYB/KYC and underwriting."
+
+Point to:
+
+- Connection/request queue.
+- Policy/audit IDs.
+- Access governance.
+- Enforced boundaries.
+
+## 3. Seven-Minute Additions
+
+- 30 seconds: trust gaps and controls: masking, consent, RBAC, audit, evidence provenance.
+- 45 seconds: architecture: React/Leaflet, FastAPI modular monolith, SQLite demo, PostgreSQL/PostGIS/RLS pilot path.
+- 45 seconds: validation: backend tests for intake, risk, matching, shock, evidence gates and audit boundaries.
+- 30 seconds: invoice workflow: hash/claim registry simulation for double-financing risk, not proof of invoice authenticity.
+
+## 4. Demo Click Path
+
+1. Open the official URL from `docs/21-competition-demo-runbook.md`.
+2. Confirm account is `Demo operator`.
+3. Open `Data Intake`; show monthly input, CSV, evidence gate and snapshot area.
+4. Return to Overview; open `Supply Map + Risk` for Dai Tin Distribution.
+5. Show risk panel, policy-gated evidence and downstream dependency count.
 6. Click `Simulate Supply Shock`.
-7. Point to red/yellow affected nodes.
-8. Read KPI impact.
-9. Click top recommendation.
-10. Open invoice verification tab if time allows.
-11. Close with business model and roadmap.
+7. Read KPI impact and point to affected routes/nodes.
+8. Open `Recovery Matching`; show top recommendation and consent-gated introduction.
+9. Open `Audit Trail`; show policy/audit trace and enforced boundaries.
+10. Close with business model and pilot path.
 
-## 5. Q&A phan bien
+## 5. Q&A
 
-| Cau hoi | Tra loi |
+| Question | Answer |
 | --- | --- |
-| Du lieu that lay tu dau? | MVP dung synthetic data co logic. Pilot se bat dau voi anchor distributor/manufacturer co downstream SME, lay POS/accounting/e-invoice/logistics data co consent. |
-| AI co train bang du lieu that chua? | Chua overclaim. MVP dung rule-based scoring minh bach + AI explanation. Khi co du lieu outcome se backtest va nang len ML risk model. |
-| Neu score sai lam SME hoang mang? | Score la early warning signal, co explanation va threshold; pilot can human review, feedback va model validation. |
-| Nha cung cap thay the co dam bao chat luong khong? | Matching co product spec, certification, capacity, reliability, payment terms. Pilot them supplier qualification va sample approval. |
-| Blockchain co can thiet khong? | Khong la trung tam demo. Chi dung cho invoice hash/funding status simulation de giai thich double financing risk; production co the dung consortium ledger. |
-| Lam sao tranh lo bi mat nha cung cap? | Graph mac dinh masked/aggregate; ten that va lien he chi mo khi co mutual consent; financial data co RBAC va audit. |
-| Cold start giai quyet sao? | Bat dau mot nganh hep, mot vung hep, anchor company, synthetic demo de ban y tuong, sau do pilot voi data cua anchor. |
-| Khac marketplace B2B o dau? | Marketplace tim mua/ban. VietSupply Radar tap trung risk sensing, dependency impact va supplier shortlist co giai thich. |
-| Tai sao khong dung app mobile? | Demo pitch can dashboard map va shock simulation; mobile la sau khi use case duoc validate. |
-| Co the lam trong 4 tuan khong? | Co neu giu scope: static seed, React/Leaflet, FastAPI, pure functions, 5 screen, 3 domain modules. |
+| Where does real data come from? | The MVP uses deterministic synthetic data. A pilot would start with one anchor distributor/manufacturer and collect POS/accounting/e-invoice/logistics data with consent. |
+| Is this AI trained on real outcomes? | No overclaim. The MVP uses transparent rule-based scoring plus explanations. Real outcome data would be backtested before any ML upgrade. |
+| What if a signal is wrong? | It is an advisory early warning with explanation, threshold, human review and feedback loop, not an automatic decision. |
+| Are alternative suppliers guaranteed? | No. Matching is a decision-support shortlist. Supplier qualification, sample approval, consent and commercial review are still required. |
+| Is blockchain required? | No. The invoice hash/claim workflow is only an optional simulation for double-financing risk; it is not the center of the pitch. |
+| How do you prevent supplier data leakage? | Graph data is masked by default. Unmasking requires role, relationship, purpose, consent/policy and audit. |
+| How do you solve cold start? | Start with one narrow industry, one region and an anchor company, then expand with consented pilot data. |
+| How is this different from a B2B marketplace? | Marketplaces focus on buying and selling. VietSupply Radar focuses on risk sensing, dependency impact and explainable recovery shortlist. |
+| Is this pilot-ready today? | No. The demo is competition-ready. Real pilot claims require live OIDC, PostgreSQL/RLS, object storage, malware scan and legal/data governance gates. |
 
-## 6. Slide deck 10 trang de xuat
+## 6. Slide Deck Outline
 
 1. Title: VietSupply Radar.
 2. Problem: SME dependency and disruption.
-3. Insight: source, cash flow, trust data are connected.
-4. Solution: supply graph + risk signal + matching.
-5. Demo architecture: map -> risk -> shock -> recommendation.
+3. Insight: source, cash flow and trust data are connected.
+4. Solution: intake -> supply graph -> risk signal -> shock -> matching -> audit.
+5. Demo story: one Binh Duong distributor disruption.
 6. Algorithm: risk signal and match score.
-7. Data and governance: synthetic MVP, consent/masking pilot.
+7. Data and governance: synthetic MVP, consent, masking and audit.
 8. Business model.
-9. Roadmap 4 weeks and pilot path.
+9. Roadmap and pilot gates.
 10. Ask: pilot partners, data access, mentorship/funding.

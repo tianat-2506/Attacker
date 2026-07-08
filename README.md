@@ -8,7 +8,8 @@ This repository now contains the research package plus a runnable MVP demo scaff
 
 - Industry: F&B/FMCG, packaged food and processed agriculture.
 - Region: TP.HCM, Binh Duong, Dong Nai, Lam Dong.
-- MVP demo flow: overview map -> 10-node Binh Duong disruption case -> evidence vault -> risk signal review -> supply shock -> top 3 suggested supplier alternatives -> consent-based introduction request -> audit trail -> invoice verification.
+- MVP competition flow: Data Intake -> Supply Map + Risk -> Shock Simulation -> Recovery Matching -> Consent + Audit.
+- Official rehearsal URL: `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`.
 - Data: synthetic, deterministic, 62 businesses, supply edges, procurement documents, certifications, guarantees, audit events and 12 months of financial snapshots.
 - AI stance: rule-based risk signal plus explainable text. ML is a later pilot/production upgrade.
 - Blockchain stance: optional invoice hash/funding-status simulation, not the center of the pitch.
@@ -33,6 +34,7 @@ This repository now contains the research package plus a runnable MVP demo scaff
 - [Roadmap](docs/14-roadmap.md)
 - [Current demo diagrams](docs/16-current-demo-diagrams.md)
 - [Run project after restart](docs/17-run-project-after-restart.md)
+- [Competition demo runbook](docs/21-competition-demo-runbook.md)
 - [Draw.io system blueprint](docs/diagrams/VietSupply_Radar_System_Blueprint.drawio)
 - [Current demo draw.io backbone](docs/diagrams/VietSupply_Radar_Current_Demo_Backbone.drawio)
 
@@ -42,7 +44,7 @@ This repository now contains the research package plus a runnable MVP demo scaff
 - Backend: FastAPI + Python domain services.
 - Data MVP: SQLite database seeded from CSV, with repository classes over the database.
 - Future data path: PostgreSQL + PostGIS; Neo4j only when graph queries outgrow adjacency lists.
-- Testing: pytest for backend/domain logic, Vitest/React Testing Library for frontend, Playwright for demo flow.
+- Testing: backend unittest/domain coverage, Vitest for frontend logic, with browser rehearsal smoke recorded in `PROJECT_STATE.md`; Playwright is recommended next for automated demo flow.
 - Deployment: local Docker fallback plus simple frontend/backend hosting.
 
 ## Current Demo Architecture
@@ -53,7 +55,7 @@ frontend/src
   api/client.ts               frontend API adapter + mock fallback
   components/MapView.tsx      Leaflet dark map with Southern Vietnam/Binh Duong focus
   components/WorkspaceViews.tsx
-                              overview, evidence, risk, matching, finance, invoice and audit workspaces
+                              overview, data intake, onboarding, evidence, risk, matching, finance, invoice and audit workspaces
 
 backend/app
   domain/entities.py          OOP dataclasses: Business, SupplyEdge, Product, FinancialSnapshot, InvoiceVerification

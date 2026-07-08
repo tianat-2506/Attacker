@@ -15,7 +15,7 @@
 
 ## Source Pointers
 
-- Run docs: `README.md`, `docs/17-run-project-after-restart.md`.
+- Run docs: `README.md`, `docs/17-run-project-after-restart.md`, `docs/21-competition-demo-runbook.md`.
 - Multi-account workflow: `docs/19-multi-account-collaboration-protocol.md`, `docs/20-session-handoff-and-workload-map.md`.
 - Source inputs: `Prompt_Codex_VietSupply_Radar.pdf`, `Noi_dung_hoi_thoai_du_an_VietSupply_Radar.pdf`, `deep-research-report.md`.
 - Diagrams: `docs/16-current-demo-diagrams.md`, `docs/diagrams/*.drawio`.
@@ -42,15 +42,18 @@
 - URL `business` state now survives initial React dev hydration; direct rehearsal links like buyer + `BIZ-005` no longer reset to buyer default on first mount.
 - QA subagent reviewed the demo path; addressed the highest-impact items for direct-link stability, buyer/disrupted-supplier mismatch, and stronger shock-to-recovery handoff.
 - Added `frontend/src/utils/demoStory.ts` with tests so future sessions do not accidentally break the locked demo flow.
+- Synced competition docs to the locked flow. `docs/21-competition-demo-runbook.md` is now the official 3-5 minute click-path: `demo-operator` -> Data Intake -> Supply Map/Risk -> Shock -> Matching -> Consent/Audit.
+- `docs/13-pitch-demo-script.md` was rewritten to match the runbook and preserve legal/finance guardrails; README now points to the official rehearsal URL.
+- `frontend/src/utils/demoStory.test.ts` now asserts `demo-operator` has all 5 demo steps live and `buyer-admin` is intentionally scoped with Intake/Audit blocked.
 
 ## Verification
 
-- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoStory.test.ts --cache=false` passed, 3 tests.
+- Latest targeted frontend: `npm.cmd exec vitest -- run src\utils\demoStory.test.ts --cache=false` passed, 5 tests.
 - Latest frontend typecheck/build: `npm.cmd run build` passed.
 - Latest backend full: `python -B -m unittest discover -s backend\tests` passed, 146 tests, 2 skipped.
 - Latest targeted frontend: `npm.cmd exec vitest -- run src\api\client.test.ts --cache=false` passed, 13 tests.
 - Latest frontend typecheck: `npm.cmd exec tsc -- --noEmit` passed.
-- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 54 tests.
+- Latest frontend tests: `npm.cmd exec vitest -- run --cache=false` passed, 56 tests.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=demo-operator&period=2026-07`; verified story panel renders 5 steps, shock activation shows impact panel, no console errors or horizontal overflow.
 - Browser smoke: opened `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`; verified URL business persists, shock band appears, Matching header separates buyer from disrupted supplier, no console errors or horizontal overflow.
 
@@ -64,6 +67,8 @@
 
 - Continue demo competition completion:
 - Keep demo story locked to 3-5 minutes; avoid adding steps that dilute the pitch.
+- Polish demo boundary/fallback copy so synthetic/local policy mode looks intentional during competition, not like a broken backend.
+- Add automated browser rehearsal/E2E for the official runbook when a lightweight tool path is chosen.
 - Polish Supply Map + Risk + Matching around the Dai Tin disruption story.
 - Make Shock Simulation more impressive with clear before/after paths and recovery sequencing.
 - Make Data Intake visibly prove input lineage: form, CSV, evidence upload, scan, review, approved snapshot.
