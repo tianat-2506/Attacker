@@ -85,6 +85,26 @@ describe("shockSequenceSteps", () => {
     expect(steps[2].metric).toBe("Policy gated");
   });
 
+  it("keeps recovery blocked until the cinematic recovery phase", () => {
+    const propagating = shockSequenceSteps({
+      shock: { ...baseShock, active: true },
+      canOpenMatching: true,
+      shockTargetName: "Dai Tin Distribution",
+      presentationPhase: "propagation"
+    });
+    const recovered = shockSequenceSteps({
+      shock: { ...baseShock, active: true },
+      canOpenMatching: true,
+      shockTargetName: "Dai Tin Distribution",
+      presentationPhase: "recovery"
+    });
+
+    expect(propagating.find((step) => step.id === "disruption")?.metric).toBe("Tracing routes");
+    expect(propagating.find((step) => step.id === "disruption")?.detail).not.toContain("78K units/month");
+    expect(propagating.find((step) => step.id === "recovery")?.status).toBe("blocked");
+    expect(recovered.find((step) => step.id === "recovery")?.status).toBe("ready");
+  });
+
   it("turns live shock recommendations into a guarded recovery playbook", () => {
     const playbook = recoveryPlaybook({
       shock: { ...baseShock, active: true },

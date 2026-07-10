@@ -95,6 +95,8 @@ import { intakeReviewDecisionState } from "../utils/intakeReviewDecision";
 import { intakeSubmissionSections } from "../utils/intakeSubmissionSections";
 import { auditWorkspaceState } from "../utils/auditWorkspaceState";
 import { opsProvenanceLabel } from "../utils/opsProvenance";
+import { useShockPresentation } from "../hooks/useShockPresentation";
+import { isShockPhaseVisible } from "../utils/shockPresentation";
 import { recoveryPlaybook, shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
@@ -221,9 +223,12 @@ export function OverviewWorkspace({
   const shockTarget = allNodes.find((node) => node.id === shock.shockNodeId)
     ?? scenario.nodes.find((node) => node.id === shock.shockNodeId);
   const shockTargetName = shockTarget?.name ?? "Selected supplier";
+  const presentationPhase = useShockPresentation(shock.active);
+  const showImpact = isShockPhaseVisible(presentationPhase, "impact");
+  const showRecovery = isShockPhaseVisible(presentationPhase, "recovery");
   const storySteps = demoStorySteps({ shock, canOpenIntake, canOpenRisk, canOpenMatching, canOpenAudit });
   const readyStepCount = demoStoryReadyCount(storySteps);
-  const shockSequence = shockSequenceSteps({ shock, canOpenMatching, shockTargetName });
+  const shockSequence = shockSequenceSteps({ shock, canOpenMatching, shockTargetName, presentationPhase });
   const playbook = recoveryPlaybook({ shock, recommendations });
 
   function storyStepIcon(id: DemoStoryStepId) {
@@ -249,12 +254,12 @@ export function OverviewWorkspace({
   }
 
   return (
-    <div className="page-stack overview-page">
+    <div className="page-stack overview-page" data-testid="shock-presentation" data-phase={presentationPhase}>
       <div className="overview-grid">
         <section className="map-panel tool-panel">
           <NetworkToolbar focused={focused} onFocusedChange={onFocusedChange} scenario={scenario} />
           <MapView nodes={nodes} edges={edges} selectedId={selectedId} shock={shock} onSelect={onSelect} />
-          {shock.active ? (
+          {showImpact ? (
             <div className="map-shock-banner">
               <span><AlertTriangle size={17} /><strong>{shockTargetName} down</strong></span>
               <span>{shock.affectedSmeCount} SMEs exposed</span>
@@ -282,7 +287,7 @@ export function OverviewWorkspace({
           <div className="kpi-grid">
             <KpiCard icon={<Users size={17} />} label="Active companies" value={dashboard.overview.activeCompanies.toLocaleString()} note="62 seeded business profiles" />
             <KpiCard icon={<ShieldAlert size={17} />} label="At-risk nodes" value={dashboard.overview.atRiskNodes.toString()} note="Rule-based signal threshold" tone="red" />
-            <KpiCard icon={<Building2 size={17} />} label="Affected SMEs" value={(shock.active ? shock.affectedSmeCount : dashboard.overview.affectedSmes).toString()} note={shock.active ? "Current shock scenario" : "Run simulation to calculate"} tone="amber" />
+            <KpiCard icon={<Building2 size={17} />} label="Affected SMEs" value={(showImpact ? shock.affectedSmeCount : dashboard.overview.affectedSmes).toString()} note={showImpact ? "Current shock scenario" : shock.active ? "Tracing affected routes" : "Run simulation to calculate"} tone="amber" />
             <KpiCard icon={<ShieldCheck size={17} />} label="Supply health" value={`${dashboard.overview.supplyHealthScore}/100`} note="Network operational indicator" tone="green" />
           </div>
 
@@ -295,14 +300,14 @@ export function OverviewWorkspace({
           </div>
 
           <section className="shock-sequence-panel">
-            <div className="panel-heading"><span>Shock sequence</span><strong>{shock.active ? "impact live" : "baseline"}</strong></div>
+            <div className="panel-heading"><span>Shock sequence</span><strong>{presentationPhase}</strong></div>
             <div className="shock-sequence-list">
               {shockSequence.map((step) => (
                 <div className={`shock-sequence-row ${step.status}`} key={step.id}>
                   <span className="shock-sequence-icon">{shockSequenceIcon(step.id)}</span>
                   <span><strong>{step.label}</strong><small>{step.detail}</small></span>
                   <i>{step.metric}</i>
-                  {step.id === "recovery" && shock.active ? (
+                  {step.id === "recovery" && showRecovery ? (
                     <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>{canOpenMatching ? "Open" : "Locked"}</button>
                   ) : null}
                 </div>
@@ -324,7 +329,7 @@ export function OverviewWorkspace({
             </div>
           </section>
 
-          {shock.active ? (
+          {showImpact ? (
             <section className="shock-impact-panel">
               <div><strong>{numberCompact.format(shock.monthlyVolumeAtRisk)}</strong><small>units/month exposed</small></div>
               <div><strong>VND {moneyCompact.format(shock.revenueAtRisk)}</strong><small>revenue at risk</small></div>
@@ -333,7 +338,7 @@ export function OverviewWorkspace({
             </section>
           ) : null}
 
-          {shock.active ? (
+          {showRecovery ? (
             <section className={`recovery-playbook-panel ${playbook.status}`}>
               <div className="panel-heading"><span>Recovery playbook</span><strong>{playbook.coveragePercent}% coverage</strong></div>
               <div className="recovery-playbook-grid">
@@ -359,7 +364,7 @@ export function OverviewWorkspace({
             ))}
           </section>
 
-          {shock.active ? (
+          {showRecovery ? (
             <button className="recovery-cta" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>
               <span><Route size={18} /><span><strong>{canOpenMatching ? "Recovery plan ready" : "Matching unavailable"}</strong><small>{canOpenMatching ? `${numberCompact.format(shock.monthlyVolumeAtRisk)} units/month exposed` : "This account has no matching workspace access."}</small></span></span>
               <ArrowRight size={17} />

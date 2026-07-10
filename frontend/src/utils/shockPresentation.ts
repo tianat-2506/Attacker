@@ -12,6 +12,38 @@ export const SHOCK_PHASE_SCHEDULE: ReadonlyArray<{
   { phase: "recovery", delayMs: 2200 }
 ];
 
+interface ShockPresentationScheduler {
+  schedule: (callback: () => void, delayMs: number) => number;
+  clear: (timerId: number) => void;
+}
+
+export function startShockPresentation({
+  active,
+  reducedMotion,
+  onPhase,
+  scheduler
+}: {
+  active: boolean;
+  reducedMotion: boolean;
+  onPhase: (phase: ShockPresentationPhase) => void;
+  scheduler: ShockPresentationScheduler;
+}) {
+  if (!active) {
+    onPhase("baseline");
+    return () => undefined;
+  }
+  if (reducedMotion) {
+    onPhase("recovery");
+    return () => undefined;
+  }
+
+  onPhase("origin");
+  const timers = SHOCK_PHASE_SCHEDULE.slice(1).map(({ phase, delayMs }) =>
+    scheduler.schedule(() => onPhase(phase), delayMs)
+  );
+  return () => timers.forEach((timerId) => scheduler.clear(timerId));
+}
+
 const phaseRank: Record<ShockPresentationPhase, number> = {
   baseline: 0,
   origin: 1,

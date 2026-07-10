@@ -5,7 +5,8 @@ import {
   phaseAtElapsedMs,
   shockEdgeVisualClass,
   shockNodeVisualClass,
-  shockPhaseCopy
+  shockPhaseCopy,
+  startShockPresentation
 } from "./shockPresentation";
 
 const shock: ShockState = {
@@ -50,5 +51,36 @@ describe("shock presentation", () => {
     expect(shockPhaseCopy("propagation", shock).metric).toContain("1 routes");
     expect(shockPhaseCopy("impact", shock).metric).toContain("12 SMEs");
     expect(shockPhaseCopy("recovery", shock).label).toBe("Recovery ready");
+  });
+
+  it("schedules ordered transitions and cancels pending timers", () => {
+    const phases: string[] = [];
+    const tasks: Array<{ id: number; delayMs: number; callback: () => void }> = [];
+    const cleared: number[] = [];
+    let nextId = 1;
+
+    const cleanup = startShockPresentation({
+      active: true,
+      reducedMotion: false,
+      onPhase: (phase) => phases.push(phase),
+      scheduler: {
+        schedule(callback, delayMs) {
+          const id = nextId++;
+          tasks.push({ id, delayMs, callback });
+          return id;
+        },
+        clear(timerId) {
+          cleared.push(timerId);
+        }
+      }
+    });
+
+    expect(phases).toEqual(["origin"]);
+    expect(tasks.map((task) => task.delayMs)).toEqual([550, 1400, 2200]);
+    tasks.forEach((task) => task.callback());
+    expect(phases).toEqual(["origin", "propagation", "impact", "recovery"]);
+
+    cleanup();
+    expect(cleared).toEqual([1, 2, 3]);
   });
 });

@@ -1,4 +1,5 @@
 import type { Recommendation, ShockState } from "../types";
+import { isShockPhaseVisible, type ShockPresentationPhase } from "./shockPresentation";
 
 export type ShockSequenceStepId = "baseline" | "disruption" | "recovery";
 export type ShockSequenceStatus = "complete" | "active" | "ready" | "blocked";
@@ -78,11 +79,13 @@ export function recoveryPlaybook({
 export function shockSequenceSteps({
   shock,
   canOpenMatching,
-  shockTargetName
+  shockTargetName,
+  presentationPhase = "recovery"
 }: {
   shock: ShockState;
   canOpenMatching: boolean;
   shockTargetName: string;
+  presentationPhase?: ShockPresentationPhase;
 }): ShockSequenceStep[] {
   if (!shock.active) {
     return [
@@ -110,6 +113,9 @@ export function shockSequenceSteps({
     ];
   }
 
+  const impactVisible = isShockPhaseVisible(presentationPhase, "impact");
+  const recoveryVisible = isShockPhaseVisible(presentationPhase, "recovery");
+
   return [
     {
       id: "baseline",
@@ -121,18 +127,22 @@ export function shockSequenceSteps({
     {
       id: "disruption",
       label: "After",
-      metric: `${shock.affectedSmeCount} SMEs`,
-      detail: `${compactNumber.format(shock.monthlyVolumeAtRisk)} units/month exposed through ${shockTargetName}.`,
+      metric: impactVisible ? `${shock.affectedSmeCount} SMEs` : "Tracing routes",
+      detail: impactVisible
+        ? `${compactNumber.format(shock.monthlyVolumeAtRisk)} units/month exposed through ${shockTargetName}.`
+        : `Propagating disruption from ${shockTargetName} through visible supply routes.`,
       status: "active"
     },
     {
       id: "recovery",
       label: "Recovery",
-      metric: canOpenMatching ? "Shortlist ready" : "Policy gated",
-      detail: canOpenMatching
+      metric: canOpenMatching ? (recoveryVisible ? "Shortlist ready" : "Preparing routes") : "Policy gated",
+      detail: canOpenMatching && recoveryVisible
         ? "Open matching to compare consent-gated alternatives."
-        : "This account cannot open recovery matching.",
-      status: canOpenMatching ? "ready" : "blocked"
+        : canOpenMatching
+          ? "Recovery matching opens after propagation and impact are visible."
+          : "This account cannot open recovery matching.",
+      status: canOpenMatching && recoveryVisible ? "ready" : "blocked"
     }
   ];
 }
