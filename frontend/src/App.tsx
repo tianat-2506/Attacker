@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import {
   Bell,
   Building2,
@@ -55,18 +55,6 @@ import {
   updateDataSubmission,
   validateDataSubmission
 } from "./api/client";
-import {
-  AuditWorkspace,
-  CompaniesWorkspace,
-  DataIntakeWorkspace,
-  FinanceWorkspace,
-  InvoiceWorkspace,
-  MapWorkspace,
-  MatchingWorkspace,
-  OnboardingWorkspace,
-  OverviewWorkspace,
-  RiskWorkspace
-} from "./components/WorkspaceViews";
 import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges, recommendations as fallbackRecommendations } from "./utils/demoData";
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
@@ -118,6 +106,17 @@ import type {
   SupplyMapRegistration,
   SupplyEdge
 } from "./types";
+
+const OverviewWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.OverviewWorkspace })));
+const MapWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.MapWorkspace })));
+const CompaniesWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.CompaniesWorkspace })));
+const DataIntakeWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.DataIntakeWorkspace })));
+const OnboardingWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.OnboardingWorkspace })));
+const RiskWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.RiskWorkspace })));
+const MatchingWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.MatchingWorkspace })));
+const FinanceWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.FinanceWorkspace })));
+const InvoiceWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.InvoiceWorkspace })));
+const AuditWorkspace = lazy(() => import("./components/WorkspaceViews").then((module) => ({ default: module.AuditWorkspace })));
 
 const navItems: Array<{ id: AppView; label: string; icon: ReactNode }> = [
   { id: "overview", label: "Overview", icon: <Home size={18} /> },
@@ -1274,6 +1273,7 @@ export default function App() {
         <div className="view-heading-mobile"><span>{accessibleNavItems.find((item) => item.id === activeView)?.label}</span><i>{activeAccount.label}</i></div>
 
         <div className="view-content">
+          <Suspense fallback={<div className="loading-state">Loading workspace...</div>}>
           {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenIntake={allowedViewIds.includes("intake")} onOpenIntake={() => openView("intake")} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} canOpenAudit={allowedViewIds.includes("audit")} onOpenAudit={() => openView("audit")} /> : null}
           {activeView === "map" ? <MapWorkspace {...networkProps} selected={selected} detail={detail} accessDecision={selectedAccessDecision} /> : null}
           {activeView === "companies" ? <CompaniesWorkspace nodes={scopedCompanyNodes} selectedId={selectedId} onSelect={setSelectedId} detail={detail} evidence={evidence} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId) : []} accessDecision={selectedAccessDecision} downloadTicket={evidenceDownloadTicket} viewError={evidenceViewError} viewingEvidenceVersionId={viewingEvidenceVersionId} onViewEvidence={handleViewEvidenceDocument} onCloseDownloadTicket={() => { setEvidenceDownloadTicket(null); setEvidenceViewError(null); }} /> : null}
@@ -1284,6 +1284,7 @@ export default function App() {
           {activeView === "finance" ? <FinanceWorkspace finance={finance} account={activeAccount} accessNotice={financeAccessNotice} /> : null}
           {activeView === "invoice" ? <InvoiceWorkspace invoice={invoice} account={activeAccount} accessNotice={invoiceAccessNotice} /> : null}
           {activeView === "audit" ? <AuditWorkspace audit={auditWorkspaceMatchesContext ? audit : null} adminOps={auditWorkspaceMatchesContext ? adminOps : null} resolved={auditWorkspaceMatchesContext} accounts={demoAccounts} activeAccount={activeAccount} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onConnectionDecision={handleConnectionRequestDecision} /> : null}
+          </Suspense>
         </div>
       </section>
     </main>

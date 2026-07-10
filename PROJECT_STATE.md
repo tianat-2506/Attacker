@@ -31,20 +31,19 @@
 
 ## Latest Slice
 
-- Seeded a shared deterministic analytics manifest: 2 model entries and 4 rulesets with reproducible config fingerprints.
-- Fresh and existing SQLite demo databases backfill/repair the manifest idempotently; approved intake uses the same manifest.
-- Audit now shows tenant-level internal registry lifecycle, manifest SHA-256 prefix, creator, and active status.
-- Admin Ops loads sources independently across demo/non-demo for non-auth failures; auth failures still fail closed.
-- Audit workspace has a loaded-context gate so old actor/business/permission payloads are not rendered after account changes.
-- Removed the SQLite “append-only” overclaim; the UI now says `Audited demo event log`.
+- Added route-level code splitting for workspace screens with React `lazy`/`Suspense`.
+- New bundle budget gate: `frontend/scripts/assert-build-budget.mjs`, run by `npm.cmd run test:bundle`.
+- Build now emits 2 JS chunks: entry around `238.72 kB`, workspace around `265.48 kB`; no `>500 kB` warning.
+- Prior slice seeded analytics provenance in Audit: 2 model entries, 4 rulesets, manifest SHA-256 prefix, creator, active status.
 - Prior slice completed Data Intake upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot.
 
 ## Verification
 
 - Frontend full: `npm.cmd test -- --run --cache=false` passed `93/93`.
-- Frontend build: `npm.cmd run build` passed; current bundle `501.78 kB` triggers the existing chunk warning.
+- Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `265518` bytes.
+- Frontend build: `npm.cmd run build` passed with no chunk-size warning.
 - Backend full: `python -B -m unittest discover -s backend\tests` passed `150`, skipped `3`.
-- Browser Audit: official URL shows `2` models, `4` rulesets, `manifest sha256` metadata; desktop/mobile have no console errors or horizontal overflow.
+- Browser smoke: Overview and Audit lazy routes render; Audit shows `2` models, `4` rulesets, `manifest sha256`; desktop/mobile have no console errors or horizontal overflow.
 - Runtime API: `demo_operator` reads registry as `demo-user`, not hidden admin impersonation.
 - Browser Intake: `2027-05` completed with `approved`, 1 financial, 1 product, 1 evidence.
 
@@ -60,7 +59,6 @@
 - Add a lightweight rendered browser rehearsal for the official runbook.
 - Polish Supply Map/Risk/Matching around disrupted supplier `BIZ-005`.
 - Make Shock the signature moment with staged route propagation and recovery visuals.
-- Add route-level code splitting to remove the current `>500 kB` bundle warning.
 - Preserve role, period, consent, privacy, and human-review gates.
 
 ## QA/Subagents
