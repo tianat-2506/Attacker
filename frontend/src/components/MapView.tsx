@@ -1,14 +1,23 @@
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 import { CircleMarker, MapContainer, Polygon, Polyline, TileLayer, Tooltip, ZoomControl, useMap } from "react-leaflet";
 import type { LatLngBoundsExpression, LatLngExpression, PathOptions } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { BusinessNode, ShockState, SupplyEdge } from "../types";
+import {
+  shockEdgeVisualClass,
+  shockFocusNodeIds,
+  shockNodeVisualClass,
+  shockPathRenderKey,
+  shockPhaseCopy,
+  type ShockPresentationPhase
+} from "../utils/shockPresentation";
 
 interface MapViewProps {
   nodes: BusinessNode[];
   edges: SupplyEdge[];
   selectedId: string;
   shock: ShockState;
+  presentationPhase: ShockPresentationPhase;
   onSelect: (id: string) => void;
 }
 
@@ -41,9 +50,9 @@ const roleStroke: Record<BusinessNode["type"], string> = {
   financial_partner: "#c084fc"
 };
 
-function riskColor(node: BusinessNode, shock: ShockState) {
-  if (shock.active && node.id === shock.shockNodeId) return "#ef4444";
-  if (shock.active && shock.affectedNodeIds.includes(node.id)) return "#f59e0b";
+function riskColor(node: BusinessNode, visualClass: string) {
+  if (visualClass.includes("shock-node-origin")) return "#ef4444";
+  if (visualClass.includes("shock-node-affected")) return "#f59e0b";
   if (node.risk >= 70) return "#ef4444";
   if (node.risk >= 45) return "#f59e0b";
   return "#84cc16";
@@ -54,25 +63,36 @@ function radiusFor(node: BusinessNode, selected: boolean) {
   return base + (selected ? 3 : 0);
 }
 
-function FitNetwork({ nodes }: { nodes: BusinessNode[] }) {
+function FitNetwork({ nodes, shock, presentationPhase }: { nodes: BusinessNode[]; shock: ShockState; presentationPhase: ShockPresentationPhase }) {
   const map = useMap();
   useEffect(() => {
     if (!nodes.length) return;
+    const focusIds = shockFocusNodeIds(nodes.map((node) => node.id), shock, presentationPhase);
+    if (focusIds.length) {
+      const focusSet = new Set(focusIds);
+      const impactBounds: LatLngBoundsExpression = nodes
+        .filter((node) => focusSet.has(node.id))
+        .map((node) => [node.lat, node.lng] as [number, number]);
+      map.fitBounds(impactBounds, { padding: [70, 70], maxZoom: 10 });
+      return;
+    }
     if (nodes.length >= 20) {
       map.fitBounds(southernVietnamBounds, { padding: [22, 22] });
       return;
     }
     const bounds: LatLngBoundsExpression = nodes.map((node) => [node.lat, node.lng] as [number, number]);
     map.fitBounds(bounds, { padding: [54, 54], maxZoom: 9 });
-  }, [map, nodes]);
+  }, [map, nodes, presentationPhase, shock.active, shock.shockNodeId, shock.affectedNodeIds]);
   return null;
 }
 
-export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewProps) {
+export function MapView({ nodes, edges, selectedId, shock, presentationPhase, onSelect }: MapViewProps) {
   const byId = new Map(nodes.map((node) => [node.id, node]));
+  const shockTargetName = byId.get(shock.shockNodeId)?.name ?? shock.shockNodeId;
+  const phaseCopy = shockPhaseCopy(presentationPhase, shock, shockTargetName);
 
   return (
-    <div className="leaflet-shell" data-testid="southern-map">
+    <div className="leaflet-shell" data-testid="southern-map" data-shock-phase={presentationPhase}>
       <MapContainer
         center={[10.75, 106.85]}
         zoom={7}
@@ -88,7 +108,7 @@ export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewPr
           url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         />
         <ZoomControl position="bottomleft" />
-        <FitNetwork nodes={nodes} />
+        <FitNetwork nodes={nodes} shock={shock} presentationPhase={presentationPhase} />
 
         <Polygon positions={southernFocusBoundary} pathOptions={{ color: "#0ea5e9", weight: 1, opacity: 0.28, fillColor: "#082f49", fillOpacity: 0.08 }} />
         <Polygon positions={binhDuongBoundary} pathOptions={{ color: "#22d3ee", weight: 9, opacity: 0.12, fillOpacity: 0 }} />
@@ -96,20 +116,22 @@ export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewPr
           <Tooltip sticky>Binh Duong focus area</Tooltip>
         </Polygon>
 
-        {edges.map((edge) => {
+        {edges.map((edge, index) => {
           const source = byId.get(edge.sourceId);
           const target = byId.get(edge.targetId);
           if (!source || !target) return null;
-          const impacted = shock.active && shock.affectedEdgeIds.includes(edge.id);
+          const visualClass = shockEdgeVisualClass(edge.id, index, shock, presentationPhase);
+          const impacted = Boolean(visualClass);
           const support = edge.relationType && edge.relationType !== "supply";
           const pathOptions: PathOptions = {
+            className: visualClass,
             color: impacted ? "#fb7185" : support ? "#c084fc" : "#22d3ee",
-            weight: impacted ? 3 : support ? 1.8 : 1.25,
-            opacity: impacted ? 0.9 : support ? 0.72 : 0.46,
+            weight: impacted ? 4 : support ? 1.8 : 1.25,
+            opacity: impacted ? 1 : support ? 0.72 : 0.46,
             dashArray: impacted ? "7 7" : support ? "3 5" : undefined
           };
           return (
-            <Polyline key={edge.id} positions={[[source.lat, source.lng], [target.lat, target.lng]]} pathOptions={pathOptions}>
+            <Polyline key={shockPathRenderKey(edge.id, visualClass)} positions={[[source.lat, source.lng], [target.lat, target.lng]]} pathOptions={pathOptions}>
               <Tooltip sticky>
                 <strong>{source.name} to {target.name}</strong><br />
                 {edge.relationType ?? "supply"} · {edge.category} · {edge.leadTimeDays}d lead time
@@ -120,14 +142,25 @@ export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewPr
 
         {nodes.map((node) => {
           const selected = node.id === selectedId;
+          const nodeVisualClass = shockNodeVisualClass(node.id, shock, presentationPhase);
           return (
-            <CircleMarker
-              key={node.id}
+            <Fragment key={node.id}>
+              {node.id === shock.shockNodeId && presentationPhase !== "baseline" ? (
+                <CircleMarker
+                  center={[node.lat, node.lng]}
+                  radius={radiusFor(node, selected) + 10}
+                  interactive={false}
+                  pathOptions={{ className: "shock-origin-halo", color: "#fb7185", fillOpacity: 0, opacity: 0.9, weight: 2 }}
+                />
+              ) : null}
+              <CircleMarker
+              key={shockPathRenderKey(node.id, nodeVisualClass)}
               center={[node.lat, node.lng]}
               radius={radiusFor(node, selected)}
               pathOptions={{
+                className: nodeVisualClass,
                 color: selected ? "#ffffff" : roleStroke[node.type] ?? "#ffffff",
-                fillColor: riskColor(node, shock),
+                fillColor: riskColor(node, nodeVisualClass),
                 fillOpacity: 0.95,
                 opacity: 1,
                 weight: selected ? 4 : 2
@@ -139,7 +172,8 @@ export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewPr
                 {node.type.replace("_", " ")} · {node.province}<br />
                 Risk {node.risk}/100 · Health {node.health}/100
               </Tooltip>
-            </CircleMarker>
+              </CircleMarker>
+            </Fragment>
           );
         })}
       </MapContainer>
@@ -147,6 +181,12 @@ export function MapView({ nodes, edges, selectedId, shock, onSelect }: MapViewPr
         <span>Southern Vietnam</span>
         <strong>Binh Duong highlighted</strong>
       </div>
+      {presentationPhase !== "baseline" ? (
+        <div className={`map-phase-overlay ${presentationPhase}`} data-testid="map-phase-overlay">
+          <span>{phaseCopy.label}</span>
+          <strong>{phaseCopy.metric}</strong>
+        </div>
+      ) : null}
     </div>
   );
 }

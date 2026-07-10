@@ -258,7 +258,7 @@ export function OverviewWorkspace({
       <div className="overview-grid">
         <section className="map-panel tool-panel">
           <NetworkToolbar focused={focused} onFocusedChange={onFocusedChange} scenario={scenario} />
-          <MapView nodes={nodes} edges={edges} selectedId={selectedId} shock={shock} onSelect={onSelect} />
+          <MapView nodes={nodes} edges={edges} selectedId={selectedId} shock={shock} presentationPhase={presentationPhase} onSelect={onSelect} />
           {showImpact ? (
             <div className="map-shock-banner">
               <span><AlertTriangle size={17} /><strong>{shockTargetName} down</strong></span>
@@ -441,7 +441,7 @@ export function MapWorkspace(props: NetworkProps & { selected: BusinessNode | un
     <div className="page-stack map-page">
       <section className="map-panel tool-panel map-expanded">
         <NetworkToolbar focused={props.focused} onFocusedChange={props.onFocusedChange} scenario={props.scenario} />
-        <MapView nodes={nodes} edges={edges} selectedId={props.selectedId} shock={props.shock} onSelect={props.onSelect} />
+        <MapView nodes={nodes} edges={edges} selectedId={props.selectedId} shock={props.shock} presentationPhase={props.shock.active ? "recovery" : "baseline"} onSelect={props.onSelect} />
       </section>
       <aside className="selection-inspector tool-panel">
         {props.selected ? <>

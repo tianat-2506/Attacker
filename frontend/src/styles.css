@@ -196,6 +196,23 @@ button.filter-control { justify-content: center; }
 .map-overlay-label span, .map-overlay-label strong { display: block; }
 .map-overlay-label span { color: var(--muted); font-size: 9px; text-transform: uppercase; }
 .map-overlay-label strong { margin-top: 2px; color: var(--cyan); font-size: 11px; }
+.map-phase-overlay { position: absolute; top: 12px; right: 12px; z-index: 500; min-width: 180px; max-width: calc(100% - 24px); padding: 9px 11px; border: 1px solid rgba(251, 113, 133, 0.4); border-radius: 6px; background: rgba(5, 11, 16, 0.9); pointer-events: none; }
+.map-phase-overlay span, .map-phase-overlay strong { display: block; }
+.map-phase-overlay span { color: var(--muted); font-size: 9px; text-transform: uppercase; }
+.map-phase-overlay strong { margin-top: 3px; color: #ffe4e6; font-size: 12px; }
+.map-phase-overlay.propagation { border-color: rgba(245, 158, 11, 0.5); }.map-phase-overlay.propagation strong { color: #ffe8be; }
+.map-phase-overlay.impact, .map-phase-overlay.recovery { border-color: rgba(132, 204, 22, 0.42); }.map-phase-overlay.impact strong, .map-phase-overlay.recovery strong { color: #e9ffd2; }
+.shock-origin-halo { transform-box: fill-box; transform-origin: center; animation: shock-origin-pulse 900ms ease-out 3; }
+.shock-node-origin { filter: drop-shadow(0 0 8px rgba(251, 91, 89, 0.95)); }
+.shock-node-affected { animation: shock-node-pulse 850ms ease-in-out 2; filter: drop-shadow(0 0 6px rgba(245, 158, 11, 0.88)); }
+.shock-edge-impacted { animation: shock-route-reveal 720ms ease-out both, shock-route-flow 900ms linear 720ms 3; }
+.shock-edge-delay-1 { animation-delay: 120ms, 840ms; }
+.shock-edge-delay-2 { animation-delay: 240ms, 960ms; }
+.shock-edge-delay-3 { animation-delay: 360ms, 1080ms; }
+@keyframes shock-origin-pulse { 0% { stroke-opacity: 0.9; stroke-width: 2; } 100% { stroke-opacity: 0; stroke-width: 16; } }
+@keyframes shock-node-pulse { 50% { fill-opacity: 0.45; stroke-width: 6; } }
+@keyframes shock-route-reveal { from { stroke-dashoffset: 40; stroke-opacity: 0; } to { stroke-dashoffset: 0; stroke-opacity: 1; } }
+@keyframes shock-route-flow { to { stroke-dashoffset: -28; } }
 .map-footbar { min-height: 39px; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 0 12px; border-top: 1px solid var(--line); color: var(--muted); font-size: 10px; }
 .map-shock-banner { min-width: 0; min-height: 43px; display: grid; grid-template-columns: minmax(180px, 1.2fr) repeat(3, minmax(90px, 0.7fr)) auto; gap: 8px; align-items: center; padding: 7px 12px; border-top: 1px solid rgba(251, 91, 89, 0.28); color: #ffd9d8; background: rgba(251, 91, 89, 0.08); }
 .map-shock-banner span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 10px; }
@@ -656,6 +673,7 @@ button.filter-control { justify-content: center; }
 
 @media (max-width: 600px) {
   .network-toolbar { grid-template-columns: 1fr; }.segmented { width: 100%; }.segmented button { width: 100%; }.leaflet-map { min-height: 470px; }.map-footbar { align-items: flex-start; padding: 8px 10px; }.map-footbar > span:last-child { display: none; }
+  .map-phase-overlay { top: 62px; right: auto; left: 12px; min-width: 0; }
   .map-shock-banner { grid-template-columns: 1fr; }.map-shock-banner span:nth-child(4), .map-shock-banner .text-button { grid-column: auto; }
   .shock-sequence-row { grid-template-columns: 26px minmax(0, 1fr); }.shock-sequence-row i, .shock-sequence-row .text-button { grid-column: 2; justify-self: start; text-align: left; }
   .kpi-grid, .analytics-grid, .profile-kpis, .finance-kpis { grid-template-columns: 1fr 1fr; }.kpi-card { min-height: 105px; }.kpi-card > strong { font-size: 19px; }
@@ -670,4 +688,8 @@ button.filter-control { justify-content: center; }
   .intake-control-strip, .intake-lineage-list, .intake-proof-list, .intake-field-grid, .upload-control-grid, .evidence-requirement-grid { grid-template-columns: 1fr; }
   .shock-impact-panel { grid-template-columns: 1fr; }
   .profile-header { display: grid; }.verified-badge { justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shock-origin-halo, .shock-node-affected, .shock-edge-impacted { animation: none; }
 }

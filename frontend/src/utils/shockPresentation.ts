@@ -69,14 +69,27 @@ export function shockNodeVisualClass(nodeId: string, shock: ShockState, phase: S
   return "";
 }
 
+export function shockFocusNodeIds(nodeIds: string[], shock: ShockState, phase: ShockPresentationPhase) {
+  if (!shock.active || phase === "baseline") return [];
+  const focusIds = new Set([shock.shockNodeId, ...shock.affectedNodeIds]);
+  return nodeIds.filter((nodeId) => focusIds.has(nodeId));
+}
+
+export function shockPathRenderKey(id: string, visualClass: string) {
+  return `${id}:${visualClass || "baseline"}`;
+}
+
 export function shockEdgeVisualClass(edgeId: string, index: number, shock: ShockState, phase: ShockPresentationPhase) {
   if (!shock.active || !isShockPhaseVisible(phase, "propagation") || !shock.affectedEdgeIds.includes(edgeId)) return "";
   return `shock-edge-impacted shock-edge-delay-${index % 4}`;
 }
 
-export function shockPhaseCopy(phase: ShockPresentationPhase, shock: ShockState) {
-  if (phase === "origin") return { label: "Supplier disruption", metric: `${shock.shockNodeId} down` };
-  if (phase === "propagation") return { label: "Impact propagating", metric: `${shock.affectedEdgeIds.length} routes exposed` };
+export function shockPhaseCopy(phase: ShockPresentationPhase, shock: ShockState, shockTargetName = shock.shockNodeId) {
+  if (phase === "origin") return { label: "Supplier disruption", metric: `${shockTargetName} down` };
+  if (phase === "propagation") {
+    const routeLabel = shock.affectedEdgeIds.length === 1 ? "route" : "routes";
+    return { label: "Impact propagating", metric: `${shock.affectedEdgeIds.length} network ${routeLabel} exposed` };
+  }
   if (phase === "impact") return { label: "Operational exposure", metric: `${shock.affectedSmeCount} SMEs / ${shock.monthlyVolumeAtRisk.toLocaleString()} units` };
   if (phase === "recovery") return { label: "Recovery ready", metric: "Consent-gated shortlist" };
   return { label: "Network baseline", metric: "Monitoring live" };

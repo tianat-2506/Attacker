@@ -4,7 +4,9 @@ import {
   isShockPhaseVisible,
   phaseAtElapsedMs,
   shockEdgeVisualClass,
+  shockFocusNodeIds,
   shockNodeVisualClass,
+  shockPathRenderKey,
   shockPhaseCopy,
   startShockPresentation
 } from "./shockPresentation";
@@ -39,16 +41,32 @@ describe("shock presentation", () => {
   });
 
   it("assigns semantic map classes only when their phase is visible", () => {
+    expect(shockNodeVisualClass("BIZ-005", shock, "baseline")).toBe("");
     expect(shockNodeVisualClass("BIZ-005", shock, "origin")).toContain("shock-node-origin");
     expect(shockNodeVisualClass("BIZ-009", shock, "origin")).toBe("");
     expect(shockNodeVisualClass("BIZ-009", shock, "propagation")).toContain("shock-node-affected");
     expect(shockEdgeVisualClass("EDGE-1", 2, shock, "propagation")).toBe("shock-edge-impacted shock-edge-delay-2");
     expect(shockEdgeVisualClass("EDGE-2", 0, shock, "recovery")).toBe("");
+    expect(shockEdgeVisualClass("EDGE-1", 4, shock, "propagation")).toBe("shock-edge-impacted shock-edge-delay-0");
+  });
+
+  it("focuses the disrupted and affected nodes only after shock starts", () => {
+    const nodeIds = ["BIZ-002", "BIZ-005", "BIZ-009", "BIZ-013"];
+
+    expect(shockFocusNodeIds(nodeIds, shock, "baseline")).toEqual([]);
+    expect(shockFocusNodeIds(nodeIds, shock, "origin")).toEqual(["BIZ-005", "BIZ-009"]);
+  });
+
+  it("changes the Leaflet render key when a semantic path class appears", () => {
+    expect(shockPathRenderKey("EDGE-1", "")).toBe("EDGE-1:baseline");
+    expect(shockPathRenderKey("EDGE-1", "shock-edge-impacted shock-edge-delay-0")).toBe(
+      "EDGE-1:shock-edge-impacted shock-edge-delay-0"
+    );
   });
 
   it("turns returned facts into concise phase copy", () => {
-    expect(shockPhaseCopy("origin", shock).metric).toContain("BIZ-005");
-    expect(shockPhaseCopy("propagation", shock).metric).toContain("1 routes");
+    expect(shockPhaseCopy("origin", shock, "Dai Tin Distribution").metric).toBe("Dai Tin Distribution down");
+    expect(shockPhaseCopy("propagation", shock).metric).toContain("1 network route");
     expect(shockPhaseCopy("impact", shock).metric).toContain("12 SMEs");
     expect(shockPhaseCopy("recovery", shock).label).toBe("Recovery ready");
   });
