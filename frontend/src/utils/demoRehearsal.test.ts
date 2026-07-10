@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import runbook from "../../../docs/21-competition-demo-runbook.md?raw";
+import rehearsalHtml from "../../public/demo-rehearsal.html?raw";
 import { getDemoAccountById } from "./demoAccounts";
 import { demoStoryReadyCount, demoStorySteps } from "./demoStory";
 import {
@@ -64,6 +65,16 @@ describe("competition demo rehearsal contract", () => {
     expect(runbook).toContain("Main persona: `demo-operator`");
     for (const label of OFFICIAL_DEMO_FLOW_LABELS) {
       expect(runbook).toContain(label);
+    }
+  });
+
+  it("keeps a rendered browser rehearsal page aligned with the official runbook", () => {
+    expect(rehearsalHtml).toContain(OFFICIAL_DEMO_URL);
+    expect(rehearsalHtml).toContain(BUYER_REHEARSAL_URL);
+    expect(rehearsalHtml).toContain("Main persona: demo-operator");
+    expect(rehearsalHtml).toContain("Decision-support only");
+    for (const label of OFFICIAL_DEMO_FLOW_LABELS) {
+      expect(rehearsalHtml).toContain(label);
     }
   });
 });

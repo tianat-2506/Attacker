@@ -31,18 +31,20 @@
 
 ## Latest Slice
 
-- Added route-level code splitting for workspace screens with React `lazy`/`Suspense`.
-- New bundle budget gate: `frontend/scripts/assert-build-budget.mjs`, run by `npm.cmd run test:bundle`.
-- Build now emits 2 JS chunks: entry around `238.72 kB`, workspace around `265.48 kB`; no `>500 kB` warning.
+- Added rendered rehearsal page at `http://127.0.0.1:5173/demo-rehearsal.html`.
+- Rehearsal page shows official/buyer demo links, 5-step timing checklist, and legal/finance guardrails.
+- `frontend/src/utils/demoRehearsal.test.ts` now keeps the rendered page aligned with `docs/21-competition-demo-runbook.md`.
+- Prior slice added route-level workspace code splitting and `npm.cmd run test:bundle`; largest JS chunk remains about `265.48 kB`.
 - Prior slice seeded analytics provenance in Audit: 2 model entries, 4 rulesets, manifest SHA-256 prefix, creator, active status.
 - Prior slice completed Data Intake upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot.
 
 ## Verification
 
-- Frontend full: `npm.cmd test -- --run --cache=false` passed `93/93`.
+- Frontend full: `npm.cmd test -- --run --cache=false` passed `94/94`.
 - Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `265518` bytes.
 - Frontend build: `npm.cmd run build` passed with no chunk-size warning.
 - Backend full: `python -B -m unittest discover -s backend\tests` passed `150`, skipped `3`.
+- Browser rehearsal page: desktop/mobile render 5 steps, official/buyer links, guardrail copy; no console errors or horizontal overflow.
 - Browser smoke: Overview and Audit lazy routes render; Audit shows `2` models, `4` rulesets, `manifest sha256`; desktop/mobile have no console errors or horizontal overflow.
 - Runtime API: `demo_operator` reads registry as `demo-user`, not hidden admin impersonation.
 - Browser Intake: `2027-05` completed with `approved`, 1 financial, 1 product, 1 evidence.
@@ -56,7 +58,6 @@
 ## Next Best Work
 
 - Keep the competition story at 3-5 minutes; do not dilute it.
-- Add a lightweight rendered browser rehearsal for the official runbook.
 - Polish Supply Map/Risk/Matching around disrupted supplier `BIZ-005`.
 - Make Shock the signature moment with staged route propagation and recovery visuals.
 - Preserve role, period, consent, privacy, and human-review gates.

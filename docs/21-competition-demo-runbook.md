@@ -6,6 +6,7 @@ Use this file as the single source for the 3-5 minute competition demo. Keep it 
 
 - Backend: `http://127.0.0.1:8000`.
 - Frontend: `http://127.0.0.1:5173`.
+- Rendered rehearsal page: `http://127.0.0.1:5173/demo-rehearsal.html`.
 - Official URL: `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`.
 - Main persona: `demo-operator`.
 - Buyer rehearsal URL: `http://127.0.0.1:5173/?view=overview&account=buyer-admin&business=BIZ-005&period=2026-07`.

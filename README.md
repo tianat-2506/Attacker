@@ -10,6 +10,7 @@ This repository now contains the research package plus a runnable MVP demo scaff
 - Region: TP.HCM, Binh Duong, Dong Nai, Lam Dong.
 - MVP competition flow: Data Intake -> Supply Map + Risk -> Shock Simulation -> Recovery Matching -> Consent + Audit.
 - Official rehearsal URL: `http://127.0.0.1:5173/?view=overview&account=demo-operator&business=BIZ-005&period=2026-07`.
+- Rendered rehearsal page: `http://127.0.0.1:5173/demo-rehearsal.html`.
 - Data: synthetic, deterministic, 62 businesses, supply edges, procurement documents, certifications, guarantees, audit events and 12 months of financial snapshots.
 - AI stance: rule-based risk signal plus explainable text. ML is a later pilot/production upgrade.
 - Blockchain stance: optional invoice hash/funding-status simulation, not the center of the pitch.
