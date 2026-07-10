@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { BusinessNode } from "../types";
-import { accountCanBrowseNetwork, accountCanReadOwnBusiness, demoAccounts, scopedBusinessNodesForAccount } from "./demoAccounts";
+import { accountCanBrowseNetwork, accountCanReadOwnBusiness, demoAccounts, recoveryBuyerIdForAccount, scopedBusinessNodesForAccount } from "./demoAccounts";
 
 const nodes: BusinessNode[] = [
   { id: "BIZ-005", name: "Supplier", type: "distributor", province: "Binh Duong", category: "beverage", lat: 0, lng: 0, revenue: 0, capacity: 0, health: 0, risk: 0 },
@@ -31,5 +31,15 @@ describe("demo account scoping", () => {
     const systemAdmin = demoAccounts.find((account) => account.id === "system-admin")!;
 
     expect(accountCanReadOwnBusiness(systemAdmin, "BIZ-062")).toBe(true);
+  });
+
+  it("uses the affected SME as the demo-operator recovery buyer", () => {
+    const operator = demoAccounts.find((account) => account.id === "demo-operator")!;
+    const buyer = demoAccounts.find((account) => account.id === "buyer-admin")!;
+
+    expect(recoveryBuyerIdForAccount(operator, ["BIZ-009", "BIZ-011"])).toBe("BIZ-009");
+    expect(recoveryBuyerIdForAccount(operator, ["BIZ-036", "BIZ-009"])).toBe("BIZ-009");
+    expect(recoveryBuyerIdForAccount(operator, [])).toBe("BIZ-009");
+    expect(recoveryBuyerIdForAccount(buyer, ["BIZ-011"])).toBe("BIZ-009");
   });
 });

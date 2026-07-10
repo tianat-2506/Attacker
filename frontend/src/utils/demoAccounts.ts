@@ -171,6 +171,13 @@ export function accountCanReadOwnBusiness(account: DemoAccount, businessId: stri
   return accountHasAnyRole(account, ["demo_operator", "system_admin"]) || businessId === account.defaultBusinessId || businessId === account.organizationId;
 }
 
+export function recoveryBuyerIdForAccount(account: DemoAccount, affectedNodeIds: string[], fallbackBuyerId = "BIZ-009") {
+  if (account.actorRole === "demo_operator") {
+    return affectedNodeIds.includes(fallbackBuyerId) ? fallbackBuyerId : affectedNodeIds[0] ?? fallbackBuyerId;
+  }
+  return account.defaultBusinessId;
+}
+
 export function scopedBusinessNodesForAccount(account: DemoAccount, nodes: BusinessNode[]) {
   if (accountCanBrowseNetwork(account)) return nodes;
   return nodes.filter((node) => accountCanReadOwnBusiness(account, node.id));

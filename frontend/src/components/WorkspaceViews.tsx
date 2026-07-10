@@ -95,7 +95,7 @@ import { intakeReviewDecisionState } from "../utils/intakeReviewDecision";
 import { intakeSubmissionSections } from "../utils/intakeSubmissionSections";
 import { auditWorkspaceState } from "../utils/auditWorkspaceState";
 import { opsProvenanceLabel } from "../utils/opsProvenance";
-import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
+import { recoveryPlaybook, shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
 const moneyCompact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
@@ -198,9 +198,11 @@ export function OverviewWorkspace({
   canOpenMatching,
   onOpenMatching,
   canOpenAudit,
-  onOpenAudit
+  onOpenAudit,
+  recommendations
 }: NetworkProps & {
   dashboard: DashboardData;
+  recommendations: Recommendation[];
   onSimulate: () => void;
   onReset: () => void;
   canOpenIntake: boolean;
@@ -222,6 +224,7 @@ export function OverviewWorkspace({
   const storySteps = demoStorySteps({ shock, canOpenIntake, canOpenRisk, canOpenMatching, canOpenAudit });
   const readyStepCount = demoStoryReadyCount(storySteps);
   const shockSequence = shockSequenceSteps({ shock, canOpenMatching, shockTargetName });
+  const playbook = recoveryPlaybook({ shock, recommendations });
 
   function storyStepIcon(id: DemoStoryStepId) {
     if (id === "intake") return <FileCheck2 size={15} />;
@@ -327,6 +330,20 @@ export function OverviewWorkspace({
               <div><strong>VND {moneyCompact.format(shock.revenueAtRisk)}</strong><small>revenue at risk</small></div>
               <div><strong>{shock.avgStockoutDays.toFixed(1)} days</strong><small>stockout window</small></div>
               <div><strong>{shock.affectedSmeCount}</strong><small>downstream SMEs</small></div>
+            </section>
+          ) : null}
+
+          {shock.active ? (
+            <section className={`recovery-playbook-panel ${playbook.status}`}>
+              <div className="panel-heading"><span>Recovery playbook</span><strong>{playbook.coveragePercent}% coverage</strong></div>
+              <div className="recovery-playbook-grid">
+                <div><span>Primary route</span><strong>{playbook.primarySupplierName}</strong></div>
+                <div><span>Alternate routes</span><strong>{playbook.routeCount}</strong></div>
+                <div><span>Recoverable</span><strong>{numberCompact.format(playbook.recoverableVolume)}</strong></div>
+                <div><span>Residual</span><strong>{numberCompact.format(playbook.residualVolume)}</strong></div>
+                <div><span>Weighted lead time</span><strong>{playbook.weightedLeadTimeDays || "-"} days</strong></div>
+              </div>
+              <p>{playbook.guardrail}</p>
             </section>
           ) : null}
 
@@ -701,8 +718,9 @@ export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatchi
   );
 }
 
-export function MatchingWorkspace({ recommendations, request, buyerName, disruptedSupplierName, selectedPeriod, accessByBusinessId, canConnect, onConnect }: { recommendations: Recommendation[]; request: ConnectionRequest | null; buyerName: string; disruptedSupplierName: string; selectedPeriod: string; accessByBusinessId: Record<string, DemoAccessDecision>; canConnect: boolean; onConnect: (supplierId: string) => void }) {
+export function MatchingWorkspace({ recommendations, request, buyerName, disruptedSupplierName, selectedPeriod, shock, accessByBusinessId, canConnect, onConnect }: { recommendations: Recommendation[]; request: ConnectionRequest | null; buyerName: string; disruptedSupplierName: string; selectedPeriod: string; shock: ShockState; accessByBusinessId: Record<string, DemoAccessDecision>; canConnect: boolean; onConnect: (supplierId: string) => void }) {
   const periodNotice = matchingPeriodNotice(recommendations, selectedPeriod);
+  const playbook = recoveryPlaybook({ shock, recommendations });
   return (
     <div className="page-stack matching-workspace">
       <header className="workspace-heading">
@@ -713,6 +731,20 @@ export function MatchingWorkspace({ recommendations, request, buyerName, disrupt
         </div>
         <span className="qualification-badge"><ShieldCheck size={16} />Review-gated shortlist</span>
       </header>
+      {shock.active ? (
+        <section className={`tool-panel recovery-playbook-wide ${playbook.status}`}>
+          <div>
+            <span className="eyebrow">Shock recovery plan</span>
+            <h2>{playbook.routeCount} alternate routes can cover {playbook.coveragePercent}% of exposed volume</h2>
+            <p>Primary route: {playbook.primarySupplierName}. Estimated recoverable volume {numberCompact.format(playbook.recoverableVolume)} units/month; residual exposure {numberCompact.format(playbook.residualVolume)} units/month.</p>
+          </div>
+          <div className="recovery-playbook-kpis">
+            <span><strong>{playbook.weightedLeadTimeDays || "-"} days</strong><small>weighted lead time</small></span>
+            <span><strong>{numberCompact.format(playbook.recoverableVolume)}</strong><small>recoverable units</small></span>
+            <span><strong>{playbook.guardrail}</strong><small>legal/finance guardrail</small></span>
+          </div>
+        </section>
+      ) : null}
       <section className="matching-criteria">
         {[["Product/spec", "25%"], ["Capacity", "20%"], ["Distance", "15%"], ["Financial health", "15%"], ["Reliability", "10%"], ["Payment term", "10%"]].map(([label, weight]) => <div key={label}><span>{label}</span><strong>{weight}</strong></div>)}
       </section>

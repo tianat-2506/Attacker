@@ -31,19 +31,23 @@
 
 ## Latest Slice
 
-- Added rendered rehearsal page at `http://127.0.0.1:5173/demo-rehearsal.html`.
-- Rehearsal page shows official/buyer demo links, 5-step timing checklist, and legal/finance guardrails.
-- `frontend/src/utils/demoRehearsal.test.ts` now keeps the rendered page aligned with `docs/21-competition-demo-runbook.md`.
+- Added Shock/Matching recovery playbook for the competition demo.
+- Overview now shows recovery coverage, primary route, alternate route count, recoverable/residual volume, lead time, and guardrail after shock.
+- Matching now shows a wide "Shock recovery plan" panel above supplier cards.
+- `demo-operator` recovery matching now uses affected buyer `BIZ-009` when present, not disrupted supplier `BIZ-005`.
+- New tests cover recovery playbook math/guardrails and demo recovery buyer selection.
+- Prior slice added rendered rehearsal page at `http://127.0.0.1:5173/demo-rehearsal.html`.
 - Prior slice added route-level workspace code splitting and `npm.cmd run test:bundle`; largest JS chunk remains about `265.48 kB`.
 - Prior slice seeded analytics provenance in Audit: 2 model entries, 4 rulesets, manifest SHA-256 prefix, creator, active status.
 - Prior slice completed Data Intake upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot.
 
 ## Verification
 
-- Frontend full: `npm.cmd test -- --run --cache=false` passed `94/94`.
-- Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `265518` bytes.
+- Frontend full: `npm.cmd test -- --run --cache=false` passed `97/97`.
+- Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `268562` bytes.
 - Frontend build: `npm.cmd run build` passed with no chunk-size warning.
 - Backend full: `python -B -m unittest discover -s backend\tests` passed `150`, skipped `3`.
+- Browser Shock/Matching: official route shock run shows ready recovery playbook, 3 supplier cards, guardrail copy; desktop/mobile have no console errors or horizontal overflow.
 - Browser rehearsal page: desktop/mobile render 5 steps, official/buyer links, guardrail copy; no console errors or horizontal overflow.
 - Browser smoke: Overview and Audit lazy routes render; Audit shows `2` models, `4` rulesets, `manifest sha256`; desktop/mobile have no console errors or horizontal overflow.
 - Runtime API: `demo_operator` reads registry as `demo-user`, not hidden admin impersonation.
@@ -58,8 +62,8 @@
 ## Next Best Work
 
 - Keep the competition story at 3-5 minutes; do not dilute it.
-- Polish Supply Map/Risk/Matching around disrupted supplier `BIZ-005`.
-- Make Shock the signature moment with staged route propagation and recovery visuals.
+- Polish Supply Map/Risk around disrupted supplier `BIZ-005`; Matching now has recovery playbook but supplier cards can still be visually sharpened.
+- Make Shock more cinematic with staged route propagation/map emphasis if time remains.
 - Preserve role, period, consent, privacy, and human-review gates.
 
 ## QA/Subagents
