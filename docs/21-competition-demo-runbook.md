@@ -28,6 +28,7 @@ Use this file as the single source for the 3-5 minute competition demo. Keep it 
 
 3. `1:45` Shock Simulation
    - Click `Run` / `Simulate Supply Shock`.
+   - Let the 2.2-second sequence finish: supplier disruption, route propagation, operational impact, recovery ready.
    - Read the shock sequence: baseline graph, live disruption, recovery shortlist.
    - Read the impact panel: exposed units, revenue at risk, stockout window and downstream SMEs.
    - Say: "The system turns one supplier disruption into a visible operational exposure."
