@@ -93,6 +93,8 @@ import { intakeLineageSteps, type IntakeLineageStepId } from "../utils/intakeLin
 import { intakeProofChecklist, type IntakeProofItemId } from "../utils/intakeProof";
 import { intakeReviewDecisionState } from "../utils/intakeReviewDecision";
 import { intakeSubmissionSections } from "../utils/intakeSubmissionSections";
+import { auditWorkspaceState } from "../utils/auditWorkspaceState";
+import { opsProvenanceLabel } from "../utils/opsProvenance";
 import { shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
 import { MapView } from "./MapView";
 
@@ -1526,13 +1528,14 @@ function demoAccountCapabilities(account: DemoAccount) {
     { label: "Onboarding", enabled: account.allowedViews.includes("onboarding"), detail: ["reviewer", "system_admin", "demo_operator"].includes(account.actorRole) ? "review queue" : "own org" },
     { label: "Graph", enabled: account.allowedViews.includes("map") || account.allowedViews.includes("matching"), detail: account.scopes.includes("commercial_graph:read") ? "masked analysis" : "consent gated" },
     { label: "Finance", enabled: account.allowedViews.includes("finance") || account.allowedViews.includes("invoice"), detail: account.actorRole === "lender" ? "review only" : "restricted" },
-    { label: "Audit/Ops", enabled: account.allowedViews.includes("audit"), detail: account.scopes.includes("ops:read") ? "ops read" : "denied" }
+    { label: "Audit/Ops", enabled: account.allowedViews.includes("audit"), detail: account.allowedViews.includes("audit") ? "authorized view" : "denied" }
   ];
 }
 
 export function AuditWorkspace({
   audit,
   adminOps,
+  resolved,
   accounts,
   activeAccount,
   canDecideConnectionRequest,
@@ -1540,28 +1543,37 @@ export function AuditWorkspace({
 }: {
   audit: AuditData | null;
   adminOps: AdminOpsData | null;
+  resolved: boolean;
   accounts: DemoAccount[];
   activeAccount: DemoAccount;
   canDecideConnectionRequest: boolean;
   onConnectionDecision: (requestId: string, decision: "grant_consent" | "reject" | "request_changes" | "activate_relationship") => Promise<void>;
 }) {
-  if (!audit) return <div className="loading-state">Loading audit trail...</div>;
   const [selectedAccountId, setSelectedAccountId] = useState(activeAccount.id);
   const [auditRequestFilter, setAuditRequestFilter] = useState<ConnectionRequestFilter>("open");
+  const workspaceState = auditWorkspaceState(resolved, Boolean(audit), Boolean(adminOps));
+  if (workspaceState.loading) return <div className="loading-state">Loading audit and operations data...</div>;
   const selectedAccount = accounts.find((account) => account.id === selectedAccountId) ?? activeAccount;
   const selectedCapabilities = demoAccountCapabilities(selectedAccount);
-  const visibleAuditConnectionRequests = audit.connectionRequests.filter((request) => connectionRequestMatchesFilter(auditRequestFilter, request, activeAccount, canDecideConnectionRequest));
+  const auditEvents = audit?.events ?? [];
+  const visibleAuditConnectionRequests = (audit?.connectionRequests ?? []).filter((request) => connectionRequestMatchesFilter(auditRequestFilter, request, activeAccount, canDecideConnectionRequest));
   const queuedJobs = adminOps?.recomputeJobs.filter((job) => job.status === "queued").length ?? 0;
-  const modelRows = adminOps?.models.length ? adminOps.models : [{ id: "no-model", artifactType: "none", modelVersion: "No model versions", name: "No model versions", status: "empty", config: {} }];
-  const rulesetRows = adminOps?.rulesets.length ? adminOps.rulesets : [{ id: "no-ruleset", artifactType: "none", rulesetVersion: "No ruleset versions", name: "No ruleset versions", status: "empty", config: {} }];
-  const jobRows = adminOps?.recomputeJobs.length ? adminOps.recomputeJobs : [{ id: "no-job", organizationId: "-", jobType: "No queued jobs", status: "empty", attempts: 0, maxAttempts: 0, payload: {} }];
+  const unavailableOpsSources = new Set(adminOps?.unavailableSources ?? []);
+  const modelEmptyLabel = unavailableOpsSources.has("models") ? "Model registry unavailable" : "No registered model versions";
+  const rulesetEmptyLabel = unavailableOpsSources.has("rulesets") ? "Ruleset registry unavailable" : "No registered ruleset versions";
+  const jobsEmptyLabel = unavailableOpsSources.has("jobs") ? "Recompute jobs unavailable" : "No queued jobs";
+  const modelRows = adminOps?.models.length ? adminOps.models : [{ id: "no-model", artifactType: "none", modelVersion: modelEmptyLabel, name: modelEmptyLabel, status: "empty", approvalStatus: "", checksum: "", createdBy: "", config: {} }];
+  const rulesetRows = adminOps?.rulesets.length ? adminOps.rulesets : [{ id: "no-ruleset", artifactType: "none", rulesetVersion: rulesetEmptyLabel, name: rulesetEmptyLabel, status: "empty", approvalStatus: "", checksum: "", createdBy: "", config: {} }];
+  const jobRows = adminOps?.recomputeJobs.length ? adminOps.recomputeJobs : [{ id: "no-job", organizationId: "-", jobType: jobsEmptyLabel, status: "empty", attempts: 0, maxAttempts: 0, payload: {} }];
   return (
     <div className="page-stack audit-workspace">
-      <header className="workspace-heading"><div><span className="eyebrow">Governance & human control</span><h1>Audit Trail</h1><p>Every evidence review, simulation and connection request is traceable.</p></div><span className="qualification-badge"><ShieldCheck size={16} />Append-only demo log</span></header>
+      <header className="workspace-heading"><div><span className="eyebrow">Governance & human control</span><h1>Audit Trail</h1><p>Every evidence review, simulation and connection request is traceable.</p></div><span className="qualification-badge"><ShieldCheck size={16} />Audited demo event log</span></header>
       <div className="audit-grid">
         <section className="tool-panel audit-events">
           <div className="panel-heading"><span>Recent events</span><Database size={16} /></div>
-          {audit.events.slice(0, 20).map((event) => <div className="audit-row" key={event.eventId}><span className="audit-mark"><Fingerprint size={15} /></span><span><strong>{event.eventType.replace(/_/g, " ")}</strong><small>{event.actorId} · {event.purpose.replace(/_/g, " ")} · subject {event.subjectId}</small></span><time>{new Date(event.timestamp).toLocaleString()}</time></div>)}
+          {auditEvents.slice(0, 20).map((event) => <div className="audit-row" key={event.eventId}><span className="audit-mark"><Fingerprint size={15} /></span><span><strong>{event.eventType.replace(/_/g, " ")}</strong><small>{event.actorId} · {event.purpose.replace(/_/g, " ")} · subject {event.subjectId}</small></span><time>{new Date(event.timestamp).toLocaleString()}</time></div>)}
+          {workspaceState.auditUnavailable ? <div className="empty-document-state">Audit event source unavailable. Authorized registry data remains visible.</div> : null}
+          {!workspaceState.auditUnavailable && !auditEvents.length ? <div className="empty-document-state">No audit events recorded for this tenant.</div> : null}
         </section>
         <section className="tool-panel request-register">
           <div className="panel-heading"><span>Human approval queue</span><Handshake size={16} /></div>
@@ -1599,7 +1611,7 @@ export function AuditWorkspace({
         </section>
       </div>
       <section className="tool-panel ops-panel">
-        <div className="panel-heading"><span>Ops registry & recompute</span><RefreshCw size={16} /></div>
+        <div className="panel-heading"><span>Tenant demo registry & recompute</span><RefreshCw size={16} /></div>
         {adminOps ? (
           <>
             <div className="ops-summary">
@@ -1611,11 +1623,11 @@ export function AuditWorkspace({
             <div className="ops-grid">
               <div>
                 <h3>Model registry</h3>
-                {modelRows.slice(0, 5).map((model) => <div className="ops-row" key={model.id}><span><strong>{model.artifactType}</strong><small>{model.modelVersion}</small></span><i className={`risk-pill ${opsStatusTone(model.status)}`}>{model.status}</i></div>)}
+                {modelRows.slice(0, 5).map((model) => <div className="ops-row" key={model.id}><span><strong>{model.artifactType}</strong><small>{model.modelVersion}</small><small>{opsProvenanceLabel(model)}</small></span><i className={`risk-pill ${opsStatusTone(model.status)}`}>{model.status}</i></div>)}
               </div>
               <div>
                 <h3>Ruleset registry</h3>
-                {rulesetRows.slice(0, 5).map((ruleset) => <div className="ops-row" key={ruleset.id}><span><strong>{ruleset.artifactType}</strong><small>{ruleset.rulesetVersion}</small></span><i className={`risk-pill ${opsStatusTone(ruleset.status)}`}>{ruleset.status}</i></div>)}
+                {rulesetRows.slice(0, 5).map((ruleset) => <div className="ops-row" key={ruleset.id}><span><strong>{ruleset.artifactType}</strong><small>{ruleset.rulesetVersion}</small><small>{opsProvenanceLabel(ruleset)}</small></span><i className={`risk-pill ${opsStatusTone(ruleset.status)}`}>{ruleset.status}</i></div>)}
               </div>
               <div>
                 <h3>Recompute jobs</h3>
@@ -1625,7 +1637,7 @@ export function AuditWorkspace({
             <DataNotice>{adminOps.advisoryNotice}</DataNotice>
           </>
         ) : (
-          <div className="ops-locked"><ShieldAlert size={18} /><span><strong>Ops policy gate locked</strong><small>No authorized registry or recompute view for this actor.</small></span></div>
+          <div className="ops-locked"><ShieldAlert size={18} /><span><strong>Ops data unavailable</strong><small>No registry or recompute data resolved for this actor context.</small></span></div>
         )}
       </section>
       <section className="tool-panel access-governance-panel">
@@ -1659,7 +1671,7 @@ export function AuditWorkspace({
         </div>
         <DataNotice>Demo RBAC mirrors the active account headers. Real pilot mode must enforce roles with verified JWT/OIDC, backend policy decisions and database RLS.</DataNotice>
       </section>
-      <DataNotice>{audit.dataScope}</DataNotice>
+      <DataNotice>{audit?.dataScope ?? "Audit event source unavailable; no event history is inferred."}</DataNotice>
     </div>
   );
 }

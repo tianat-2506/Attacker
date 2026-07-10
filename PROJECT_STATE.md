@@ -31,20 +31,22 @@
 
 ## Latest Slice
 
-- Fixed Data Intake review synchronization: submit now reloads the reviewer queue.
-- Added fail-closed review CTA state in `frontend/src/utils/intakeReviewDecision.ts`.
-- Review decisions stay disabled until the exact queue task is hydrated; approval also obeys the evidence gate.
-- Removed self-declared inline evidence from manual submission payloads via `frontend/src/utils/intakeSubmissionSections.ts`.
-- Evidence now follows the trustworthy demo path: upload ticket -> checksum/object record -> malware scan -> Vault/snapshot provenance.
-- Browser-tested a fresh `2027-05` flow: demo upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot v1.
+- Seeded a shared deterministic analytics manifest: 2 model entries and 4 rulesets with reproducible config fingerprints.
+- Fresh and existing SQLite demo databases backfill/repair the manifest idempotently; approved intake uses the same manifest.
+- Audit now shows tenant-level internal registry lifecycle, manifest SHA-256 prefix, creator, and active status.
+- Admin Ops loads sources independently across demo/non-demo for non-auth failures; auth failures still fail closed.
+- Audit workspace has a loaded-context gate so old actor/business/permission payloads are not rendered after account changes.
+- Removed the SQLite “append-only” overclaim; the UI now says `Audited demo event log`.
+- Prior slice completed Data Intake upload/scan -> draft -> validate -> submit -> approve -> canonical snapshot.
 
 ## Verification
 
-- Frontend full: `npm.cmd exec vitest -- run --cache=false` passed `83/83`.
-- Frontend build: `npm.cmd run build`; latest bundle `499.90 kB` minified, below the previous warning threshold.
-- Backend full: `python -B -m unittest discover -s backend\tests` passed `146`, skipped `2`.
-- Browser: `2027-05` completed with `approved`, 1 financial, 1 product, 1 evidence; no console errors or horizontal overflow.
-- Regression tests: `intakeReviewDecision.test.ts`, `intakeSubmissionSections.test.ts`.
+- Frontend full: `npm.cmd test -- --run --cache=false` passed `93/93`.
+- Frontend build: `npm.cmd run build` passed; current bundle `501.78 kB` triggers the existing chunk warning.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed `150`, skipped `3`.
+- Browser Audit: official URL shows `2` models, `4` rulesets, `manifest sha256` metadata; desktop/mobile have no console errors or horizontal overflow.
+- Runtime API: `demo_operator` reads registry as `demo-user`, not hidden admin impersonation.
+- Browser Intake: `2027-05` completed with `approved`, 1 financial, 1 product, 1 evidence.
 
 ## Hard Boundaries
 
@@ -58,7 +60,7 @@
 - Add a lightweight rendered browser rehearsal for the official runbook.
 - Polish Supply Map/Risk/Matching around disrupted supplier `BIZ-005`.
 - Make Shock the signature moment with staged route propagation and recovery visuals.
-- Seed/show deterministic model/ruleset provenance in Audit.
+- Add route-level code splitting to remove the current `>500 kB` bundle warning.
 - Preserve role, period, consent, privacy, and human-review gates.
 
 ## QA/Subagents

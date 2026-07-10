@@ -12,6 +12,7 @@ from typing import Any
 from uuid import uuid4
 
 from backend.app.services.access_control import AccessDeniedError, PolicyService, RequestContext
+from backend.app.services.analytics_manifest import DEMO_MODEL_REGISTRY, DEMO_RULESET_REGISTRY, registry_checksum
 from backend.app.services.database import Database
 from backend.app.services.repositories import AuditRepository
 
@@ -1260,11 +1261,7 @@ class PeriodicIntakeService:
         feature_snapshot_id: str,
         now: str,
     ) -> None:
-        model_rows = [
-            ("risk", "deterministic-demo-v0.1", {"purpose": "risk decision-support"}),
-            ("scenario", "deterministic-demo-v0.1", {"purpose": "scenario decision-support"}),
-        ]
-        for artifact_type, model_version, config in model_rows:
+        for artifact_type, model_version, config in DEMO_MODEL_REGISTRY:
             connection.execute(
                 """
                 INSERT OR IGNORE INTO model_registry (
@@ -1279,18 +1276,12 @@ class PeriodicIntakeService:
                     artifact_type,
                     model_version,
                     _json(config),
-                    hashlib.sha256(f"{artifact_type}:{model_version}:{_json(config)}".encode("utf-8")).hexdigest(),
+                    registry_checksum(artifact_type, model_version, config),
                     submission["submitted_by"],
                     now,
                 ),
             )
-        ruleset_rows = [
-            ("feature", "intake-feature-set-v0.1-demo", {"sections": P0_SECTIONS}),
-            ("risk", "intake-risk-rules-v0.1", {"inputs": ["cashflow", "debt", "late_payment", "delivery_delay"]}),
-            ("matching", "supplier-shortlist-rules-v0.1", {"guardrail": "consent_required"}),
-            ("scenario", "scenario-rules-v0.1", {"guardrail": "human_review_required"}),
-        ]
-        for artifact_type, ruleset_version, config in ruleset_rows:
+        for artifact_type, ruleset_version, config in DEMO_RULESET_REGISTRY:
             connection.execute(
                 """
                 INSERT OR IGNORE INTO ruleset_registry (
@@ -1305,7 +1296,7 @@ class PeriodicIntakeService:
                     artifact_type,
                     ruleset_version,
                     _json(config),
-                    hashlib.sha256(f"{artifact_type}:{ruleset_version}:{_json(config)}".encode("utf-8")).hexdigest(),
+                    registry_checksum(artifact_type, ruleset_version, config),
                     submission["submitted_by"],
                     now,
                 ),

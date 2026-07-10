@@ -84,20 +84,6 @@ function trustHeaders() {
   return headers;
 }
 
-function demoAdminOpsInit(): RequestInit | undefined {
-  if (APP_MODE !== "demo") return undefined;
-  return {
-    headers: {
-      "X-Tenant-Id": "tenant-demo",
-      "X-Organization-Id": "org-demo",
-      "X-Actor-Id": "demo-admin",
-      "X-Actor-Role": "demo_admin",
-      "X-Purpose": "ops_governance_review",
-      "X-Demo-Scopes": "demo:read policy:override"
-    }
-  };
-}
-
 async function requestJson(path: string, init?: RequestInit) {
   const headers = trustHeaders();
   new Headers(init?.headers).forEach((value, key) => headers.set(key, value));
@@ -964,6 +950,9 @@ function apiAdminOpsData(modelsPayload: any, rulesetsPayload: any, jobsPayload: 
     modelVersion: item.model_version,
     name: item.name ?? item.model_version,
     status: item.status,
+    approvalStatus: item.approval_status,
+    checksum: item.checksum,
+    createdBy: item.created_by,
     config: item.config ?? {},
     createdAt: item.created_at
   }));
@@ -973,6 +962,9 @@ function apiAdminOpsData(modelsPayload: any, rulesetsPayload: any, jobsPayload: 
     rulesetVersion: item.ruleset_version,
     name: item.name ?? item.ruleset_version,
     status: item.status,
+    approvalStatus: item.approval_status,
+    checksum: item.checksum,
+    createdBy: item.created_by,
     config: item.config ?? {},
     createdAt: item.created_at
   }));
@@ -999,7 +991,8 @@ function apiAdminOpsData(modelsPayload: any, rulesetsPayload: any, jobsPayload: 
     policyDecisionIds: [modelsPayload.policy_decision_id, rulesetsPayload.policy_decision_id, jobsPayload.policy_decision_id].filter(Boolean),
     auditEventIds: [modelsPayload.audit_event_id, rulesetsPayload.audit_event_id, jobsPayload.audit_event_id].filter(Boolean),
     advisoryNotice: jobsPayload.advisory_notice ?? modelsPayload.advisory_notice ?? "Operational decision-support only.",
-    access: "authorized"
+    access: "authorized",
+    unavailableSources: []
   };
 }
 
@@ -1281,27 +1274,39 @@ export async function getMatchRuns(organizationId: string, periodKey?: string): 
 }
 
 export async function getAdminOps(organizationId?: string): Promise<AdminOpsData> {
-  const init = demoAdminOpsInit();
   const jobsSearch = new URLSearchParams({ limit: "20" });
   if (organizationId) jobsSearch.set("organization_id", organizationId);
-  try {
-    const [models, rulesets, jobs] = await Promise.all([
-      requestJson("/api/v1/admin/model-registry", init),
-      requestJson("/api/v1/admin/ruleset-registry", init),
-      requestJson(`/api/v1/admin/recompute-jobs?${jobsSearch.toString()}`, init)
-    ]);
-    return apiAdminOpsData(models.data, rulesets.data, jobs.data);
-  } catch (error) {
-    return demoFallback(error, () => ({
+  const results = await Promise.allSettled([
+    requestJson("/api/v1/admin/model-registry"),
+    requestJson("/api/v1/admin/ruleset-registry"),
+    requestJson(`/api/v1/admin/recompute-jobs?${jobsSearch.toString()}`)
+  ]);
+  const rejected = results.filter((result): result is PromiseRejectedResult => result.status === "rejected");
+  const authFailure = rejected.find((result) => result.reason instanceof ApiError && [401, 403].includes(result.reason.status));
+  if (authFailure) throw authFailure.reason;
+  if (rejected.length === results.length) {
+    return demoFallback(rejected[0].reason, () => ({
       models: [],
       rulesets: [],
       recomputeJobs: [],
       policyDecisionIds: [],
       auditEventIds: [],
-      advisoryNotice: "Ops registry requires demo_admin/system_admin read_ops policy.",
-      access: "fallback"
+      advisoryNotice: "Ops registry requires an actor authorized by the read_ops policy.",
+      access: "fallback",
+      unavailableSources: ["models", "rulesets", "jobs"]
     }));
   }
+  const modelsPayload = results[0].status === "fulfilled" ? results[0].value.data : { models: [] };
+  const rulesetsPayload = results[1].status === "fulfilled" ? results[1].value.data : { rulesets: [] };
+  const jobsPayload = results[2].status === "fulfilled" ? results[2].value.data : { jobs: [] };
+  const data = apiAdminOpsData(modelsPayload, rulesetsPayload, jobsPayload);
+  if (!rejected.length) return data;
+  return {
+    ...data,
+    access: "partial",
+    unavailableSources: (["models", "rulesets", "jobs"] as const).filter((_, index) => results[index].status === "rejected"),
+    advisoryNotice: "Ops registry is partial because one or more administrative data sources are temporarily unavailable."
+  };
 }
 
 export async function getAudit(): Promise<AuditData> {

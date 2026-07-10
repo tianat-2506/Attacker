@@ -122,6 +122,19 @@ class AccessControlTests(unittest.TestCase):
         self.assertTrue(payload["audit_event_id"])
         self.assertEqual(viewed_event["actor_id"], "demo-user")
 
+    def test_demo_operator_reads_ops_registry_without_admin_impersonation(self) -> None:
+        context = RequestContext.demo()
+
+        models = self.service.governance.list_model_registry(None, context)
+
+        self.assertEqual(len(models["models"]), 2)
+        viewed_event = next(
+            item for item in self.service.audit.list_recent()
+            if item["event_type"] == "MODEL_REGISTRY_VIEWED"
+        )
+        self.assertEqual(viewed_event["actor_id"], "demo-user")
+        self.assertEqual(viewed_event["actor_role"], "demo_operator")
+
 
 if __name__ == "__main__":
     unittest.main()

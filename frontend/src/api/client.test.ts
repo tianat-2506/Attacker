@@ -403,10 +403,10 @@ describe("api client trust headers", () => {
     expect(request.buyerId).toBe("BIZ-042");
   });
 
-  it("maps admin ops endpoints with scoped demo admin headers", async () => {
+  it("maps admin ops endpoints with the active actor headers", async () => {
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.includes("/admin/model-registry")) return new Response(JSON.stringify({ data: { models: [{ model_registry_id: "MOD-1", artifact_type: "risk", model_version: "deterministic-v1", name: "Risk v1", status: "active", config: { deterministic: true }, created_at: "2026-07-01T00:00:00Z" }], policy_decision_id: "POL-M", audit_event_id: "AUD-M", advisory_notice: "Decision support only." } }), { status: 200 });
-      if (url.includes("/admin/ruleset-registry")) return new Response(JSON.stringify({ data: { rulesets: [{ ruleset_registry_id: "RULE-1", artifact_type: "risk", ruleset_version: "risk-rules-v1", name: "Risk rules", status: "active", config: { source: "intake" }, created_at: "2026-07-01T00:00:00Z" }], policy_decision_id: "POL-R", audit_event_id: "AUD-R", advisory_notice: "Decision support only." } }), { status: 200 });
+      if (url.includes("/admin/model-registry")) return new Response(JSON.stringify({ data: { models: [{ model_registry_id: "MOD-1", artifact_type: "risk", model_version: "deterministic-v1", name: "Risk v1", status: "active", approval_status: "approved", checksum: "a".repeat(64), created_by: "system-seed", config: { deterministic: true }, created_at: "2026-07-01T00:00:00Z" }], policy_decision_id: "POL-M", audit_event_id: "AUD-M", advisory_notice: "Decision support only." } }), { status: 200 });
+      if (url.includes("/admin/ruleset-registry")) return new Response(JSON.stringify({ data: { rulesets: [{ ruleset_registry_id: "RULE-1", artifact_type: "risk", ruleset_version: "risk-rules-v1", name: "Risk rules", status: "active", approval_status: "approved", checksum: "b".repeat(64), created_by: "system-seed", config: { source: "intake" }, created_at: "2026-07-01T00:00:00Z" }], policy_decision_id: "POL-R", audit_event_id: "AUD-R", advisory_notice: "Decision support only." } }), { status: 200 });
       if (url.includes("/admin/recompute-jobs")) return new Response(JSON.stringify({ data: { jobs: [{ job_id: "JOB-1", organization_id: "BIZ-009", reporting_period_id: "PER-1", source_submission_id: "SUB-1", job_type: "analytics_recompute", status: "queued", attempts: 0, max_attempts: 3, last_error: null, payload: { period_key: "2026-07" }, created_at: "2026-07-01T00:00:00Z" }], policy_decision_id: "POL-J", audit_event_id: "AUD-J", advisory_notice: "Ops view audited." } }), { status: 200 });
       return new Response(JSON.stringify({ data: {} }), { status: 404 });
     });
@@ -416,14 +416,76 @@ describe("api client trust headers", () => {
     const [, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
     const headers = init?.headers as Headers;
 
-    expect(headers.get("X-Actor-Id")).toBe("demo-admin");
-    expect(headers.get("X-Actor-Role")).toBe("demo_admin");
-    expect(headers.get("X-Demo-Scopes")).toContain("policy:override");
+    expect(headers.get("X-Actor-Id")).toBe("demo-user");
+    expect(headers.get("X-Actor-Role")).toBe("demo_operator");
+    expect(headers.get("X-Demo-Scopes")).toBe("demo:read");
     expect(ops.models[0].modelVersion).toBe("deterministic-v1");
+    expect(ops.models[0].approvalStatus).toBe("approved");
+    expect(ops.models[0].checksum).toBe("a".repeat(64));
+    expect(ops.models[0].createdBy).toBe("system-seed");
     expect(ops.rulesets[0].rulesetVersion).toBe("risk-rules-v1");
+    expect(ops.rulesets[0].approvalStatus).toBe("approved");
+    expect(ops.rulesets[0].checksum).toBe("b".repeat(64));
     expect(ops.recomputeJobs[0].status).toBe("queued");
     expect(ops.policyDecisionIds).toEqual(["POL-M", "POL-R", "POL-J"]);
     expect(ops.auditEventIds).toEqual(["AUD-M", "AUD-R", "AUD-J"]);
     expect(ops.access).toBe("authorized");
+    expect(ops.unavailableSources).toEqual([]);
+  });
+
+  it("preserves registry provenance when the recompute jobs endpoint fails", async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes("/admin/model-registry")) return new Response(JSON.stringify({ data: { models: [{ model_registry_id: "MOD-1", artifact_type: "risk", model_version: "deterministic-demo-v0.1", status: "active", approval_status: "approved", checksum: "a".repeat(64), created_by: "system-seed", config: {} }], policy_decision_id: "POL-M", advisory_notice: "Internal registry lifecycle only." } }), { status: 200 });
+      if (url.includes("/admin/ruleset-registry")) return new Response(JSON.stringify({ data: { rulesets: [{ ruleset_registry_id: "RUL-1", artifact_type: "risk", ruleset_version: "intake-risk-rules-v0.1", status: "active", approval_status: "approved", checksum: "b".repeat(64), created_by: "system-seed", config: {} }], policy_decision_id: "POL-R", advisory_notice: "Internal registry lifecycle only." } }), { status: 200 });
+      if (url.includes("/admin/recompute-jobs")) return new Response(JSON.stringify({ detail: "temporary failure" }), { status: 500 });
+      return new Response(JSON.stringify({ data: {} }), { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const ops = await getAdminOps("BIZ-005");
+
+    expect(ops.models).toHaveLength(1);
+    expect(ops.rulesets).toHaveLength(1);
+    expect(ops.recomputeJobs).toEqual([]);
+    expect(ops.access).toBe("partial");
+    expect(ops.unavailableSources).toEqual(["jobs"]);
+    expect(ops.advisoryNotice).toContain("partial");
+  });
+
+  it("preserves rulesets when the model registry endpoint fails", async () => {
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes("/admin/model-registry")) return new Response(JSON.stringify({ detail: "temporary failure" }), { status: 500 });
+      if (url.includes("/admin/ruleset-registry")) return new Response(JSON.stringify({ data: { rulesets: [{ ruleset_registry_id: "RUL-1", artifact_type: "risk", ruleset_version: "intake-risk-rules-v0.1", status: "active", approval_status: "approved", checksum: "b".repeat(64), created_by: "system-seed", config: {} }], policy_decision_id: "POL-R", advisory_notice: "Internal registry lifecycle only." } }), { status: 200 });
+      if (url.includes("/admin/recompute-jobs")) return new Response(JSON.stringify({ data: { jobs: [], policy_decision_id: "POL-J", advisory_notice: "Ops view audited." } }), { status: 200 });
+      return new Response(JSON.stringify({ data: {} }), { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const ops = await getAdminOps("BIZ-005");
+
+    expect(ops.models).toEqual([]);
+    expect(ops.rulesets).toHaveLength(1);
+    expect(ops.access).toBe("partial");
+    expect(ops.unavailableSources).toEqual(["models"]);
+    expect(ops.policyDecisionIds).toEqual(["POL-R", "POL-J"]);
+  });
+
+  it("preserves authorized ops sources outside demo mode when one source fails", async () => {
+    vi.stubEnv("VITE_APP_MODE", "production");
+    vi.resetModules();
+    const { getAdminOps: getProductionAdminOps } = await import("./client");
+    const fetchMock = vi.fn(async (url: string) => {
+      if (url.includes("/admin/model-registry")) return new Response(JSON.stringify({ detail: "temporary failure" }), { status: 500 });
+      if (url.includes("/admin/ruleset-registry")) return new Response(JSON.stringify({ data: { rulesets: [{ ruleset_registry_id: "RUL-1", artifact_type: "risk", ruleset_version: "intake-risk-rules-v0.1", status: "active", approval_status: "approved", checksum: "b".repeat(64), created_by: "system-seed", config: {} }], policy_decision_id: "POL-R", advisory_notice: "Internal registry lifecycle only." } }), { status: 200 });
+      if (url.includes("/admin/recompute-jobs")) return new Response(JSON.stringify({ data: { jobs: [], policy_decision_id: "POL-J", advisory_notice: "Ops view audited." } }), { status: 200 });
+      return new Response(JSON.stringify({ data: {} }), { status: 404 });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const ops = await getProductionAdminOps("BIZ-005");
+
+    expect(ops.rulesets).toHaveLength(1);
+    expect(ops.access).toBe("partial");
+    expect(ops.unavailableSources).toEqual(["models"]);
   });
 });

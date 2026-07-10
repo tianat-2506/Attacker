@@ -9,6 +9,12 @@ from pathlib import Path
 from typing import Any, Iterable
 
 from backend.app.domain.invoice_verification import invoice_hash
+from backend.app.services.analytics_manifest import (
+    DEMO_MODEL_REGISTRY,
+    DEMO_RULESET_REGISTRY,
+    registry_checksum,
+    registry_config_json,
+)
 from backend.app.services.data_loader import DATA_DIR, load_data
 
 
@@ -1502,6 +1508,60 @@ class Database:
                     submission_id,
                     f"SEED-PROD-{row['sku']}",
                     start,
+                    now,
+                ),
+            )
+        self._seed_analytics_registry_records(connection, now)
+
+    def _seed_analytics_registry_records(self, connection: sqlite3.Connection, now: str) -> None:
+        for artifact_type, model_version, config in DEMO_MODEL_REGISTRY:
+            config_json = registry_config_json(config)
+            connection.execute(
+                """
+                INSERT INTO model_registry (
+                  model_registry_id, tenant_id, artifact_type, model_version, status,
+                  approval_status, config_json, checksum, created_by, created_at
+                )
+                VALUES (?, 'tenant-demo', ?, ?, 'active', 'approved', ?, ?, 'system-seed', ?)
+                ON CONFLICT(tenant_id, artifact_type, model_version) DO UPDATE SET
+                  status = excluded.status,
+                  approval_status = excluded.approval_status,
+                  config_json = excluded.config_json,
+                  checksum = excluded.checksum,
+                  created_by = excluded.created_by
+                """,
+                (
+                    f"MOD-{artifact_type}-{model_version}",
+                    artifact_type,
+                    model_version,
+                    config_json,
+                    registry_checksum(artifact_type, model_version, config),
+                    now,
+                ),
+            )
+
+        for artifact_type, ruleset_version, config in DEMO_RULESET_REGISTRY:
+            config_json = registry_config_json(config)
+            connection.execute(
+                """
+                INSERT INTO ruleset_registry (
+                  ruleset_registry_id, tenant_id, artifact_type, ruleset_version, status,
+                  approval_status, config_json, checksum, created_by, created_at
+                )
+                VALUES (?, 'tenant-demo', ?, ?, 'active', 'approved', ?, ?, 'system-seed', ?)
+                ON CONFLICT(tenant_id, artifact_type, ruleset_version) DO UPDATE SET
+                  status = excluded.status,
+                  approval_status = excluded.approval_status,
+                  config_json = excluded.config_json,
+                  checksum = excluded.checksum,
+                  created_by = excluded.created_by
+                """,
+                (
+                    f"RUL-{artifact_type}-{ruleset_version}",
+                    artifact_type,
+                    ruleset_version,
+                    config_json,
+                    registry_checksum(artifact_type, ruleset_version, config),
                     now,
                 ),
             )

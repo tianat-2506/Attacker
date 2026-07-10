@@ -708,6 +708,9 @@ export interface ModelRegistryItem {
   modelVersion: string;
   name: string;
   status: string;
+  approvalStatus: string;
+  checksum: string;
+  createdBy: string;
   config: Record<string, unknown>;
   createdAt?: string | null;
 }
@@ -718,6 +721,9 @@ export interface RulesetRegistryItem {
   rulesetVersion: string;
   name: string;
   status: string;
+  approvalStatus: string;
+  checksum: string;
+  createdBy: string;
   config: Record<string, unknown>;
   createdAt?: string | null;
 }
@@ -746,5 +752,6 @@ export interface AdminOpsData {
   policyDecisionIds: string[];
   auditEventIds: string[];
   advisoryNotice: string;
-  access: "authorized" | "fallback";
+  access: "authorized" | "partial" | "fallback";
+  unavailableSources: Array<"models" | "rulesets" | "jobs">;
 }

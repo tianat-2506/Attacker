@@ -56,6 +56,39 @@ class AdminOpsApiTests(unittest.TestCase):
         self.assertEqual(denied.status_code, 403)
         self.assertEqual(denied.json()["detail"]["code"], "ACCESS_DENIED")
 
+    def test_admin_ops_registry_endpoints_expose_seeded_demo_manifest(self) -> None:
+        client = TestClient(app)
+        headers = {
+            "X-Tenant-Id": "tenant-demo",
+            "X-Organization-Id": "BIZ-005",
+            "X-Actor-Id": "demo-admin",
+            "X-Actor-Role": "demo_admin",
+            "X-Purpose": "ops_governance_review",
+            "X-Demo-Scopes": "demo:read policy:override",
+        }
+
+        models = client.get("/api/v1/admin/model-registry", headers=headers)
+        rulesets = client.get("/api/v1/admin/ruleset-registry", headers=headers)
+
+        self.assertEqual(models.status_code, 200)
+        self.assertEqual(rulesets.status_code, 200)
+        self.assertEqual(
+            {(item["artifact_type"], item["model_version"]) for item in models.json()["data"]["models"]},
+            {
+                ("risk", "deterministic-demo-v0.1"),
+                ("scenario", "deterministic-demo-v0.1"),
+            },
+        )
+        self.assertEqual(
+            {(item["artifact_type"], item["ruleset_version"]) for item in rulesets.json()["data"]["rulesets"]},
+            {
+                ("feature", "intake-feature-set-v0.1-demo"),
+                ("matching", "supplier-shortlist-rules-v0.1"),
+                ("risk", "intake-risk-rules-v0.1"),
+                ("scenario", "scenario-rules-v0.1"),
+            },
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

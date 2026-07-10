@@ -1,7 +1,10 @@
 from __future__ import annotations
 
+import hashlib
+import json
 import tempfile
 import unittest
+from contextlib import closing
 from pathlib import Path
 
 from backend.app.services.access_control import RequestContext
@@ -77,6 +80,94 @@ class DatabaseServiceTests(unittest.TestCase):
         self.assertEqual(request["consent_status"], "awaiting_supplier_consent")
         audit = self.service.audit_payload()
         self.assertTrue(any(event["event_type"] == "CONNECTION_REQUEST_CREATED" for event in audit["events"]))
+
+    def test_seeded_demo_exposes_deterministic_analytics_provenance(self) -> None:
+        context = RequestContext.authorized_demo()
+
+        models = self.service.governance.list_model_registry(None, context)
+        rulesets = self.service.governance.list_ruleset_registry(None, context)
+
+        self.assertEqual(
+            {(item["artifact_type"], item["model_version"]) for item in models["models"]},
+            {
+                ("risk", "deterministic-demo-v0.1"),
+                ("scenario", "deterministic-demo-v0.1"),
+            },
+        )
+        self.assertEqual(
+            {(item["artifact_type"], item["ruleset_version"]) for item in rulesets["rulesets"]},
+            {
+                ("feature", "intake-feature-set-v0.1-demo"),
+                ("matching", "supplier-shortlist-rules-v0.1"),
+                ("risk", "intake-risk-rules-v0.1"),
+                ("scenario", "scenario-rules-v0.1"),
+            },
+        )
+        self.assertTrue(all(item["approval_status"] == "approved" for item in models["models"] + rulesets["rulesets"]))
+        for item in models["models"] + rulesets["rulesets"]:
+            version = item.get("model_version") or item["ruleset_version"]
+            config_json = json.dumps(item["config"], ensure_ascii=False, sort_keys=True)
+            expected = hashlib.sha256(f"{item['artifact_type']}:{version}:{config_json}".encode("utf-8")).hexdigest()
+            self.assertEqual(item["checksum"], expected)
+
+    def test_existing_demo_database_backfills_registry_idempotently(self) -> None:
+        with closing(self.database.connect()) as connection:
+            connection.execute("DELETE FROM model_registry")
+            connection.execute("DELETE FROM ruleset_registry")
+            connection.execute(
+                """
+                INSERT INTO model_registry (
+                  model_registry_id, tenant_id, artifact_type, model_version, status,
+                  approval_status, config_json, checksum, created_by, created_at
+                )
+                VALUES (
+                  'MOD-risk-deterministic-demo-v0.1', 'tenant-demo', 'risk',
+                  'deterministic-demo-v0.1', 'inactive', 'draft', '{}', 'stale',
+                  'legacy-seed', '2025-01-01T00:00:00Z'
+                )
+                """
+            )
+            connection.execute(
+                """
+                INSERT INTO ruleset_registry (
+                  ruleset_registry_id, tenant_id, artifact_type, ruleset_version, status,
+                  approval_status, config_json, checksum, created_by, created_at
+                )
+                VALUES (
+                  'RUL-risk-intake-risk-rules-v0.1', 'tenant-demo', 'risk',
+                  'intake-risk-rules-v0.1', 'inactive', 'draft', '{}', 'stale',
+                  'legacy-seed', '2025-01-01T00:00:00Z'
+                )
+                """
+            )
+            connection.commit()
+
+        self.database.seed_from_csv(reset=False)
+        self.database.seed_from_csv(reset=False)
+
+        with closing(self.database.connect()) as connection:
+            model_count = connection.execute("SELECT COUNT(*) AS count FROM model_registry").fetchone()["count"]
+            ruleset_count = connection.execute("SELECT COUNT(*) AS count FROM ruleset_registry").fetchone()["count"]
+            risk_model = connection.execute(
+                "SELECT * FROM model_registry WHERE artifact_type = 'risk'"
+            ).fetchone()
+            risk_ruleset = connection.execute(
+                "SELECT * FROM ruleset_registry WHERE artifact_type = 'risk'"
+            ).fetchone()
+        self.assertEqual(model_count, 2)
+        self.assertEqual(ruleset_count, 4)
+        self.assertEqual(risk_model["status"], "active")
+        self.assertEqual(risk_model["approval_status"], "approved")
+        self.assertEqual(risk_model["created_by"], "system-seed")
+        self.assertNotEqual(risk_model["config_json"], "{}")
+        self.assertNotEqual(risk_model["checksum"], "stale")
+        self.assertEqual(risk_model["created_at"], "2025-01-01T00:00:00Z")
+        self.assertEqual(risk_ruleset["status"], "active")
+        self.assertEqual(risk_ruleset["approval_status"], "approved")
+        self.assertEqual(risk_ruleset["created_by"], "system-seed")
+        self.assertNotEqual(risk_ruleset["config_json"], "{}")
+        self.assertNotEqual(risk_ruleset["checksum"], "stale")
+        self.assertEqual(risk_ruleset["created_at"], "2025-01-01T00:00:00Z")
 
 
 if __name__ == "__main__":

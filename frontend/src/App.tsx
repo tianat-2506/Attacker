@@ -71,6 +71,7 @@ import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges,
 import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
+import { auditWorkspaceContextMatches } from "./utils/auditWorkspaceState";
 import { apiConnectionLabel, authContextLabel, demoBoundaryBanner } from "./utils/demoBoundary";
 import { mergePendingEvidenceUploadsForPeriod } from "./utils/pendingEvidenceUploads";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
@@ -331,6 +332,7 @@ export default function App() {
   const [invoiceAccessNotice, setInvoiceAccessNotice] = useState<string | null>(null);
   const [audit, setAudit] = useState<AuditData | null>(null);
   const [adminOps, setAdminOps] = useState<AdminOpsData | null>(null);
+  const [auditWorkspaceLoadedContext, setAuditWorkspaceLoadedContext] = useState<string | null>(null);
   const [authContext, setAuthContext] = useState<AuthMe | null>(null);
   const [authContextStatus, setAuthContextStatus] = useState<"loading" | "verified" | "mismatch" | "unavailable">("loading");
   const [shock, setShock] = useState<ShockState>(defaultShock);
@@ -436,6 +438,7 @@ export default function App() {
     return [activeAccount.defaultBusinessId];
   }, [activeAccount, allNodes, intakePermissions.canApproveDraft, reviewQueue]);
   const canReadOps = verifiedCapabilities?.canReadAudit ?? activeAccount.allowedViews.includes("audit");
+  const auditWorkspaceMatchesContext = auditWorkspaceContextMatches(auditWorkspaceLoadedContext, activeAccount.id, selectedId, canReadOps);
   const authContextMismatch = Boolean(
     authContext
     && (
@@ -734,16 +737,22 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
+    const workspaceContextKey = `${activeAccount.id}:${selectedId}`;
     if (!canLoadAuditWorkspaceForView(activeView, canReadOps)) {
       setAudit(null);
       setAdminOps(null);
+      setAuditWorkspaceLoadedContext(null);
       return () => { mounted = false; };
     }
+    setAudit(null);
+    setAdminOps(null);
+    setAuditWorkspaceLoadedContext(null);
     Promise.all([getAudit().catch(() => null), getAdminOps(selectedId).catch(() => null)])
       .then(([auditData, opsData]) => {
         if (!mounted) return;
         setAudit(auditData);
         setAdminOps(opsData);
+        setAuditWorkspaceLoadedContext(workspaceContextKey);
       });
     return () => { mounted = false; };
   }, [activeView, selectedId, activeAccount.id, canReadOps]);
@@ -1274,7 +1283,7 @@ export default function App() {
           {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={disruptedSupplier?.name ?? disruptedSupplierId} selectedPeriod={selectedPeriod} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
           {activeView === "finance" ? <FinanceWorkspace finance={finance} account={activeAccount} accessNotice={financeAccessNotice} /> : null}
           {activeView === "invoice" ? <InvoiceWorkspace invoice={invoice} account={activeAccount} accessNotice={invoiceAccessNotice} /> : null}
-          {activeView === "audit" ? <AuditWorkspace audit={audit} adminOps={adminOps} accounts={demoAccounts} activeAccount={activeAccount} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onConnectionDecision={handleConnectionRequestDecision} /> : null}
+          {activeView === "audit" ? <AuditWorkspace audit={auditWorkspaceMatchesContext ? audit : null} adminOps={auditWorkspaceMatchesContext ? adminOps : null} resolved={auditWorkspaceMatchesContext} accounts={demoAccounts} activeAccount={activeAccount} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onConnectionDecision={handleConnectionRequestDecision} /> : null}
         </div>
       </section>
     </main>

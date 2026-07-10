@@ -438,6 +438,7 @@ class PolicyService:
                 "read_match_run",
                 "read_scenario_run",
                 "read_audit",
+                "read_ops",
             }
         ),
         "sme_submitter": frozenset(
