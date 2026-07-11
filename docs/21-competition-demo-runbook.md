@@ -24,11 +24,12 @@ Use this file as the single source for the 3-5 minute competition demo. Keep it 
 2. `0:45` Supply Map + Risk
    - Return to Overview and open the Dai Tin/Binh Duong risk case.
    - Show masked-by-default graph, policy-gated evidence chain and deterministic rule trace.
+   - Use `Run operational scenario` to hand the evidence-backed signal into the hypothetical network test.
    - Say: "This is an early warning signal for supply continuity, not a credit score or legal conclusion."
 
 3. `1:45` Shock Simulation
-   - Click `Run` / `Simulate Supply Shock`.
-   - Let the 2.2-second sequence finish: supplier disruption, route propagation, operational impact, recovery ready.
+   - The app returns to Overview automatically; let the 2.2-second sequence finish.
+   - Follow supplier disruption, route propagation, operational impact and recovery ready.
    - Read the shock sequence: baseline graph, live disruption, recovery shortlist.
    - Read the impact panel: exposed units, revenue at risk, stockout window and downstream SMEs.
    - Say: "The system turns one supplier disruption into a visible operational exposure."

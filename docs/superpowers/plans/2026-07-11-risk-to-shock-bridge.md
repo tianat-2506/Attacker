@@ -1,16 +1,28 @@
 # Risk-to-Shock Bridge Implementation Plan
 
+> **Status:** Implemented with QA corrections. The detailed steps below preserve the original TDD sequence; this revision governs wherever they conflict.
+
+## QA Revision
+
+- Final states are `ready`, `result`, and `unavailable`; avoid “live” claims.
+- The existing shock endpoint now accepts `period_key`, requires `simulate_shock`, and returns run/ruleset/model/source plus policy and audit provenance.
+- Graph read and shock execution are separate capabilities; denied execution is audited.
+- A displayed result must match the selected period and have complete provenance. Demo fallback is explicitly synthetic.
+- Shock execution is independent from recommendation loading; Overview/Map/Matching ignore stale-period results.
+- Overview Run controls are capability-aware, and Matching remains independently accessible for human review.
+- Final verification counts and runtime evidence are maintained in `PROJECT_STATE.md`.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Connect the evidence-backed Risk workspace to the staged Shock cinematic with a compact, policy-safe operational scenario handoff.
 
-**Architecture:** A pure utility converts risk/shock/access inputs into a `ready`, `live`, or `unavailable` display model. A focused React component renders that model. `App` owns the existing simulation side effect and route transition, while `RiskWorkspace` remains responsible for page composition.
+**Architecture:** A pure utility converts risk/shock/access inputs into a `ready`, `result`, or `unavailable` display model. A focused React component renders that model. `App` owns policy-aware simulation, period scoping and route transition, while `RiskWorkspace` remains responsible for page composition.
 
 **Tech Stack:** React 18, TypeScript 5.6, Vitest 2, React DOM server rendering, existing CSS and lucide-react icons.
 
 ## Global Constraints
 
-- Do not add or change backend endpoints.
+- Do not add a new endpoint; harden the existing endpoint contract as described in the QA revision.
 - Do not show seeded impact numbers before the shock endpoint returns a live result.
 - Use only returned `ShockState` values in the live bridge.
 - Keep `Review alternatives` independent from running a shock.

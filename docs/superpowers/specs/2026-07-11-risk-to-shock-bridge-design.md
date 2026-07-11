@@ -6,7 +6,7 @@ The competition flow explains an evidence-backed risk signal and then demonstrat
 
 ## Decision
 
-Add a compact Operational Scenario bridge inside the Risk workspace. It reuses the existing `RiskSignal`, `ShockState`, and shock simulation endpoint. No backend endpoint, score, forecast, or persisted analytics record is added in this slice.
+Add a compact Operational Scenario bridge inside the Risk workspace. It reuses the existing `RiskSignal`, `ShockState`, and shock simulation endpoint. The endpoint is hardened in place with a dedicated execution capability, selected-period context, policy/audit correlation, and deterministic run provenance; no new endpoint, score, forecast, or persisted analytics table is added.
 
 The bridge separates two concepts:
 
@@ -19,7 +19,7 @@ The bridge separates two concepts:
 2. The bridge shows a ready state without exposing stale or fallback impact values.
 3. The presenter clicks `Run operational scenario`.
 4. The existing shock simulation runs, then the app opens Overview with the staged map cinematic.
-5. If the scenario is already active, the bridge shows the calculated impact and the CTA becomes `View live scenario`.
+5. If a provenance-complete result matches the selected period, the bridge shows the calculated impact and the CTA becomes `View scenario results`.
 6. For a risk subject that does not match the supported shock node, the bridge remains visible but disabled and explains that no scoped scenario is available.
 7. `Review alternatives` remains an independent human-review path; running a shock is not an artificial prerequisite for Matching.
 
@@ -28,8 +28,9 @@ The bridge separates two concepts:
 ### `riskShockBridge.ts`
 
 - Converts `RiskSignal`, `ShockState`, subject name, selected period, and policy capability into a display model.
-- Returns `ready`, `live`, or `unavailable` state.
+- Returns `ready`, `result`, or `unavailable` state.
 - Hides exact impact values in `ready` state so fallback seed values cannot be mistaken for calculated output.
+- Rejects stale-period and incomplete-provenance results; synthetic fallback is labeled explicitly.
 - Emits the legal/product guardrail copy from one testable source.
 
 ### `RiskWorkspace`
@@ -41,26 +42,29 @@ The bridge separates two concepts:
 
 ### `App`
 
-- Supplies the current `ShockState`, selected period, and graph capability.
-- Runs the existing simulation for a ready bridge and opens Overview after a successful result.
+- Supplies the current `ShockState`, selected period, graph-read capability, and separate shock-execution capability.
+- Runs the existing simulation for a ready bridge, validates result context, and opens Overview without waiting on Matching data.
 - Opens Overview without rerunning when the scenario is already active.
+- Scopes Overview, Map, Matching, and recovery-data loading to a result matching the selected period.
 
 ## Copy And Guardrails
 
 - Never call the bridge a forecast, probability, breach finding, or automated supplier decision.
 - Ready-state metrics use action labels such as `Trace`, `Calculate`, and `Estimate`, not seeded numbers.
-- Live-state metrics use only the returned shock result.
+- Result-state metrics use only the returned shock result.
 - Required notice: `Hypothetical decision-support scenario. Not a forecast, legal finding, or supplier replacement instruction.`
-- Existing policy decision, audit ID, evidence scope, consent, and human-review controls remain unchanged.
+- Every non-fallback result exposes period, run, ruleset, model, policy decision, audit event, and result source.
 
 ## Error And Access Behavior
 
-- Existing shock API errors retain the current demo fallback boundary; non-demo errors are not silently converted.
-- The bridge action is disabled when graph access is unavailable or the selected risk subject is not the supported shock node.
+- Existing shock API errors retain the explicit synthetic demo fallback boundary; non-demo failures are caught and do not apply a result.
+- The bridge action is disabled independently for graph denial, execution denial, or an unsupported risk subject.
+- Overview Run controls use the same capability and show the policy boundary instead of silently doing nothing.
+- Recommendation loading is failure-isolated from scenario execution.
 - The Risk locked state remains unchanged and never renders scenario details.
 
 ## Verification
 
-- Pure unit tests cover ready, live, mismatched-subject, and capability-denied states plus guardrail wording.
+- Pure unit tests cover ready, result, stale-period, missing-provenance, fallback, mismatched-subject, and split capability states plus guardrail wording.
 - Existing frontend tests, TypeScript build, and bundle budget must remain green.
 - Browser QA follows the official URL and verifies Risk -> scenario -> Overview phase progression on desktop and mobile, with no horizontal overflow or console errors.

@@ -31,6 +31,11 @@
 
 ## Latest Slice
 
+- Added a policy-safe Risk-to-Shock bridge for the official `BIZ-005` competition path.
+- Risk now separates an observed advisory signal from a hypothetical scenario, hides seeded/stale values, and requires selected-period plus run/ruleset/model/source provenance; non-fallback results also require policy and audit IDs.
+- Backend shock execution now has a dedicated capability and audited denial path. Graph read and simulation permission are separate.
+- Risk hands the presenter into the staged Overview cinematic; Matching stays independent and recovery recommendations load without blocking the Shock result.
+- Overview, Map and Matching ignore Shock results from another period; Overview Run controls reflect account capability.
 - Added a four-phase Shock cinematic: `origin -> propagation -> impact -> recovery` in 2.2 seconds.
 - Overview now gates impact/recovery facts by phase; reset cancels pending transitions and reduced-motion resolves immediately.
 - Supply Map auto-focuses the affected subnetwork, pulses the disrupted/affected nodes, staggers impacted routes, and labels each phase.
@@ -47,11 +52,12 @@
 
 ## Verification
 
-- Frontend full: `npm.cmd test -- --run --cache=false` passed `105/105`.
-- Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `271641` bytes.
+- Frontend full: `npm.cmd test -- --run --cache=false` passed `120/120`.
+- Frontend bundle gate: `npm.cmd run test:bundle` passed; largest JS chunk `273388` bytes.
 - Frontend build: `npm.cmd run build` passed with no chunk-size warning.
-- Backend full: `python -B -m unittest discover -s backend\tests` passed `150`, skipped `3`.
-- Browser Shock: official route reaches all four phases in order; origin `1` node, propagation `4` visible routes/`3` affected nodes, impact before recovery, then guarded playbook.
+- Backend full: `python -B -m unittest discover -s backend\tests` passed `151`, skipped `3`.
+- Browser Risk-to-Shock: official Risk bridge starts `ready`, routes to Overview, and reaches guarded recovery with `92%` coverage, `3` alternate routes and no horizontal overflow.
+- Browser role boundary: `supplier-admin` Risk bridge is `unavailable`; scenario CTA is disabled with graph-access explanation.
 - Browser responsive/reset: desktop 1280x720 and mobile 390x844 have no horizontal overflow; mobile phase overlays do not overlap; reset remains baseline after 2.5 seconds; no console errors/warnings.
 - Browser Matching: official route shows ready recovery playbook, 3 supplier cards and guardrail copy.
 - Browser rehearsal page: desktop/mobile render 5 steps, official/buyer links, guardrail copy; no console errors or horizontal overflow.
@@ -68,12 +74,12 @@
 ## Next Best Work
 
 - Keep the competition story at 3-5 minutes; do not dilute it.
-- Add a compact Risk-to-Shock bridge for disrupted supplier `BIZ-005` without changing advisory/legal boundaries.
 - Sharpen Matching supplier-card hierarchy and consent/review actions, then rehearse the complete official route once more.
+- Keep Data Intake, policy/audit provenance and explicit synthetic fallback visible enough for judges without extending the 3-5 minute story.
 - Preserve role, period, consent, privacy, and human-review gates.
 
 ## QA/Subagents
 
 - QA charter: test as real stakeholders; flag token waste, unsupported legal/finance claims, broken role flows, and UI-only features without backend policy/data paths.
 - Recent attempted agents `Descartes` and `Hume` hit usage limits.
-- Prior QA names: `Heisenberg`, `Ampere`, `Zeno`, `Peirce`, `Lovelace`, `Hegel`, `Confucius`, `Locke`, `Popper`, `Herschel`, `Raman`, `Poincare`, `Galileo`.
+- Prior QA names: `Dirac`, `Heisenberg`, `Ampere`, `Zeno`, `Peirce`, `Lovelace`, `Hegel`, `Confucius`, `Locke`, `Popper`, `Herschel`, `Raman`, `Poincare`, `Galileo`.
