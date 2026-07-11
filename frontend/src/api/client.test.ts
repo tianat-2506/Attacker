@@ -30,6 +30,7 @@ import {
   getRiskRuns,
   runEvidenceScanJob,
   setDemoAccountContext,
+  simulateShock,
   submitDataSubmission,
   transitionInvoiceClaim,
   validateDataSubmission
@@ -186,6 +187,58 @@ describe("api client trust headers", () => {
     expect(riskSignal.auditEventId).toBe("AUD-RISK");
   });
 
+  it("sends the selected period and maps shock run provenance", async () => {
+    const fetchMock = vi.fn(async () => new Response(JSON.stringify({
+      data: {
+        shock_node: "BIZ-005",
+        affected_nodes: [{ business_id: "BIZ-009" }],
+        affected_edges: ["EDGE-055", "EDGE-056"],
+        impact: {
+          affected_sme_count: 12,
+          monthly_volume_at_risk: 199060,
+          estimated_revenue_at_risk: 4800000000,
+          avg_stockout_days: 3.8
+        },
+        period_key: "2026-07",
+        scenario_run_id: "SCN-001",
+        ruleset_version: "shock-rules-v1.0",
+        model_version: "deterministic-adjacency-v1.0",
+        policy_decision_id: "POL-SHOCK-001",
+        audit_event_id: "AUD-SHOCK-001",
+        result_source: "current_demo_graph",
+        advisory_notice: "Hypothetical scenario only."
+      }
+    }), { status: 200 }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await simulateShock("2026-07");
+    const [url, init] = fetchMock.mock.calls[0] as unknown as [string, RequestInit];
+    const body = JSON.parse(String(init.body));
+
+    expect(String(url)).toMatch(/\/api\/v1\/simulation\/shock$/);
+    expect(body.period_key).toBe("2026-07");
+    expect(result.periodKey).toBe("2026-07");
+    expect(result.scenarioRunId).toBe("SCN-001");
+    expect(result.rulesetVersion).toBe("shock-rules-v1.0");
+    expect(result.modelVersion).toBe("deterministic-adjacency-v1.0");
+    expect(result.policyDecisionId).toBe("POL-SHOCK-001");
+    expect(result.auditEventId).toBe("AUD-SHOCK-001");
+    expect(result.resultSource).toBe("current_demo_graph");
+  });
+
+  it("labels offline shock data as a period-scoped demo fallback", async () => {
+    vi.stubGlobal("fetch", vi.fn(async () => { throw new TypeError("offline"); }));
+
+    const result = await simulateShock("2026-07");
+
+    expect(result.active).toBe(true);
+    expect(result.periodKey).toBe("2026-07");
+    expect(result.resultSource).toBe("demo_fallback");
+    expect(result.scenarioRunId).toBe("SCN-DEMO-FALLBACK");
+    expect(result.policyDecisionId).toBeNull();
+    expect(result.advisoryNotice).toContain("Synthetic demo fallback");
+  });
+
   it("maps dashboard alert business ids for risk navigation", async () => {
     const fetchMock = vi.fn(async () => new Response(JSON.stringify({
       data: {
@@ -304,7 +357,7 @@ describe("api client trust headers", () => {
 
   it("maps trust foundation endpoints for consent evidence invoice and versioned runs", async () => {
     const fetchMock = vi.fn(async (url: string) => {
-      if (url.endsWith("/auth/me")) return new Response(JSON.stringify({ data: { tenant_id: "tenant-demo", actor_id: "demo-user", organization_id: "BIZ-009", organization_ids: ["BIZ-009"], roles: ["demo_operator"], scopes: ["demo:read"], purpose: "demo_view", request_id: "req-1", auth_assurance: "demo-header", app_mode: "demo", capabilities: { can_read_graph: true, can_create_submission: true, can_review_submission: true, can_create_evidence_upload: true, can_read_connection_request: true, can_decide_connection_request: true, can_record_evidence_scan_result: true, can_read_match_run: true, can_read_audit: true, allowed_actions: ["read_graph", "create_submission", "review_submission", "create_evidence_upload", "read_connection_request", "decide_connection_request", "record_malware_scan_result", "read_match_run", "read_audit"] }, workspace_access: { views: { overview: true, map: true, intake: true, audit: true }, allowed_views: ["overview", "map", "intake", "audit", "unknown"], default_view: "overview" }, advisory_notice: "Decision support only." } }), { status: 200 });
+      if (url.endsWith("/auth/me")) return new Response(JSON.stringify({ data: { tenant_id: "tenant-demo", actor_id: "demo-user", organization_id: "BIZ-009", organization_ids: ["BIZ-009"], roles: ["demo_operator"], scopes: ["demo:read"], purpose: "demo_view", request_id: "req-1", auth_assurance: "demo-header", app_mode: "demo", capabilities: { can_read_graph: true, can_create_submission: true, can_review_submission: true, can_create_evidence_upload: true, can_read_connection_request: true, can_decide_connection_request: true, can_record_evidence_scan_result: true, can_read_match_run: true, can_simulate_shock: true, can_read_audit: true, allowed_actions: ["read_graph", "create_submission", "review_submission", "create_evidence_upload", "read_connection_request", "decide_connection_request", "record_malware_scan_result", "read_match_run", "simulate_shock", "read_audit"] }, workspace_access: { views: { overview: true, map: true, intake: true, audit: true }, allowed_views: ["overview", "map", "intake", "audit", "unknown"], default_view: "overview" }, advisory_notice: "Decision support only." } }), { status: 200 });
       if (url.endsWith("/consents")) return new Response(JSON.stringify({ data: { consent_id: "CONS-1", subject_id: "BIZ-009", recipient_id: "BIZ-062", scope: "financial_summary", purpose: "working_capital_review", legal_basis: "explicit_consent", status: "granted", expires_at: null, revoked_at: null, policy_decision_id: "POL-1", audit_event_id: "AUD-1", advisory_notice: "Decision support only." } }), { status: 201 });
       if (url.endsWith("/evidence/upload-url")) return new Response(JSON.stringify({ data: { evidence_version_id: "EVV-1", organization_id: "BIZ-009", period_key: "2026-07", document_type: "GUARANTEE", file_name: "cert.pdf", content_type: "application/pdf", byte_size: 1024, classification: "restricted_financial", object_key: "s3://demo/file.pdf", upload_url: "demo-presigned://file.pdf", expires_in_seconds: 900, malware_scan_status: "pending_upload", policy_decision_id: "POL-2", audit_event_id: "AUD-2", advisory_notice: "Scan required." } }), { status: 201 });
       if (url.includes("/connection-requests?")) return new Response(JSON.stringify({ data: { connection_requests: [{ request_id: "REQ-1", requester_id: "buyer-admin-009", buyer_id: "BIZ-009", target_supplier_id: "BIZ-007", disrupted_supplier_id: "BIZ-005", status: "pending", consent_status: "awaiting_supplier_consent", requested_at: "2026-07-01T00:00:00Z", policy_decision_id: "POL-CONN-LIST", audit_event_id: "AUD-CONN-LIST", next_step: "Supplier consent required.", advisory_notice: "Decision support only." }], scope: "own_organization", policy_decision_id: "POL-LIST", audit_event_id: "AUD-LIST" } }), { status: 200 });
@@ -341,6 +394,8 @@ describe("api client trust headers", () => {
     expect(me.capabilities.canDecideConnectionRequest).toBe(true);
     expect(me.capabilities.canRecordEvidenceScanResult).toBe(true);
     expect(me.capabilities.canReadMatchRun).toBe(true);
+    expect(me.capabilities.canSimulateShock).toBe(true);
+    expect(me.capabilities.allowedActions).toContain("simulate_shock");
     expect(me.capabilities.allowedActions).toContain("read_audit");
     expect(me.workspaceAccess.allowedViews).toEqual(["overview", "map", "intake", "audit"]);
     expect(me.workspaceAccess.defaultView).toBe("overview");

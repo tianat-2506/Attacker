@@ -144,6 +144,13 @@ function apiShockToState(data: any): ShockState {
     monthlyVolumeAtRisk: Number(data.impact?.monthly_volume_at_risk ?? 0),
     revenueAtRisk: Number(data.impact?.estimated_revenue_at_risk ?? 0),
     avgStockoutDays: Number(data.impact?.avg_stockout_days ?? 0),
+    periodKey: data.period_key ?? null,
+    scenarioRunId: data.scenario_run_id ?? null,
+    rulesetVersion: data.ruleset_version ?? null,
+    modelVersion: data.model_version ?? null,
+    policyDecisionId: data.policy_decision_id ?? null,
+    auditEventId: data.audit_event_id ?? null,
+    resultSource: data.result_source ?? null,
     advisoryNotice: data.advisory_notice
   };
 }
@@ -415,16 +422,27 @@ export async function getOverview(): Promise<OverviewMetrics> {
   return (await getDashboard()).overview;
 }
 
-export async function simulateShock(): Promise<ShockState> {
+export async function simulateShock(periodKey: string): Promise<ShockState> {
   try {
     const payload = await requestJson("/api/v1/simulation/shock", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ shock_business_id: "BIZ-005", product_category: "beverage", inventory_coverage_days: 5 })
+      body: JSON.stringify({ shock_business_id: "BIZ-005", product_category: "beverage", inventory_coverage_days: 5, period_key: periodKey })
     });
     return apiShockToState(payload.data);
   } catch (error) {
-    return demoFallback(error, () => ({ ...defaultShock, active: true }));
+    return demoFallback(error, () => ({
+      ...defaultShock,
+      active: true,
+      periodKey,
+      scenarioRunId: "SCN-DEMO-FALLBACK",
+      rulesetVersion: "shock-rules-demo-v1.0",
+      modelVersion: "deterministic-demo-v0.1",
+      policyDecisionId: null,
+      auditEventId: null,
+      resultSource: "demo_fallback",
+      advisoryNotice: "Synthetic demo fallback scenario; backend policy and audit provenance are unavailable."
+    }));
   }
 }
 
@@ -796,6 +814,7 @@ function apiAuthMe(item: any): AuthMe {
       canReadRiskRun: Boolean(capabilities.can_read_risk_run),
       canReadMatchRun: Boolean(capabilities.can_read_match_run),
       canReadScenarioRun: Boolean(capabilities.can_read_scenario_run),
+      canSimulateShock: Boolean(capabilities.can_simulate_shock),
       canReadAudit: Boolean(capabilities.can_read_audit),
       allowedActions: capabilities.allowed_actions ?? []
     },

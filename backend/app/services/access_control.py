@@ -400,6 +400,7 @@ class PolicyService:
         "can_read_risk_run": "read_risk_run",
         "can_read_match_run": "read_match_run",
         "can_read_scenario_run": "read_scenario_run",
+        "can_simulate_shock": "simulate_shock",
         "can_read_audit": "read_audit",
     }
     ROLE_ACTIONS: dict[str, frozenset[str]] = {
@@ -437,6 +438,7 @@ class PolicyService:
                 "read_risk_run",
                 "read_match_run",
                 "read_scenario_run",
+                "simulate_shock",
                 "read_audit",
                 "read_ops",
             }
@@ -524,6 +526,7 @@ class PolicyService:
                 "read_risk_run",
                 "read_match_run",
                 "read_scenario_run",
+                "simulate_shock",
             }
         ),
         "supplier_admin": frozenset(
@@ -554,7 +557,7 @@ class PolicyService:
             }
         ),
         "reviewer": frozenset({"read_business", "read_financials", "read_evidence", "review_submission", "read_supply_map_registration", "review_supply_map_registration", "read_connection_request", "decide_connection_request", "read_risk_run", "read_match_run", "read_scenario_run"}),
-        "network_analyst": frozenset({"read_graph", "read_supply_map_registration", "read_risk_run", "read_match_run", "read_scenario_run"}),
+        "network_analyst": frozenset({"read_graph", "read_supply_map_registration", "read_risk_run", "read_match_run", "read_scenario_run", "simulate_shock"}),
         "lender": frozenset({"read_financials", "read_evidence", "read_supply_map_registration", "create_supply_map_registration", "read_invoice", "register_invoice_claim", "transition_invoice_claim", "read_risk_run", "read_scenario_run"}),
         "evidence_scanner": frozenset({"read_evidence", "record_malware_scan_result"}),
     }

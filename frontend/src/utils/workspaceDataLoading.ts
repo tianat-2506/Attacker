@@ -32,8 +32,18 @@ export function canLoadReviewQueueForView(activeView: AppView, canApproveDraft: 
   return activeView === "intake" && canApproveDraft;
 }
 
-export function canLoadRecommendationsForView(activeView: AppView, canReadRecommendations: boolean) {
-  return activeView === "matching" && canReadRecommendations;
+export function canLoadRecommendationsForView(
+  activeView: AppView,
+  canReadRecommendations: boolean,
+  shockActive = false,
+  shockPeriodKey?: string | null,
+  selectedPeriod?: string
+) {
+  if (!canReadRecommendations) return false;
+  if (activeView === "matching") return true;
+  return activeView === "overview"
+    && shockActive
+    && Boolean(shockPeriodKey && selectedPeriod && shockPeriodKey === selectedPeriod);
 }
 
 export function canLoadConnectionRequestsForView(activeView: AppView, canReadConnectionRequests: boolean) {

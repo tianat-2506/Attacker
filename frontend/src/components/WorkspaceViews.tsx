@@ -98,7 +98,9 @@ import { opsProvenanceLabel } from "../utils/opsProvenance";
 import { useShockPresentation } from "../hooks/useShockPresentation";
 import { isShockPhaseVisible } from "../utils/shockPresentation";
 import { recoveryPlaybook, shockSequenceSteps, type ShockSequenceStepId } from "../utils/shockSequence";
+import type { RiskShockBridgeModel } from "../utils/riskShockBridge";
 import { MapView } from "./MapView";
+import { RiskShockBridge } from "./RiskShockBridge";
 
 const moneyCompact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
 const numberCompact = new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 });
@@ -201,10 +203,14 @@ export function OverviewWorkspace({
   onOpenMatching,
   canOpenAudit,
   onOpenAudit,
+  canSimulateShock,
+  shockExecutionNotice,
   recommendations
 }: NetworkProps & {
   dashboard: DashboardData;
   recommendations: Recommendation[];
+  canSimulateShock: boolean;
+  shockExecutionNotice?: string | null;
   onSimulate: () => void;
   onReset: () => void;
   canOpenIntake: boolean;
@@ -242,7 +248,7 @@ export function OverviewWorkspace({
   function storyStepAction(id: DemoStoryStepId) {
     if (id === "intake") return <button className="text-button" type="button" disabled={!canOpenIntake} onClick={onOpenIntake}>Open</button>;
     if (id === "map_risk") return <button className="text-button" type="button" disabled={!canOpenRisk} onClick={() => onOpenRisk(shock.shockNodeId)}>Review</button>;
-    if (id === "shock") return <button className="text-button" type="button" disabled={shock.active} onClick={onSimulate}>{shock.active ? "Live" : "Run"}</button>;
+    if (id === "shock") return <button className="text-button" data-testid="shock-run-story" type="button" disabled={shock.active || !canSimulateShock} title={!canSimulateShock ? "Scenario execution is not permitted for this account" : undefined} onClick={onSimulate}>{shock.active ? "Result" : canSimulateShock ? "Run" : "Locked"}</button>;
     if (id === "matching") return <button className="text-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>Open</button>;
     return <button className="text-button" type="button" disabled={!canOpenAudit} onClick={onOpenAudit}>Open</button>;
   }
@@ -292,12 +298,13 @@ export function OverviewWorkspace({
           </div>
 
           <div className="simulation-strip">
-            <div><AlertTriangle size={18} /><span><strong>{shockTargetName} disruption</strong><small>{shock.active ? "Scenario active" : "Ready to simulate"}</small></span></div>
+            <div><AlertTriangle size={18} /><span><strong>{shockTargetName} disruption</strong><small>{shock.active ? "Scenario active" : canSimulateShock ? "Ready to simulate" : "Scenario execution is not permitted for this account."}</small></span></div>
             <div className="button-row">
-              <button className="primary-button" type="button" onClick={onSimulate} disabled={shock.active}><RefreshCw size={15} />Run</button>
+              <button className="primary-button" data-testid="shock-run-primary" type="button" onClick={onSimulate} disabled={shock.active || !canSimulateShock} title={!canSimulateShock ? "Scenario execution is not permitted for this account" : undefined}><RefreshCw size={15} />Run</button>
               {shock.active ? <button className="icon-button" type="button" title="Reset scenario" onClick={onReset}><RefreshCw size={16} /></button> : null}
             </div>
           </div>
+          {shockExecutionNotice ? <DataNotice>{shockExecutionNotice}</DataNotice> : null}
 
           <section className="shock-sequence-panel">
             <div className="panel-heading"><span>Shock sequence</span><strong>{presentationPhase}</strong></div>
@@ -674,7 +681,25 @@ function RiskLockedState({ subjectName, message }: { subjectName: string; messag
   );
 }
 
-export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatching, onOpenMatching }: { signal: RiskSignal | null; subjectName: string; accessNotice?: string | null; canOpenMatching: boolean; onOpenMatching: () => void }) {
+export function RiskWorkspace({
+  signal,
+  subjectName,
+  selectedPeriod,
+  accessNotice,
+  bridge,
+  canOpenMatching,
+  onOpenMatching,
+  onOpenShock
+}: {
+  signal: RiskSignal | null;
+  subjectName: string;
+  selectedPeriod: string;
+  accessNotice?: string | null;
+  bridge: RiskShockBridgeModel | null;
+  canOpenMatching: boolean;
+  onOpenMatching: () => void;
+  onOpenShock: () => void;
+}) {
   if (!signal) return accessNotice ? <RiskLockedState subjectName={subjectName} message={accessNotice} /> : <div className="loading-state">Loading evidence-based risk signal...</div>;
   const evidenceBlocked = signal.evidenceScope === "evidence_blocked_by_policy";
   const riskEyebrow = evidenceBlocked ? "High-level advisory" : "Evidence-scoped analysis";
@@ -683,12 +708,13 @@ export function RiskWorkspace({ signal, subjectName, accessNotice, canOpenMatchi
     : "No visible evidence documents for this account, business and period scope.";
   return (
     <div className="risk-workspace page-stack">
-      <header className="workspace-heading"><div><span className="eyebrow">{riskEyebrow}</span><h1>Risk Signal Review</h1><p>{subjectName} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
+      <header className="workspace-heading"><div><span className="eyebrow">{riskEyebrow}</span><h1>Risk Signal Review</h1><p>{subjectName} / period {selectedPeriod} / rule set {signal.formulaVersion}</p></div><span className="confidence-ring"><strong>{signal.confidence}%</strong><small>confidence</small></span></header>
       <section className="risk-summary-band">
         <div className="risk-severity"><AlertTriangle size={28} /><span><small>{signal.riskType.replace(/_/g, " ")}</small><strong>{signal.level}</strong></span></div>
         <p>{signal.summary}</p>
         <button className="primary-button" type="button" disabled={!canOpenMatching} onClick={onOpenMatching}>{canOpenMatching ? "Review alternatives" : "Matching unavailable"}<ArrowRight size={16} /></button>
       </section>
+      {bridge ? <RiskShockBridge model={bridge} onOpenScenario={onOpenShock} /> : null}
       <div className="risk-columns">
         <section className="rule-panel tool-panel">
           <div className="panel-heading"><span>Deterministic rule trace</span><ShieldCheck size={16} /></div>

@@ -122,6 +122,13 @@ export interface ShockState {
   monthlyVolumeAtRisk: number;
   revenueAtRisk: number;
   avgStockoutDays: number;
+  periodKey?: string | null;
+  scenarioRunId?: string | null;
+  rulesetVersion?: string | null;
+  modelVersion?: string | null;
+  policyDecisionId?: string | null;
+  auditEventId?: string | null;
+  resultSource?: string | null;
   advisoryNotice?: string;
 }
 
@@ -557,6 +564,7 @@ export interface AuthCapabilities {
   canReadRiskRun: boolean;
   canReadMatchRun: boolean;
   canReadScenarioRun: boolean;
+  canSimulateShock: boolean;
   canReadAudit: boolean;
   allowedActions: string[];
 }

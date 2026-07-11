@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from dataclasses import asdict
 from typing import Any
+from uuid import uuid4
 
 from backend.app.domain.invoice_verification import double_financing_alert, invoice_hash
 from backend.app.domain.risk_scoring import calculate_business_risk
@@ -1330,21 +1331,63 @@ class VietSupplyRadarService:
         shock_business_id: str = "BIZ-005",
         product_category: str = "beverage",
         inventory_coverage_days: int = 5,
+        period_key: str | None = None,
         context: RequestContext | None = None,
     ) -> dict[str, Any]:
         active_context = _context(context)
+        decision = PolicyService.decide(
+            "simulate_shock",
+            active_context,
+            resource_type="supply_shock_scenario",
+            resource_id=shock_business_id,
+            resource_organization_id=shock_business_id,
+            data_classification="partner_visible",
+            external_access_allowed=True,
+        )
+        if decision.effect != "allow":
+            self.audit.record_policy_decision(active_context, decision)
+            self.audit.record_context(
+                "SUPPLY_SHOCK_SIMULATION_DENIED",
+                active_context,
+                shock_business_id,
+                policy_decision=decision,
+                payload={
+                    "action": "simulate_shock",
+                    "period_key": period_key,
+                    "product_category": product_category,
+                    "reason": decision.reason,
+                },
+            )
+            raise AccessDeniedError("POLICY_DENIED", decision.reason, status_code=403)
+        self.audit.record_policy_decision(active_context, decision)
         businesses = {business.business_id: business.to_domain() for business in self.businesses.list_all()}
         edges = [edge.to_domain() for edge in self.edges.list_all()]
         result = simulate_shock(shock_business_id, businesses, edges, product_category, inventory_coverage_days)
-        self.audit.record(
+        event_id = self.audit.record_context(
             "SUPPLY_SHOCK_SIMULATED",
-            active_context.actor_role,
+            active_context,
             shock_business_id,
-            active_context.purpose,
-            actor_id=active_context.actor_id,
+            policy_decision=decision,
+            payload={
+                "period_key": period_key,
+                "product_category": product_category,
+                "inventory_coverage_days": inventory_coverage_days,
+                "result_source": "current_demo_graph" if active_context.app_mode == "demo" else "current_commercial_graph",
+            },
         )
         payload = asdict(result)
-        payload["advisory_notice"] = "Scenario simulation only; it does not declare breach/default or trigger automatic switching."
+        payload.update(
+            {
+                "period_key": period_key,
+                "scenario_run_id": f"SCN-{uuid4().hex[:12].upper()}",
+                "ruleset_version": "shock-rules-v1.0",
+                "model_version": "deterministic-adjacency-v1.0",
+                "policy_decision_id": decision.decision_id,
+                "audit_event_id": event_id,
+                "result_source": "current_demo_graph" if active_context.app_mode == "demo" else "current_commercial_graph",
+                "advisory_notice": "Hypothetical decision-support scenario only; it is not a forecast, legal finding, credit assessment or automatic supplier replacement instruction.",
+            }
+        )
         return payload
 
     def recommendations_payload(

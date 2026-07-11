@@ -9,6 +9,7 @@ class ShockSimulationRequest(BaseModel):
     shock_business_id: str = "BIZ-005"
     product_category: str = "beverage"
     inventory_coverage_days: int = Field(default=5, ge=0, le=365)
+    period_key: str | None = Field(default=None, pattern=r"^\d{4}-\d{2}$")
 
 
 class SupplierRecommendationRequest(BaseModel):

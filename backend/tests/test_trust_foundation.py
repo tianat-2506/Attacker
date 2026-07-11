@@ -115,6 +115,7 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertTrue(sme["can_create_submission"])
         self.assertTrue(sme["can_create_evidence_upload"])
         self.assertTrue(sme["can_read_supply_map_registration"])
+        self.assertFalse(sme["can_simulate_shock"])
         self.assertFalse(sme["can_review_submission"])
         self.assertFalse(sme["can_create_connection_request"])
         self.assertIn("create_submission", sme["allowed_actions"])
@@ -123,6 +124,7 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertEqual(sme_me["workspace_access"]["default_view"], "intake")
 
         self.assertTrue(buyer["can_read_graph"])
+        self.assertTrue(buyer["can_simulate_shock"])
         self.assertTrue(buyer["can_create_connection_request"])
         self.assertFalse(buyer["can_create_submission"])
         self.assertFalse(buyer["can_read_evidence"])
@@ -138,6 +140,60 @@ class TrustFoundationTests(unittest.TestCase):
         self.assertIn("onboarding", reviewer_me["workspace_access"]["allowed_views"])
         self.assertNotIn("overview", reviewer_me["workspace_access"]["allowed_views"])
         self.assertEqual(reviewer_me["workspace_access"]["default_view"], "intake")
+
+    def test_shock_simulation_is_policy_gated_and_returns_run_provenance(self) -> None:
+        buyer_context = context_from_headers(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="buyer-admin-009",
+            actor_role="buyer_admin",
+            purpose="supply_continuity_scenario",
+            scopes="demo:read buyer:intro",
+            app_mode="demo",
+        )
+        sme_context = context_from_headers(
+            tenant_id="tenant-demo",
+            organization_id="BIZ-009",
+            actor_id="sme-biz-009",
+            actor_role="sme_submitter",
+            purpose="periodic_intake",
+            scopes="demo:read intake:write",
+            app_mode="demo",
+        )
+
+        result = self.service.shock_payload(
+            shock_business_id="BIZ-005",
+            product_category="beverage",
+            inventory_coverage_days=5,
+            period_key="2026-07",
+            context=buyer_context,
+        )
+
+        self.assertEqual(result["period_key"], "2026-07")
+        self.assertTrue(result["scenario_run_id"].startswith("SCN-"))
+        self.assertEqual(result["ruleset_version"], "shock-rules-v1.0")
+        self.assertEqual(result["model_version"], "deterministic-adjacency-v1.0")
+        self.assertTrue(result["policy_decision_id"].startswith("POL-"))
+        self.assertTrue(result["audit_event_id"].startswith("AUD-"))
+        self.assertEqual(result["result_source"], "current_demo_graph")
+        self.assertIn("Hypothetical", result["advisory_notice"])
+
+        with self.assertRaises(AccessDeniedError):
+            self.service.shock_payload(
+                shock_business_id="BIZ-005",
+                product_category="beverage",
+                inventory_coverage_days=5,
+                period_key="2026-07",
+                context=sme_context,
+            )
+
+        denied = next(
+            event
+            for event in self.service.audit.list_recent()
+            if event["event_type"] == "SUPPLY_SHOCK_SIMULATION_DENIED"
+        )
+        self.assertEqual(denied["actor_id"], "sme-biz-009")
+        self.assertTrue(denied["policy_decision_id"])
 
     def test_risk_signal_can_be_high_level_without_evidence_access(self) -> None:
         buyer_context = context_from_headers(

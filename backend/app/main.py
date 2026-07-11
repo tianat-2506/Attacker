@@ -368,6 +368,7 @@ if FastAPI is not None:
             shock_business_id=request.shock_business_id,
             product_category=request.product_category,
             inventory_coverage_days=request.inventory_coverage_days,
+            period_key=request.period_key,
             context=context,
         )
         return {"data": result, "meta": {}, "errors": []}

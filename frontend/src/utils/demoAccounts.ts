@@ -167,6 +167,10 @@ export function accountCanBrowseNetwork(account: DemoAccount) {
   return accountHasAnyRole(account, ["demo_operator", "system_admin", "buyer_admin", "network_analyst", "org_admin"]);
 }
 
+export function accountCanSimulateShock(account: DemoAccount) {
+  return accountHasAnyRole(account, ["demo_operator", "system_admin", "buyer_admin", "network_analyst"]);
+}
+
 export function accountCanReadOwnBusiness(account: DemoAccount, businessId: string) {
   return accountHasAnyRole(account, ["demo_operator", "system_admin"]) || businessId === account.defaultBusinessId || businessId === account.organizationId;
 }

@@ -40,6 +40,9 @@ describe("workspace data loading guardrails", () => {
 
     expect(canLoadRecommendationsForView("matching", true)).toBe(true);
     expect(canLoadRecommendationsForView("overview", true)).toBe(false);
+    expect(canLoadRecommendationsForView("overview", true, true, "2026-07", "2026-07")).toBe(true);
+    expect(canLoadRecommendationsForView("overview", true, true, "2026-07", "2026-08")).toBe(false);
+    expect(canLoadRecommendationsForView("overview", true, false)).toBe(false);
 
     expect(canLoadConnectionRequestsForView("onboarding", true)).toBe(true);
     expect(canLoadConnectionRequestsForView("matching", true)).toBe(false);

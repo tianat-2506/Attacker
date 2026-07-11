@@ -56,13 +56,14 @@ import {
   validateDataSubmission
 } from "./api/client";
 import { businesses as fallbackBusinesses, defaultShock, edges as fallbackEdges, recommendations as fallbackRecommendations } from "./utils/demoData";
-import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, recoveryBuyerIdForAccount, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
+import { accountCanBrowseNetwork, accountCanReadOwnBusiness, accountCanSimulateShock, accountHasAnyRole, defaultDemoAccount, demoAccounts, firstAllowedView, getDemoAccountById, recoveryBuyerIdForAccount, scopedBusinessNodesForAccount } from "./utils/demoAccounts";
 import { canLoadInvoiceWorkspace, invoiceIdForWorkspace } from "./utils/invoiceSelection";
 import { canRequestRiskSignal } from "./utils/accessDecision";
 import { auditWorkspaceContextMatches } from "./utils/auditWorkspaceState";
 import { apiConnectionLabel, authContextLabel, demoBoundaryBanner } from "./utils/demoBoundary";
 import { mergePendingEvidenceUploadsForPeriod } from "./utils/pendingEvidenceUploads";
 import { readWorkspaceUrlState, workspaceSearchWithState } from "./utils/workspaceUrlState";
+import { riskShockBridgeModel, shockResultMatchesContext } from "./utils/riskShockBridge";
 import {
   canLoadAuditWorkspaceForView,
   canLoadBusinessDetailForView,
@@ -335,6 +336,7 @@ export default function App() {
   const [authContext, setAuthContext] = useState<AuthMe | null>(null);
   const [authContextStatus, setAuthContextStatus] = useState<"loading" | "verified" | "mismatch" | "unavailable">("loading");
   const [shock, setShock] = useState<ShockState>(defaultShock);
+  const [shockExecutionNotice, setShockExecutionNotice] = useState<string | null>(null);
   const [disruptedSupplierId, setDisruptedSupplierId] = useState(DEMO_DISRUPTED_SUPPLIER_ID);
   const [connectionRequest, setConnectionRequest] = useState<ConnectionRequest | null>(null);
   const [connectionRequests, setConnectionRequests] = useState<ConnectionRequest[]>([]);
@@ -394,6 +396,7 @@ export default function App() {
       canReadFinance: verifiedCapabilities?.canReadFinancials ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "sme_submitter", "supplier_admin", "reviewer", "lender", "org_admin"]),
       canReadInvoice: verifiedCapabilities?.canReadInvoice ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "sme_submitter", "supplier_admin", "lender", "org_admin"]),
       canReadRiskRun: verifiedCapabilities?.canReadRiskRun ?? activeAccount.allowedViews.includes("risk"),
+      canSimulateShock: verifiedCapabilities?.canSimulateShock ?? accountCanSimulateShock(activeAccount),
       canReadConnectionRequests: verifiedCapabilities?.canReadConnectionRequest ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "reviewer", "buyer_admin", "supplier_admin", "org_admin"]),
       canDecideConnectionRequest: verifiedCapabilities?.canDecideConnectionRequest ?? accountHasAnyRole(activeAccount, ["demo_operator", "system_admin", "reviewer", "supplier_admin", "org_admin"]),
       canReadRecommendations: (verifiedCapabilities?.canReadMatchRun ?? activeAccount.allowedViews.includes("matching")) || Boolean(verifiedCapabilities?.canReadGraph)
@@ -607,7 +610,7 @@ export default function App() {
 
   useEffect(() => {
     let mounted = true;
-    if (!canLoadRecommendationsForView(activeView, dataPermissions.canReadRecommendations)) {
+    if (!canLoadRecommendationsForView(activeView, dataPermissions.canReadRecommendations, shock.active, shock.periodKey, selectedPeriod)) {
       setRecommendations([]);
       return () => { mounted = false; };
     }
@@ -619,7 +622,7 @@ export default function App() {
         if (mounted) setRecommendations([]);
       });
     return () => { mounted = false; };
-  }, [activeAccount.id, activeView, dataPermissions.canReadRecommendations, disruptedSupplierId, recoveryBuyerId, selectedPeriod]);
+  }, [activeAccount.id, activeView, dataPermissions.canReadRecommendations, disruptedSupplierId, recoveryBuyerId, selectedPeriod, shock.active, shock.periodKey]);
 
   useEffect(() => {
     let mounted = true;
@@ -758,6 +761,19 @@ export default function App() {
   }, [activeView, selectedId, activeAccount.id, canReadOps]);
 
   const selected = useMemo(() => allNodes.find((node) => node.id === selectedId) ?? scenario?.nodes.find((node) => node.id === selectedId), [allNodes, scenario, selectedId]);
+  const selectedPeriodShock = useMemo(
+    () => dataPermissions.canReadGraph && shockResultMatchesContext(shock, selectedPeriod) ? shock : defaultShock,
+    [dataPermissions.canReadGraph, selectedPeriod, shock]
+  );
+  const riskSubjectName = selected?.name ?? riskSignal?.businessId ?? selectedId;
+  const riskShockBridge = useMemo(() => riskSignal ? riskShockBridgeModel({
+    signalBusinessId: riskSignal.businessId,
+    subjectName: riskSubjectName,
+    periodKey: selectedPeriod,
+    canReadGraph: dataPermissions.canReadGraph,
+    canRunShock: dataPermissions.canSimulateShock,
+    shock
+  }) : null, [dataPermissions.canReadGraph, dataPermissions.canSimulateShock, riskSignal, riskSubjectName, selectedPeriod, shock]);
   const disruptedSupplier = useMemo(() => allNodes.find((node) => node.id === disruptedSupplierId) ?? scenario?.nodes.find((node) => node.id === disruptedSupplierId), [allNodes, disruptedSupplierId, scenario]);
   const matchingBuyer = useMemo(() => allNodes.find((node) => node.id === recoveryBuyerId) ?? scenario?.nodes.find((node) => node.id === recoveryBuyerId), [allNodes, recoveryBuyerId, scenario]);
   const filteredNodes = useMemo(() => allNodes.filter((node) => (region === "ALL" || node.province === region) && (category === "ALL" || node.category === category)), [allNodes, region, category]);
@@ -765,19 +781,41 @@ export default function App() {
   const filteredEdges = useMemo(() => allEdges.filter((edge) => filteredIds.has(edge.sourceId) && filteredIds.has(edge.targetId)), [allEdges, filteredIds]);
 
   async function handleSimulate() {
+    if (!dataPermissions.canSimulateShock) {
+      setShockExecutionNotice("Scenario execution is not permitted for this account.");
+      return false;
+    }
+    setShockExecutionNotice(null);
     setDisruptedSupplierId(DEMO_DISRUPTED_SUPPLIER_ID);
     setSelectedId(DEMO_DISRUPTED_SUPPLIER_ID);
-    const result = await simulateShock();
-    const nextRecoveryBuyerId = recoveryBuyerIdForAccount(activeAccount, result.affectedNodeIds);
-    const shortlist = dataPermissions.canReadRecommendations
-      ? await getRecommendations(nextRecoveryBuyerId, selectedPeriod, DEMO_DISRUPTED_SUPPLIER_ID)
-      : [];
-    setShock(result);
-    setRecommendations(shortlist);
+    try {
+      const result = await simulateShock(selectedPeriod);
+      if (!shockResultMatchesContext(result, selectedPeriod)) throw new Error("Shock result context mismatch");
+      setShock(result);
+      setRecommendations([]);
+      return true;
+    } catch {
+      setShock(defaultShock);
+      setRecommendations([]);
+      setShockExecutionNotice("Scenario execution failed or was denied. No scenario result was applied.");
+      return false;
+    }
+  }
+
+  function handleResetShock() {
+    setShock(defaultShock);
+    setRecommendations([]);
+    setShockExecutionNotice(null);
   }
 
   function openView(view: AppView) {
     setActiveView(allowedViewIds.includes(view) ? view : defaultViewId);
+  }
+
+  async function handleOpenShock() {
+    if (!riskShockBridge || riskShockBridge.action === "none") return;
+    if (riskShockBridge.action === "run") await handleSimulate();
+    openView("overview");
   }
 
   function handleOpenRisk(businessId?: string | null) {
@@ -1210,7 +1248,7 @@ export default function App() {
     scenario,
     focused: focusedNetwork,
     selectedId,
-    shock,
+    shock: selectedPeriodShock,
     onFocusedChange: setFocusedNetwork,
     onSelect: setSelectedId
   };
@@ -1276,13 +1314,13 @@ export default function App() {
 
         <div className="view-content">
           <Suspense fallback={<div className="loading-state">Loading workspace...</div>}>
-          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} recommendations={recommendations} onSimulate={handleSimulate} onReset={() => setShock(defaultShock)} canOpenIntake={allowedViewIds.includes("intake")} onOpenIntake={() => openView("intake")} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} canOpenAudit={allowedViewIds.includes("audit")} onOpenAudit={() => openView("audit")} /> : null}
+          {activeView === "overview" ? <OverviewWorkspace {...networkProps} dashboard={dashboard} recommendations={recommendations} canSimulateShock={dataPermissions.canSimulateShock} shockExecutionNotice={shockExecutionNotice} onSimulate={handleSimulate} onReset={handleResetShock} canOpenIntake={allowedViewIds.includes("intake")} onOpenIntake={() => openView("intake")} canOpenRisk={allowedViewIds.includes("risk")} onOpenRisk={handleOpenRisk} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} canOpenAudit={allowedViewIds.includes("audit")} onOpenAudit={() => openView("audit")} /> : null}
           {activeView === "map" ? <MapWorkspace {...networkProps} selected={selected} detail={detail} accessDecision={selectedAccessDecision} /> : null}
           {activeView === "companies" ? <CompaniesWorkspace nodes={scopedCompanyNodes} selectedId={selectedId} onSelect={setSelectedId} detail={detail} evidence={evidence} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId) : []} accessDecision={selectedAccessDecision} downloadTicket={evidenceDownloadTicket} viewError={evidenceViewError} viewingEvidenceVersionId={viewingEvidenceVersionId} onViewEvidence={handleViewEvidenceDocument} onCloseDownloadTicket={() => { setEvidenceDownloadTicket(null); setEvidenceViewError(null); }} /> : null}
           {activeView === "intake" ? <DataIntakeWorkspace nodes={intakePermissions.canApproveDraft ? allNodes : scopedCompanyNodes} selectedId={selectedId} selectedPeriod={selectedPeriod} periods={periods} submission={intakeSubmission} snapshot={periodSnapshot} importBatch={importBatch} errorReport={intakeErrorReport} pendingEvidenceUploads={dataPermissions.canReadEvidence && canReadSelectedBusiness ? pendingEvidenceUploads.filter((item) => item.businessId === selectedId && item.periodKey === selectedPeriod) : []} vaultDocuments={dataPermissions.canReadEvidence && canReadSelectedBusiness ? evidence?.documents ?? [] : []} evidenceScanJob={evidenceScanJob} permittedBusinessIds={permittedIntakeBusinessIds} actionPermissions={intakePermissions} reviewQueue={reviewQueue} reviewQueueNotice={reviewQueueNotice} busy={intakeBusy} onSelect={setSelectedId} onPeriodChange={setSelectedPeriod} onCreateDraft={handleCreateDraft} onSaveDraft={handleSaveDraft} onValidate={handleValidateDraft} onSubmit={handleSubmitDraft} onReviewDecision={handleReviewDecision} onReviewQueueSelect={handleReviewQueueSelect} onImportCsv={handleImportCsv} onEvidenceUpload={handleEvidenceUpload} onRunEvidenceScan={handleRunEvidenceScan} onLoadErrorReport={handleLoadErrorReport} /> : null}
           {activeView === "onboarding" ? <OnboardingWorkspace account={activeAccount} registrations={visibleSupplyMapRegistrations} connectionRequests={connectionRequests} canCreate={canCreateOnboarding} canReview={canReviewOnboarding} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onCreate={handleCreateSupplyMapRegistration} onDecision={handleSupplyMapRegistrationDecision} onConnectionDecision={handleConnectionRequestDecision} /> : null}
-          {activeView === "risk" ? <RiskWorkspace signal={riskSignal} subjectName={selected?.name ?? riskSignal?.businessId ?? selectedId} accessNotice={riskAccessNotice} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} /> : null}
-          {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={disruptedSupplier?.name ?? disruptedSupplierId} selectedPeriod={selectedPeriod} shock={shock} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
+          {activeView === "risk" ? <RiskWorkspace signal={riskSignal} subjectName={riskSubjectName} selectedPeriod={selectedPeriod} accessNotice={riskAccessNotice} bridge={riskShockBridge} canOpenMatching={allowedViewIds.includes("matching")} onOpenMatching={() => openView("matching")} onOpenShock={handleOpenShock} /> : null}
+          {activeView === "matching" ? <MatchingWorkspace recommendations={recommendations} request={connectionRequest} buyerName={matchingBuyer?.name ?? activeAccount.organizationName} disruptedSupplierName={disruptedSupplier?.name ?? disruptedSupplierId} selectedPeriod={selectedPeriod} shock={selectedPeriodShock} accessByBusinessId={accessByBusinessId} canConnect={canRequestIntroduction} onConnect={handleConnectionRequest} /> : null}
           {activeView === "finance" ? <FinanceWorkspace finance={finance} account={activeAccount} accessNotice={financeAccessNotice} /> : null}
           {activeView === "invoice" ? <InvoiceWorkspace invoice={invoice} account={activeAccount} accessNotice={invoiceAccessNotice} /> : null}
           {activeView === "audit" ? <AuditWorkspace audit={auditWorkspaceMatchesContext ? audit : null} adminOps={auditWorkspaceMatchesContext ? adminOps : null} resolved={auditWorkspaceMatchesContext} accounts={demoAccounts} activeAccount={activeAccount} canDecideConnectionRequest={dataPermissions.canDecideConnectionRequest} onConnectionDecision={handleConnectionRequestDecision} /> : null}
